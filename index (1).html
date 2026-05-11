@@ -1,0 +1,2553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>The One Love Initiative</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --black: #080808;
+      --off-black: #111111;
+      --card: #161616;
+      --border: rgba(255,255,255,0.07);
+      --white: #F5F5F0;
+      --muted: rgba(245,245,240,0.45);
+      --purple: #7B5CF5;
+      --purple-dim: rgba(123,92,245,0.15);
+      --purple-glow: rgba(123,92,245,0.4);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: var(--black);
+      color: var(--white);
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* CUSTOM CURSOR */
+    .cursor {
+      width: 12px; height: 12px;
+      background: var(--purple);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 9999;
+      transition: transform 0.15s ease, width 0.2s, height 0.2s;
+      mix-blend-mode: screen;
+    }
+    .cursor-ring {
+      width: 36px; height: 36px;
+      border: 1px solid rgba(123,92,245,0.5);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 9998;
+      transition: transform 0.35s ease;
+    }
+    a:hover ~ .cursor, button:hover ~ .cursor { transform: scale(2.5); }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 20px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(8,8,8,0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      transition: padding 0.3s;
+    }
+
+    .nav-logo {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.4rem;
+      letter-spacing: 0.08em;
+      color: var(--white);
+      text-decoration: none;
+    }
+    .nav-logo span { color: var(--purple); }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 36px;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--white); }
+
+    .nav-donate {
+      background: var(--purple) !important;
+      color: var(--white) !important;
+      padding: 10px 22px;
+      border-radius: 2px;
+      font-weight: 500 !important;
+      transition: opacity 0.2s !important;
+    }
+    .nav-donate:hover { opacity: 0.85; }
+
+    /* PAGE SYSTEM */
+    .page { display: none; min-height: 100vh; }
+    .page.active { display: block; }
+
+    /* HERO */
+    #home-page { position: relative; overflow: hidden; }
+
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 0 48px 80px;
+      position: relative;
+    }
+
+    .hero-noise {
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
+      pointer-events: none;
+    }
+
+    .hero-glow {
+      position: absolute;
+      top: -200px; right: -200px;
+      width: 700px; height: 700px;
+      background: radial-gradient(circle, rgba(123,92,245,0.18) 0%, transparent 65%);
+      pointer-events: none;
+      animation: pulseGlow 6s ease-in-out infinite;
+    }
+
+    .hero-glow-2 {
+      position: absolute;
+      bottom: -100px; left: -100px;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(123,92,245,0.08) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.7; transform: scale(1.05); }
+    }
+
+    .hero-eyebrow {
+      font-size: 0.72rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--purple);
+      font-weight: 500;
+      margin-bottom: 20px;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.3s forwards;
+    }
+
+    .hero-title {
+      font-family: 'Montserrat', sans-serif;
+      font-size: clamp(5rem, 14vw, 13rem);
+      line-height: 0.9;
+      letter-spacing: 0.02em;
+      color: var(--white);
+      opacity: 0;
+      animation: fadeUp 0.9s 0.45s forwards;
+    }
+
+    .hero-title .outline {
+      -webkit-text-stroke: 1px rgba(255,255,255,0.3);
+      color: transparent;
+    }
+
+    .hero-subtitle-row {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-top: 32px;
+      gap: 40px;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.6s forwards;
+    }
+
+    .hero-sub {
+      font-size: 1rem;
+      line-height: 1.7;
+      color: var(--muted);
+      max-width: 480px;
+      font-weight: 300;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 14px;
+      flex-shrink: 0;
+    }
+
+    .btn-primary {
+      background: var(--purple);
+      color: var(--white);
+      padding: 14px 28px;
+      font-size: 0.78rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-weight: 500;
+      text-decoration: none;
+      border-radius: 2px;
+      border: none;
+      cursor: none;
+      transition: opacity 0.2s, transform 0.2s;
+      font-family: 'Montserrat', sans-serif;
+      display: inline-block;
+    }
+    .btn-primary:hover { opacity: 0.85; transform: translateY(-2px); }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--white);
+      padding: 14px 28px;
+      font-size: 0.78rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-weight: 500;
+      text-decoration: none;
+      border-radius: 2px;
+      border: 1px solid rgba(255,255,255,0.2);
+      cursor: none;
+      transition: border-color 0.2s, transform 0.2s;
+      font-family: 'Montserrat', sans-serif;
+      display: inline-block;
+    }
+    .btn-outline:hover { border-color: var(--purple); transform: translateY(-2px); }
+
+    .hero-scroll {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      opacity: 0;
+      animation: fadeIn 1s 1.2s forwards;
+    }
+
+    .scroll-line {
+      width: 1px;
+      height: 48px;
+      background: linear-gradient(to bottom, var(--purple), transparent);
+      animation: scrollPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes scrollPulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    /* STATS BAR */
+    .stats-bar {
+      background: var(--card);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 48px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+    }
+
+    .stat {
+      text-align: center;
+      padding: 0 24px;
+      border-right: 1px solid var(--border);
+    }
+    .stat:last-child { border-right: none; }
+
+    .stat-num {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 3.5rem;
+      color: var(--purple);
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-size: 0.72rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 8px;
+    }
+
+    /* SECTIONS */
+    section { padding: 120px 48px; }
+
+    .section-inner { max-width: 1200px; margin: 0 auto; }
+
+    .section-label {
+      font-size: 0.68rem;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: var(--purple);
+      font-weight: 500;
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-family: 'Montserrat', sans-serif;
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 400;
+      line-height: 1.2;
+      color: var(--white);
+      margin-bottom: 20px;
+    }
+
+    .section-title em { font-style: italic; color: var(--purple); font-weight: 300; }
+
+    .section-sub {
+      font-size: 1rem;
+      line-height: 1.75;
+      color: var(--muted);
+      max-width: 560px;
+      font-weight: 300;
+    }
+
+    /* MISSION SECTION */
+    .mission-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: start;
+      margin-top: 64px;
+    }
+
+    .mission-text p {
+      font-size: 1.05rem;
+      line-height: 1.85;
+      color: rgba(245,245,240,0.7);
+      font-weight: 300;
+      margin-bottom: 24px;
+    }
+
+    .mission-quote {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.4rem;
+      font-style: italic;
+      color: var(--white);
+      line-height: 1.6;
+      padding-left: 24px;
+      border-left: 2px solid var(--purple);
+      margin-top: 40px;
+    }
+
+    /* HOW WE WORK CARDS */
+    .work-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--border);
+      margin-top: 64px;
+      border: 1px solid var(--border);
+    }
+
+    .work-card {
+      background: var(--card);
+      padding: 48px 36px;
+      position: relative;
+      overflow: hidden;
+      transition: background 0.3s;
+    }
+
+    .work-card::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--purple);
+      transform: scaleX(0);
+      transition: transform 0.3s;
+    }
+
+    .work-card:hover { background: #1a1a1a; }
+    .work-card:hover::after { transform: scaleX(1); }
+
+    .work-num {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 5rem;
+      color: rgba(123,92,245,0.1);
+      line-height: 1;
+      margin-bottom: 16px;
+      transition: color 0.3s;
+    }
+
+    .work-card:hover .work-num { color: rgba(123,92,245,0.2); }
+
+    .work-card-title {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 400;
+      margin-bottom: 14px;
+      color: var(--white);
+    }
+
+    .work-card-text {
+      font-size: 0.9rem;
+      line-height: 1.75;
+      color: var(--muted);
+      font-weight: 300;
+    }
+
+    /* KIT SECTION */
+    .kit-section {
+      background: var(--card);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .kit-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+
+    .kit-items {
+      list-style: none;
+      margin-top: 32px;
+    }
+
+    .kit-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 18px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.95rem;
+      color: rgba(245,245,240,0.8);
+      font-weight: 300;
+    }
+
+    .kit-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--purple);
+      flex-shrink: 0;
+    }
+
+    .kit-visual {
+      background: var(--off-black);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 48px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .kit-visual::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at center, var(--purple-dim) 0%, transparent 70%);
+    }
+
+    .kit-big-num {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 7rem;
+      color: var(--purple);
+      line-height: 1;
+      position: relative;
+    }
+
+    .kit-goal-label {
+      font-size: 0.8rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 8px;
+      position: relative;
+    }
+
+    .progress-bar {
+      margin-top: 32px;
+      height: 4px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 2px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--purple);
+      border-radius: 2px;
+      animation: fillBar 2s 1s forwards ease-out;
+    }
+
+    @keyframes fillBar {
+      to { width: 0.5%; }
+    }
+
+    /* VALUES */
+    .values-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+      margin-top: 64px;
+    }
+
+    .value-card {
+      border: 1px solid var(--border);
+      padding: 40px;
+      border-radius: 4px;
+      transition: border-color 0.3s, transform 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .value-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: var(--purple);
+      transform: scaleX(0);
+      transition: transform 0.4s;
+    }
+
+    .value-card:hover { border-color: rgba(123,92,245,0.3); transform: translateY(-4px); }
+    .value-card:hover::before { transform: scaleX(1); }
+
+    .value-icon { font-size: 2rem; margin-bottom: 20px; }
+
+    .value-title {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 400;
+      margin-bottom: 12px;
+    }
+
+    .value-text {
+      font-size: 0.9rem;
+      line-height: 1.75;
+      color: var(--muted);
+      font-weight: 300;
+    }
+
+    /* PARTNER */
+    .partner-card {
+      border: 1px solid var(--border);
+      padding: 48px;
+      display: flex;
+      gap: 40px;
+      align-items: center;
+      margin-top: 48px;
+      border-radius: 4px;
+      transition: border-color 0.3s;
+    }
+
+    .partner-card:hover { border-color: rgba(123,92,245,0.3); }
+
+    .partner-badge {
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      background: var(--purple);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.4rem;
+      color: var(--white);
+      flex-shrink: 0;
+      letter-spacing: 0.05em;
+    }
+
+    .partner-name {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.3rem;
+      margin-bottom: 10px;
+    }
+
+    .partner-desc {
+      font-size: 0.9rem;
+      line-height: 1.75;
+      color: var(--muted);
+      font-weight: 300;
+    }
+
+    /* TEAM */
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-top: 64px;
+    }
+
+    .team-card {
+      border: 1px solid var(--border);
+      padding: 36px;
+      border-radius: 4px;
+      text-align: center;
+      transition: border-color 0.3s, transform 0.3s;
+    }
+
+    .team-card:hover { border-color: rgba(123,92,245,0.3); transform: translateY(-4px); }
+
+    .team-avatar {
+      width: 72px; height: 72px;
+      border-radius: 50%;
+      background: var(--purple-dim);
+      border: 1px solid var(--purple);
+      margin: 0 auto 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.6rem;
+      color: var(--purple);
+    }
+
+    .team-name {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.1rem;
+      margin-bottom: 6px;
+    }
+
+    .team-role {
+      font-size: 0.72rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--purple);
+    }
+
+    .team-bio {
+      font-size: 0.85rem;
+      line-height: 1.65;
+      color: var(--muted);
+      margin-top: 14px;
+      font-weight: 300;
+    }
+
+    /* STEPS */
+    .steps {
+      margin-top: 64px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+      position: relative;
+    }
+
+    .steps::before {
+      content: '';
+      position: absolute;
+      top: 24px; left: 0; right: 0;
+      height: 1px;
+      background: var(--border);
+      z-index: 0;
+    }
+
+    .step {
+      padding: 0 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .step-num {
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      background: var(--purple);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.4rem;
+      color: var(--white);
+      margin-bottom: 24px;
+    }
+
+    .step-title {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.1rem;
+      margin-bottom: 10px;
+    }
+
+    .step-text {
+      font-size: 0.85rem;
+      line-height: 1.7;
+      color: var(--muted);
+      font-weight: 300;
+    }
+
+    /* GET INVOLVED */
+    .involved-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-top: 64px;
+    }
+
+    .involved-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 40px 32px;
+      border-radius: 4px;
+      transition: border-color 0.3s, transform 0.3s;
+    }
+
+    .involved-card:hover { border-color: rgba(123,92,245,0.3); transform: translateY(-4px); }
+
+    .involved-icon { font-size: 2rem; margin-bottom: 20px; }
+
+    .involved-title {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.3rem;
+      margin-bottom: 12px;
+    }
+
+    .involved-text {
+      font-size: 0.88rem;
+      line-height: 1.75;
+      color: var(--muted);
+      font-weight: 300;
+      margin-bottom: 28px;
+    }
+
+    /* FAQ */
+    .faq-list { margin-top: 64px; }
+
+    .faq-item {
+      border-bottom: 1px solid var(--border);
+      padding: 28px 0;
+      cursor: none;
+    }
+
+    .faq-question {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--white);
+      gap: 20px;
+    }
+
+    .faq-toggle {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 1.2rem;
+      color: var(--purple);
+      transition: transform 0.3s, background 0.3s;
+    }
+
+    .faq-item.open .faq-toggle { transform: rotate(45deg); background: var(--purple-dim); }
+
+    .faq-answer {
+      font-size: 0.9rem;
+      line-height: 1.8;
+      color: var(--muted);
+      font-weight: 300;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease, padding 0.3s;
+    }
+
+    .faq-item.open .faq-answer { max-height: 300px; padding-top: 16px; }
+
+    /* PRESS */
+    .press-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      margin-top: 64px;
+    }
+
+    .press-facts {
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 40px;
+      border-radius: 4px;
+    }
+
+    .press-facts h3 {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.2rem;
+      margin-bottom: 24px;
+    }
+
+    .fact-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.88rem;
+    }
+
+    .fact-label { color: var(--muted); font-weight: 300; }
+    .fact-value { color: var(--white); font-weight: 500; }
+
+    .press-contact {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 24px;
+    }
+
+    .press-contact p {
+      font-size: 1rem;
+      line-height: 1.75;
+      color: var(--muted);
+      font-weight: 300;
+    }
+
+    .press-email {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.1rem;
+      color: var(--purple);
+      text-decoration: none;
+    }
+
+    /* CONTACT */
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      margin-top: 64px;
+    }
+
+    .contact-info p {
+      font-size: 1rem;
+      line-height: 1.8;
+      color: var(--muted);
+      font-weight: 300;
+      margin-bottom: 32px;
+    }
+
+    .contact-email {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.2rem;
+      color: var(--purple);
+      text-decoration: none;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .contact-location {
+      font-size: 0.8rem;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    .contact-form { display: flex; flex-direction: column; gap: 16px; }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+    .form-field { display: flex; flex-direction: column; gap: 8px; }
+
+    .form-field label {
+      font-size: 0.68rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .form-field input,
+    .form-field textarea,
+    .form-field select {
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--white);
+      padding: 14px 18px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 300;
+      border-radius: 2px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .form-field input:focus,
+    .form-field textarea:focus,
+    .form-field select:focus { border-color: var(--purple); }
+
+    .form-field textarea { resize: vertical; min-height: 120px; }
+
+    .form-field select option { background: var(--card); }
+
+    /* CTA BANNER */
+    .cta-banner {
+      background: var(--purple);
+      padding: 80px 48px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-banner::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E");
+    }
+
+    .cta-banner h2 {
+      font-family: 'Montserrat', sans-serif;
+      font-size: clamp(3rem, 8vw, 6rem);
+      letter-spacing: 0.04em;
+      color: var(--white);
+      position: relative;
+      margin-bottom: 16px;
+    }
+
+    .cta-banner p {
+      font-size: 1rem;
+      color: rgba(255,255,255,0.75);
+      font-weight: 300;
+      margin-bottom: 36px;
+      position: relative;
+    }
+
+    .cta-banner .btn-white {
+      background: var(--white);
+      color: var(--purple);
+      padding: 16px 36px;
+      font-size: 0.8rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      font-weight: 500;
+      text-decoration: none;
+      border-radius: 2px;
+      display: inline-block;
+      position: relative;
+      transition: opacity 0.2s;
+    }
+
+    .cta-banner .btn-white:hover { opacity: 0.9; }
+
+    /* FOOTER */
+    footer {
+      background: var(--off-black);
+      border-top: 1px solid var(--border);
+      padding: 60px 48px 40px;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 48px;
+      max-width: 1200px;
+      margin: 0 auto 48px;
+    }
+
+    .footer-brand {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.6rem;
+      letter-spacing: 0.08em;
+      color: var(--white);
+      margin-bottom: 16px;
+    }
+
+    .footer-brand span { color: var(--purple); }
+
+    .footer-desc {
+      font-size: 0.85rem;
+      line-height: 1.7;
+      color: var(--muted);
+      font-weight: 300;
+      margin-bottom: 24px;
+    }
+
+    .footer-col h4 {
+      font-size: 0.68rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+
+    .footer-col a {
+      display: block;
+      font-size: 0.88rem;
+      color: rgba(245,245,240,0.6);
+      text-decoration: none;
+      margin-bottom: 10px;
+      transition: color 0.2s;
+      cursor: none;
+    }
+
+    .footer-col a:hover { color: var(--purple); }
+
+    .footer-bottom {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding-top: 32px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    /* SCROLL ANIMATIONS */
+    .reveal {
+      opacity: 0;
+      transform: translateY(32px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+
+    /* ANIMATIONS */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    /* PAGE TRANSITIONS */
+    .page-transition {
+      position: fixed;
+      inset: 0;
+      background: var(--purple);
+      z-index: 9997;
+      transform: scaleY(0);
+      transform-origin: top;
+      pointer-events: none;
+    }
+
+    .page-transition.entering {
+      animation: slideIn 0.4s ease forwards;
+    }
+
+    .page-transition.leaving {
+      animation: slideOut 0.4s ease forwards;
+    }
+
+    @keyframes slideIn {
+      from { transform: scaleY(0); transform-origin: top; }
+      to { transform: scaleY(1); transform-origin: top; }
+    }
+
+    @keyframes slideOut {
+      from { transform: scaleY(1); transform-origin: bottom; }
+      to { transform: scaleY(0); transform-origin: bottom; }
+    }
+
+    /* MOBILE */
+    @media (max-width: 900px) {
+      nav { padding: 16px 24px; }
+      .nav-links { display: none; }
+      section { padding: 70px 24px; }
+      .hero { padding: 0 24px 60px; }
+      .hero-title { font-size: clamp(4rem, 18vw, 8rem); }
+      .hero-subtitle-row { flex-direction: column; align-items: flex-start; gap: 24px; }
+      .stats-bar { grid-template-columns: repeat(2, 1fr); gap: 24px; padding: 40px 24px; }
+      .stat { border-right: none; border-bottom: 1px solid var(--border); padding-bottom: 24px; }
+      .mission-grid { grid-template-columns: 1fr; gap: 40px; }
+      .work-cards { grid-template-columns: 1fr; }
+      .kit-grid { grid-template-columns: 1fr; gap: 40px; }
+      .values-grid { grid-template-columns: 1fr; }
+      .team-grid { grid-template-columns: 1fr; }
+      .steps { grid-template-columns: 1fr 1fr; gap: 40px; }
+      .steps::before { display: none; }
+      .involved-grid { grid-template-columns: 1fr; }
+      .press-grid { grid-template-columns: 1fr; }
+      .contact-grid { grid-template-columns: 1fr; gap: 48px; }
+      .form-row { grid-template-columns: 1fr; }
+      .footer-grid { grid-template-columns: 1fr 1fr; gap: 36px; }
+      .footer-bottom { flex-direction: column; gap: 12px; text-align: center; }
+      .partner-card { flex-direction: column; gap: 24px; padding: 32px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+<div class="page-transition" id="pageTransition"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo" onclick="showPage('home')">One <span>Love</span> Initiative</a>
+  <ul class="nav-links">
+    <li><a href="#" onclick="showPage('home')">Home</a></li>
+    <li><a href="#" onclick="showPage('about')">About</a></li>
+    <li><a href="#" onclick="showPage('work')">Our Work</a></li>
+    <li><a href="#" onclick="showPage('involved')">Get Involved</a></li>
+    <li><a href="#" onclick="showPage('partners')">Partners</a></li>
+    <li><a href="#" onclick="showPage('press')">Press</a></li>
+    <li><a href="#" onclick="showPage('faq')">FAQ</a></li>
+    <li><a href="#" onclick="showPage('contact')">Contact</a></li>
+    <li><a href="https://donate.stripe.com/3cIcMY53Y81g7MK0hl0kE00" target="_blank" class="nav-donate">Donate</a></li>
+  </ul>
+</nav>
+
+<!-- ===== HOME PAGE ===== -->
+<div class="page active" id="home-page">
+
+  <section class="hero">
+    <div class="hero-noise"></div>
+    <div class="hero-glow"></div>
+    <div class="hero-glow-2"></div>
+    <p class="hero-eyebrow">Charlotte, North Carolina · Est. 2025</p>
+    <h1 class="hero-title"><span style="display:block;font-size:clamp(2.5rem,7vw,6.5rem);letter-spacing:0.08em;font-weight:800;line-height:1;">THE ONE LOVE</span><span class="outline" style="display:block;font-size:clamp(4rem,12vw,11rem);letter-spacing:0.02em;line-height:0.9;">INITIATIVE</span></h1>
+    <div class="hero-subtitle-row">
+      <p class="hero-sub">A student-led movement based in Charlotte, NC — join us as we work toward assembling and distributing 20,000 O.L.I Kits for individuals and families experiencing hardship across our community.</p>
+      <div class="hero-actions">
+        <a href="#" class="btn-primary" onclick="showPage('involved')">Get Involved</a>
+        <a href="https://donate.stripe.com/3cIcMY53Y81g7MK0hl0kE00" target="_blank" class="btn-outline">Donate Now</a>
+      </div>
+    </div>
+    <div class="hero-scroll">
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+
+  <div class="stats-bar">
+    <div class="stat reveal"><div class="stat-num">0</div><div class="stat-label">Kits Distributed</div></div>
+    <div class="stat reveal reveal-delay-1"><div class="stat-num">3</div><div class="stat-label">Active Volunteers</div></div>
+    <div class="stat reveal reveal-delay-2"><div class="stat-num">1</div><div class="stat-label">Drives Organized</div></div>
+    <div class="stat reveal reveal-delay-3"><div class="stat-num">1</div><div class="stat-label">Partner Organizations</div></div>
+  </div>
+
+  <section>
+    <div class="section-inner">
+      <p class="section-label reveal">Our Mission</p>
+      <h2 class="section-title reveal">Mobilizing students to<br><em>serve Charlotte</em></h2>
+      <div class="mission-grid">
+        <div class="mission-text reveal">
+          <p>At the One Love Initiative, we believe students have the power to create real, lasting change. Our mission is to mobilize young people across Charlotte to organize donation drives, assemble O.L.I Kits, and deliver essential supplies to individuals and families facing hardship.</p>
+          <p>We don't operate independently — we partner with established organizations who share our commitment to community, ensuring that every kit we assemble reaches the people who need it most, efficiently and with care.</p>
+          <p class="mission-quote">"We began as students who asked a simple question: what can we actually do? The answer is the One Love Initiative."</p>
+        </div>
+        <div class="work-cards reveal reveal-delay-1" style="display:grid;grid-template-columns:1fr;gap:1px;margin-top:0;">
+          <div class="work-card">
+            <div class="work-num">01</div>
+            <h3 class="work-card-title">Donation Drives</h3>
+            <p class="work-card-text">We organize student-led drives at schools, places of worship, and neighborhoods across Charlotte. Community members come together to contribute essential items that form the foundation of every O.L.I Kit.</p>
+          </div>
+          <div class="work-card">
+            <div class="work-num">02</div>
+            <h3 class="work-card-title">Kit Assembly</h3>
+            <p class="work-card-text">Student volunteers gather to sort and assemble donated items into O.L.I Kits — carefully packed bundles of essential supplies ready for distribution to families in need.</p>
+          </div>
+          <div class="work-card">
+            <div class="work-num">03</div>
+            <h3 class="work-card-title">Community Partnerships</h3>
+            <p class="work-card-text">By partnering with established nonprofits like Crisis Assistance Ministry, we ensure every O.L.I Kit reaches the families who need it most — efficiently, respectfully, and with care.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="kit-section">
+    <div class="section-inner">
+      <p class="section-label reveal">Current Initiative</p>
+      <h2 class="section-title reveal">Children's Hygiene<br><em>Kit Drive</em></h2>
+      <div class="kit-grid">
+        <div class="reveal">
+          <p class="section-sub">We are currently organizing a donation drive focused on assembling children's hygiene kits for families in need, distributed through our partnership with Crisis Assistance Ministry.</p>
+          <ul class="kit-items">
+            <li class="kit-item"><span class="kit-dot"></span>Kids Toothbrush</li>
+            <li class="kit-item"><span class="kit-dot"></span>Kids Toothpaste</li>
+            <li class="kit-item"><span class="kit-dot"></span>Kid-Friendly Soap or Body Wash</li>
+            <li class="kit-item"><span class="kit-dot"></span>Kid-Friendly Lotion</li>
+          </ul>
+          <div style="margin-top:32px;">
+            <a href="https://donate.stripe.com/3cIcMY53Y81g7MK0hl0kE00" target="_blank" class="btn-primary">Donate to the Drive</a>
+          </div>
+        </div>
+        <div class="kit-visual reveal reveal-delay-2">
+          <div class="kit-big-num">20K</div>
+          <div class="kit-goal-label">O.L.I Kit Goal · Summer 2025</div>
+          <div class="progress-bar"><div class="progress-fill"></div></div>
+          <p style="font-size:0.78rem;color:var(--muted);margin-top:16px;position:relative;">We're just getting started. Every donation brings us closer.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="cta-banner reveal">
+    <h2>Ready to Make a Difference?</h2>
+    <p>Join our student-led movement and help us reach 20,000 O.L.I Kits for Charlotte families.</p>
+    <a href="#" class="btn-white" onclick="showPage('involved')">Get Involved Today</a>
+  </div>
+
+</div>
+
+<!-- ===== ABOUT PAGE ===== -->
+<div class="page" id="about-page">
+  <section style="padding-top:160px;">
+    <div class="section-inner">
+      <p class="section-label reveal">Who We Are</p>
+      <h2 class="section-title reveal">Built by students,<br><em>for the community</em></h2>
+      <p class="section-sub reveal" style="margin-top:16px;">Growing our impact through dedicated student leadership and community engagement across Charlotte, NC.</p>
+
+      <div class="mission-grid" style="margin-top:80px;">
+        <div class="reveal">
+          <p class="section-label">Our Story</p>
+          <p style="font-size:1rem;line-height:1.85;color:rgba(245,245,240,0.7);font-weight:300;margin-bottom:20px;">The One Love Initiative began with a simple question: what can students actually do to help? Founded by Prithivi Vijayakumar, O.L.I was built on the belief that young people don't need to wait to make a difference.</p>
+          <p style="font-size:1rem;line-height:1.85;color:rgba(245,245,240,0.7);font-weight:300;margin-bottom:20px;">Starting with a single hygiene kit drive in Charlotte, NC, we set out to prove that organized, student-led action — backed by strong community partnerships — can create real, measurable impact.</p>
+          <p style="font-size:1rem;line-height:1.85;color:rgba(245,245,240,0.7);font-weight:300;">Our goal is 20,000 O.L.I Kits distributed by the end of summer 2025. We're just getting started.</p>
+        </div>
+        <div class="reveal reveal-delay-1">
+          <p class="section-label">Our Mission</p>
+          <p style="font-size:1rem;line-height:1.85;color:rgba(245,245,240,0.7);font-weight:300;margin-bottom:20px;">At the One Love Initiative, we believe students have the power to create real, lasting change. Our mission is to mobilize young people across Charlotte to organize donation drives, assemble O.L.I Kits, and deliver essential supplies to individuals and families facing hardship.</p>
+          <blockquote class="mission-quote">"Students serving community — not tomorrow, but today."</blockquote>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding-top:0;">
+    <div class="section-inner">
+      <p class="section-label reveal">Core Values</p>
+      <h2 class="section-title reveal">What drives<br><em>everything we do</em></h2>
+      <div class="values-grid">
+        <div class="value-card reveal">
+          <div class="value-icon">🎓</div>
+          <h3 class="value-title">Student Leadership</h3>
+          <p class="value-text">We believe students are not just the future — they are the present. Every drive we organize, every kit we assemble, and every partnership we build is led by young people committed to making Charlotte a better place for everyone.</p>
+        </div>
+        <div class="value-card reveal reveal-delay-1">
+          <div class="value-icon">❤️</div>
+          <h3 class="value-title">Community First</h3>
+          <p class="value-text">Every decision we make is guided by empathy and a deep respect for the dignity of the people we serve. We show up not just with supplies, but with genuine care for the individuals and families who receive our O.L.I Kits.</p>
+        </div>
+        <div class="value-card reveal reveal-delay-2">
+          <div class="value-icon">🤝</div>
+          <h3 class="value-title">Partnership</h3>
+          <p class="value-text">We believe in the power of collaboration. By working alongside established organizations, religious communities, and local businesses, we multiply our impact and ensure every donation goes further than it could alone.</p>
+        </div>
+        <div class="value-card reveal reveal-delay-3">
+          <div class="value-icon">📊</div>
+          <h3 class="value-title">Transparency</h3>
+          <p class="value-text">We maintain full transparency in how we operate, how donations are used, and how impact is measured. Every kit assembled is logged, every dollar tracked, and every drive documented so our community can trust us completely.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding-top:0;">
+    <div class="section-inner">
+      <p class="section-label reveal">The Team</p>
+      <h2 class="section-title reveal">Student leaders dedicated<br><em>to community impact</em></h2>
+      <div class="team-grid">
+        <div class="team-card reveal">
+          <div class="team-avatar">PV</div>
+          <div class="team-name">Prithivi Vijayakumar</div>
+          <div class="team-role">Founder</div>
+          <p class="team-bio">Leading the vision, strategy, and community outreach efforts of the One Love Initiative. Passionate about proving that student-led action can create real community impact.</p>
+        </div>
+        <div class="team-card reveal reveal-delay-1">
+          <div class="team-avatar">OL</div>
+          <div class="team-name">Operations Lead</div>
+          <div class="team-role">Director of Operations</div>
+          <p class="team-bio">Coordinating drive logistics, kit assembly operations, and volunteer scheduling to keep the initiative running smoothly and efficiently.</p>
+        </div>
+        <div class="team-card reveal reveal-delay-2">
+          <div class="team-avatar">ML</div>
+          <div class="team-name">Marketing Lead</div>
+          <div class="team-role">Marketing Director</div>
+          <p class="team-bio">Spreading awareness of the One Love Initiative to schools, organizations, and the wider Charlotte community through strategic outreach and content.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ===== OUR WORK PAGE ===== -->
+<div class="page" id="work-page">
+  <section style="padding-top:160px;">
+    <div class="section-inner">
+      <p class="section-label reveal">What We Do</p>
+      <h2 class="section-title reveal">From collection<br><em>to community</em></h2>
+      <p class="section-sub reveal" style="margin-top:16px;">Every O.L.I Kit starts with a drive and ends with a family in need. Here's how we make it happen.</p>
+
+      <div class="steps reveal" style="margin-top:80px;">
+        <div class="step">
+          <div class="step-num">1</div>
+          <h3 class="step-title">Identify Needs</h3>
+          <p class="step-text">We work with Crisis Assistance Ministry to identify the specific items families in Charlotte need most, ensuring every drive is targeted and impactful.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <h3 class="step-title">Organize Drives</h3>
+          <p class="step-text">Students coordinate and lead donation collection efforts at schools, places of worship, and neighborhoods across Charlotte.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <h3 class="step-title">Assemble Kits</h3>
+          <p class="step-text">Volunteers come together to sort and assemble donations into O.L.I Kits — ready-to-distribute bundles of essential supplies.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <h3 class="step-title">Deliver to Partners</h3>
+          <p class="step-text">Completed O.L.I Kits are handed off to Crisis Assistance Ministry for direct distribution to families experiencing hardship.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="kit-section">
+    <div class="section-inner">
+      <p class="section-label reveal">Current Project</p>
+      <h2 class="section-title reveal">Children's Hygiene<br><em>Kit Drive</em></h2>
+      <div class="kit-grid">
+        <div class="reveal">
+          <p style="font-size:1rem;line-height:1.8;color:var(--muted);font-weight:300;margin-bottom:32px;">Our pilot drive is focused on assembling children's hygiene kits for families in need across Charlotte. Each kit is carefully assembled with kid-friendly essentials and distributed through our partnership with Crisis Assistance Ministry.</p>
+          <p class="section-label">Each Kit Contains</p>
+          <ul class="kit-items">
+            <li class="kit-item"><span class="kit-dot"></span>Kids Toothbrush</li>
+            <li class="kit-item"><span class="kit-dot"></span>Kids Toothpaste</li>
+            <li class="kit-item"><span class="kit-dot"></span>Kid-Friendly Soap or Body Wash</li>
+            <li class="kit-item"><span class="kit-dot"></span>Kid-Friendly Lotion</li>
+          </ul>
+        </div>
+        <div class="reveal reveal-delay-1">
+          <p class="section-label">Coming Soon</p>
+          <div class="value-card" style="margin-top:16px;">
+            <div class="value-icon">🔜</div>
+            <h3 class="value-title">Future Drives</h3>
+            <p class="value-text">Our next drive is in the works. We're constantly identifying new needs in the Charlotte community and planning drives that go beyond hygiene — from clothing to household essentials. Stay tuned and follow us on social media for updates.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="cta-banner reveal">
+    <h2>Help Us Hit 20,000 Kits</h2>
+    <p>Every item donated and every dollar contributed goes directly toward assembling O.L.I Kits for Charlotte families.</p>
+    <a href="https://donate.stripe.com/3cIcMY53Y81g7MK0hl0kE00" target="_blank" class="btn-white">Donate Now</a>
+  </div>
+</div>
+
+<!-- ===== GET INVOLVED PAGE ===== -->
+<div class="page" id="involved-page">
+  <section style="padding-top:160px;">
+    <div class="section-inner">
+      <p class="section-label reveal">Join Us</p>
+      <h2 class="section-title reveal">Make an impact<br><em>today</em></h2>
+      <p class="section-sub reveal" style="margin-top:16px;">Whether you want to volunteer, donate items, start a drive, or give financially — there's a place for you in the One Love Initiative.</p>
+
+      <div class="involved-grid" style="margin-top:64px;">
+        <div class="involved-card reveal">
+          <div class="involved-icon">🤝</div>
+          <h3 class="involved-title">Volunteer</h3>
+          <p class="involved-text">Help organize drives, assist with O.L.I Kit assembly, or promote our initiatives at your school or place of worship. Earn community service hours while making a real difference in Charlotte.</p>
+          <a href="#" class="btn-primary" onclick="showPage('contact')">Sign Up</a>
+        </div>
+        <div class="involved-card reveal reveal-delay-1">
+          <div class="involved-icon">📦</div>
+          <h3 class="involved-title">Donate Items</h3>
+          <p class="involved-text">We are currently collecting kids toothbrushes, toothpaste, kid-friendly soap, and lotion for our Children's Hygiene Kit Drive. Every item donated becomes part of an O.L.I Kit for a family in need.</p>
+          <a href="#" class="btn-primary" onclick="showPage('contact')">Learn How</a>
+        </div>
+        <div class="involved-card reveal reveal-delay-2">
+          <div class="involved-icon">💜</div>
+          <h3 class="involved-title">Donate Money</h3>
+          <p class="involved-text">Financial donations allow us to purchase bulk supplies and assemble more O.L.I Kits. 100% of donations go directly toward supplies and operational costs for our drives.</p>
+          <a href="https://donate.stripe.com/3cIcMY53Y81g7MK0hl0kE00" target="_blank" class="btn-primary">Donate Now</a>
+        </div>
+        <div class="involved-card reveal">
+          <div class="involved-icon">🏫</div>
+          <h3 class="involved-title">Start a Drive</h3>
+          <p class="involved-text">Students and school clubs can start their own O.L.I Kit drives at their schools, neighborhoods, or organizations. We provide full guidance on how to organize and run a successful drive.</p>
+          <a href="#" class="btn-primary" onclick="showPage('contact')">Get Started</a>
+        </div>
+        <div class="involved-card reveal reveal-delay-1">
+          <div class="involved-icon">🕌</div>
+          <h3 class="involved-title">Religious Communities</h3>
+          <p class="involved-text">Places of worship are incredible partners for donation drives. We already have a relationship with the Hindu Center of Charlotte and welcome partnerships with all faith communities across the city.</p>
+          <a href="#" class="btn-primary" onclick="showPage('contact')">Partner With Us</a>
+        </div>
+        <div class="involved-card reveal reveal-delay-2">
+          <div class="involved-icon">📣</div>
+          <h3 class="involved-title">Spread the Word</h3>
+          <p class="involved-text">Follow us on social media and share our mission with your network. Every share helps us reach more volunteers, donors, and families in need. Awareness is the first step to impact.</p>
+          <a href="#" class="btn-primary" onclick="showPage('contact')">Connect</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding-top:0;">
+    <div class="section-inner">
+      <p class="section-label reveal">Why It Matters</p>
+      <h2 class="section-title reveal">The need is<br><em>real and urgent</em></h2>
+      <div class="mission-grid reveal" style="margin-top:48px;">
+        <div>
+          <p style="font-size:1rem;line-height:1.85;color:rgba(245,245,240,0.7);font-weight:300;margin-bottom:20px;">Thousands of families in Charlotte face daily hardship — struggling to afford basic hygiene supplies, household essentials, and more. The One Love Initiative exists to bridge that gap.</p>
+          <p style="font-size:1rem;line-height:1.85;color:rgba(245,245,240,0.7);font-weight:300;">Every kit you help us assemble, every drive you help us organize, and every dollar you donate goes directly toward putting essential supplies in the hands of families who need them. No overhead. No bureaucracy. Just students serving community.</p>
+        </div>
+        <div>
+          <div class="value-card">
+            <div class="value-icon">🎯</div>
+            <h3 class="value-title">Our Goal</h3>
+            <p class="value-text">20,000 O.L.I Kits assembled and distributed by the end of summer 2025. We know it's ambitious. That's exactly why we need you.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ===== PARTNERS PAGE ===== -->
+<div class="page" id="partners-page">
+  <section style="padding-top:160px;">
+    <div class="section-inner">
+      <p class="section-label reveal">Our Partners</p>
+      <h2 class="section-title reveal">Working together<br><em>for Charlotte</em></h2>
+      <p class="section-sub reveal" style="margin-top:16px;">We are proud to work alongside organizations that share our commitment to serving Charlotte's families.</p>
+
+      <div class="partner-card reveal" style="margin-top:64px;">
+        <div class="partner-badge">CAM</div>
+        <div>
+          <h3 class="partner-name">Crisis Assistance Ministry</h3>
+          <p class="partner-desc">Crisis Assistance Ministry provides essential support to Mecklenburg County residents facing financial hardship. As our primary distribution partner, they ensure every O.L.I Kit we assemble reaches the families who need it most. Their decades of experience and deep community trust make them the ideal partner for our mission.</p>
+        </div>
+      </div>
+
+      <div class="partner-card reveal reveal-delay-1" style="margin-top:24px;">
+        <div class="partner-badge">HC</div>
+        <div>
+          <h3 class="partner-name">Hindu Center of Charlotte</h3>
+          <p class="partner-desc">The Hindu Center of Charlotte is one of our key community partners, helping us expand our volunteer base and reach more families across the city. Their community's generosity and commitment to service aligns deeply with our mission at the One Love Initiative.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding-top:0;">
+    <div class="section-inner">
+      <p class="section-label reveal">Partner Benefits</p>
+      <h2 class="section-title reveal">What we bring<br><em>to the table</em></h2>
+      <div class="values-grid reveal" style="margin-top:48px;">
+        <div class="value-card">
+          <div class="value-icon">📦</div>
+          <h3 class="value-title">Reliable Delivery</h3>
+          <p class="value-text">All donated items are delivered directly to families in need through our established distribution network. We coordinate logistics so our partners can focus on what they do best.</p>
+        </div>
+        <div class="value-card">
+          <div class="value-icon">👥</div>
+          <h3 class="value-title">Student-Powered</h3>
+          <p class="value-text">Every drive is organized and executed by dedicated student volunteers committed to making a real difference. Our partners benefit from an energetic, motivated team of young leaders.</p>
+        </div>
+        <div class="value-card">
+          <div class="value-icon">📊</div>
+          <h3 class="value-title">Full Transparency</h3>
+          <p class="value-text">We maintain detailed records of every drive, kit assembled, and donation received. Our partners can always see exactly how their collaboration is creating impact in the community.</p>
+        </div>
+        <div class="value-card">
+          <div class="value-icon">🌱</div>
+          <h3 class="value-title">Growing Network</h3>
+          <p class="value-text">As we grow toward our 20,000 kit goal, our partner network grows with us. Early partners benefit from being part of a movement that is only getting bigger and more impactful.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding-top:0;background:var(--card);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+    <div class="section-inner">
+      <p class="section-label reveal">Become a Partner</p>
+      <h2 class="section-title reveal">Let's build something<br><em>together</em></h2>
+      <div class="mission-grid reveal" style="margin-top:48px;">
+        <div>
+          <p style="font-size:1rem;line-height:1.85;color:rgba(245,245,240,0.7);font-weight:300;margin-bottom:20px;">We are actively seeking partnerships with local businesses, schools, religious organizations, and community groups across Charlotte. As a partner, you'll help us expand our reach, grow our volunteer base, and assemble more O.L.I Kits for families in need.</p>
+          <p style="font-size:1rem;line-height:1.85;color:rgba(245,245,240,0.7);font-weight:300;margin-bottom:32px;">If your organization shares our commitment to community, we'd love to connect.</p>
+          <a href="#" class="btn-primary" onclick="showPage('contact')">Get In Touch</a>
+        </div>
+        <div class="value-card" style="align-self:center;">
+          <div class="value-icon">✉️</div>
+          <h3 class="value-title">Contact Us Directly</h3>
+          <p class="value-text" style="margin-bottom:16px;">For partnership inquiries, reach out directly at:</p>
+          <a href="mailto:oneloveinitiative.official@gmail.com" class="press-email">oneloveinitiative.official@gmail.com</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ===== PRESS PAGE ===== -->
+<div class="page" id="press-page">
+  <section style="padding-top:160px;">
+    <div class="section-inner">
+      <p class="section-label reveal">Press & Media</p>
+      <h2 class="section-title reveal">Resources for journalists<br><em>and media outlets</em></h2>
+      <p class="section-sub reveal" style="margin-top:16px;">Everything you need to cover the One Love Initiative — our story, key facts, and media contact.</p>
+
+      <div class="press-grid reveal" style="margin-top:64px;">
+        <div class="press-facts">
+          <h3>Key Facts</h3>
+          <div class="fact-row"><span class="fact-label">Founded</span><span class="fact-value">2025</span></div>
+          <div class="fact-row"><span class="fact-label">Location</span><span class="fact-value">Charlotte, NC</span></div>
+          <div class="fact-row"><span class="fact-label">Founder</span><span class="fact-value">Prithivi Vijayakumar</span></div>
+          <div class="fact-row"><span class="fact-label">Type</span><span class="fact-value">Student-Led Initiative</span></div>
+          <div class="fact-row"><span class="fact-label">Current Drive</span><span class="fact-value">Children's Hygiene Kit Drive</span></div>
+          <div class="fact-row"><span class="fact-label">Distribution Partner</span><span class="fact-value">Crisis Assistance Ministry</span></div>
+          <div class="fact-row"><span class="fact-label">Kit Goal</span><span class="fact-value">20,000 O.L.I Kits · Summer 2025</span></div>
+          <div class="fact-row"><span class="fact-label">Active Volunteers</span><span class="fact-value">3</span></div>
+        </div>
+        <div class="press-contact">
+          <div>
+            <p class="section-label">Our Story</p>
+            <p>The One Love Initiative is a student-led community service organization based in Charlotte, NC, founded by Prithivi Vijayakumar. We organize donation drives and assemble O.L.I Kits — bundles of essential supplies — for individuals and families experiencing hardship, distributed through our partnership with Crisis Assistance Ministry.</p>
+          </div>
+          <div>
+            <p class="section-label">Media Contact</p>
+            <p style="margin-bottom:12px;">For press inquiries, interviews, or media requests:</p>
+            <a href="mailto:oneloveinitiative.official@gmail.com" class="press-email">oneloveinitiative.official@gmail.com</a>
+            <p style="font-size:0.8rem;color:var(--muted);margin-top:8px;">Charlotte, North Carolina</p>
+          </div>
+          <a href="https://donate.stripe.com/3cIcMY53Y81g7MK0hl0kE00" target="_blank" class="btn-primary" style="align-self:flex-start;">Support Our Mission</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ===== FAQ PAGE ===== -->
+<div class="page" id="faq-page">
+  <section style="padding-top:160px;">
+    <div class="section-inner">
+      <p class="section-label reveal">FAQ</p>
+      <h2 class="section-title reveal">Frequently Asked<br><em>Questions</em></h2>
+      <p class="section-sub reveal" style="margin-top:16px;">Everything you need to know about the One Love Initiative, our drives, and how you can get involved.</p>
+
+      <div class="faq-list reveal" style="margin-top:64px;">
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-question">What is the One Love Initiative? <div class="faq-toggle">+</div></div>
+          <div class="faq-answer">The One Love Initiative is a student-led nonprofit based in Charlotte, NC, dedicated to assembling and distributing O.L.I Kits — bundles of essential supplies — for individuals and families experiencing hardship across our community.</div>
+        </div>
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-question">What is an O.L.I Kit? <div class="faq-toggle">+</div></div>
+          <div class="faq-answer">An O.L.I Kit is a carefully assembled bundle of essential items donated and packaged by our student volunteers. Our current kit is the Children's Hygiene Kit, which includes a kids toothbrush, toothpaste, kid-friendly soap or body wash, and kid-friendly lotion.</div>
+        </div>
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-question">Who receives the kits? <div class="faq-toggle">+</div></div>
+          <div class="faq-answer">All O.L.I Kits are distributed through our partner organization, Crisis Assistance Ministry, which serves individuals and families facing financial hardship in Mecklenburg County, NC.</div>
+        </div>
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-question">How can I donate items? <div class="faq-toggle">+</div></div>
+          <div class="faq-answer">We are currently collecting kids toothbrushes, toothpaste, kid-friendly soap, and lotion for our Children's Hygiene Kit Drive. Reach out to us at oneloveinitiative.official@gmail.com to find out where to drop off donations.</div>
+        </div>
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-question">Can I donate money instead of items? <div class="faq-toggle">+</div></div>
+          <div class="faq-answer">Yes! Financial donations go directly toward purchasing bulk supplies for O.L.I Kit assembly. You can donate securely through our Stripe donation page — click the Donate button in the navigation bar.</div>
+        </div>
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-question">How do I volunteer? <div class="faq-toggle">+</div></div>
+          <div class="faq-answer">We'd love to have you! Volunteers help organize drives, assemble kits, and spread the word. Email us at oneloveinitiative.official@gmail.com or fill out the contact form on our Contact page to get started.</div>
+        </div>
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-question">Can I start a drive at my school or organization? <div class="faq-toggle">+</div></div>
+          <div class="faq-answer">Absolutely. We welcome students, school clubs, religious organizations, and community groups to host their own drives. We provide full guidance on how to organize and contribute. Reach out to us to get started.</div>
+        </div>
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-question">How are donations used? <div class="faq-toggle">+</div></div>
+          <div class="faq-answer">100% of donated funds go toward purchasing supplies for O.L.I Kit assembly and covering operational costs for our drives. We maintain full transparency in how funds are used.</div>
+        </div>
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-question">Where is the One Love Initiative based? <div class="faq-toggle">+</div></div>
+          <div class="faq-answer">We are based in Charlotte, North Carolina, and currently serve families across the greater Charlotte and Mecklenburg County area.</div>
+        </div>
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-question">How do I partner with the One Love Initiative? <div class="faq-toggle">+</div></div>
+          <div class="faq-answer">If your organization would like to partner with us — whether as a distribution partner, sponsor, or community collaborator — please reach out at oneloveinitiative.official@gmail.com. We'd love to connect.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="cta-banner reveal">
+    <h2>Still Have Questions?</h2>
+    <p>We'd love to hear from you. Reach out and we'll get back to you as soon as possible.</p>
+    <a href="#" class="btn-white" onclick="showPage('contact')">Contact Us</a>
+  </div>
+</div>
+
+<!-- ===== CONTACT PAGE ===== -->
+<div class="page" id="contact-page">
+  <section style="padding-top:160px;">
+    <div class="section-inner">
+      <p class="section-label reveal">Get In Touch</p>
+      <h2 class="section-title reveal">Let's work<br><em>together</em></h2>
+      <div class="contact-grid">
+        <div class="reveal">
+          <p class="contact-info" style="font-size:1rem;line-height:1.8;color:var(--muted);font-weight:300;margin-bottom:32px;">Whether you want to volunteer, donate items, start a drive at your school, or partner with us — we'd love to hear from you. Fill out the form or reach out directly.</p>
+          <a href="mailto:oneloveinitiative.official@gmail.com" class="contact-email">oneloveinitiative.official@gmail.com</a>
+          <p class="contact-location">Charlotte, North Carolina</p>
+          <div style="margin-top:40px;">
+            <p class="section-label">Follow Us</p>
+            <a href="https://www.instagram.com/one.love.initiative/" target="_blank" class="btn-outline" style="display:inline-block;margin-top:12px;">Instagram →</a>
+          </div>
+        </div>
+        <div class="reveal reveal-delay-1">
+          <form class="contact-form" onsubmit="handleSubmit(event)">
+            <div class="form-row">
+              <div class="form-field">
+                <label>First Name</label>
+                <input type="text" placeholder="Your first name" required/>
+              </div>
+              <div class="form-field">
+                <label>Last Name</label>
+                <input type="text" placeholder="Your last name"/>
+              </div>
+            </div>
+            <div class="form-field">
+              <label>Email</label>
+              <input type="email" placeholder="your@email.com" required/>
+            </div>
+            <div class="form-field">
+              <label>I want to</label>
+              <select>
+                <option>Volunteer</option>
+                <option>Donate Items</option>
+                <option>Start a Drive</option>
+                <option>Partner with OLI</option>
+                <option>Press / Media Inquiry</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label>Message</label>
+              <textarea placeholder="Tell us how you'd like to get involved..." required></textarea>
+            </div>
+            <button type="submit" class="btn-primary" style="align-self:flex-start;border:none;">Send Message</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="footer-brand">One <span>Love</span> Initiative</div>
+      <p class="footer-desc">A student-led initiative organizing donation drives and assembling O.L.I Kits for individuals and families in need across Charlotte, NC.</p>
+      <a href="mailto:oneloveinitiative.official@gmail.com" style="font-size:0.8rem;color:var(--purple);text-decoration:none;">oneloveinitiative.official@gmail.com</a>
+    </div>
+    <div class="footer-col">
+      <h4>Navigate</h4>
+      <a href="#" onclick="showPage('home')">Home</a>
+      <a href="#" onclick="showPage('about')">About</a>
+      <a href="#" onclick="showPage('work')">Our Work</a>
+      <a href="#" onclick="showPage('involved')">Get Involved</a>
+    </div>
+    <div class="footer-col">
+      <h4>More</h4>
+      <a href="#" onclick="showPage('partners')">Partners</a>
+      <a href="#" onclick="showPage('press')">Press & Media</a>
+      <a href="#" onclick="showPage('faq')">FAQ</a>
+      <a href="#" onclick="showPage('contact')">Contact</a>
+    </div>
+    <div class="footer-col">
+      <h4>Take Action</h4>
+      <a href="https://donate.stripe.com/3cIcMY53Y81g7MK0hl0kE00" target="_blank">Donate Now</a>
+      <a href="#" onclick="showPage('involved')">Volunteer</a>
+      <a href="#" onclick="showPage('involved')">Start a Drive</a>
+      <a href="https://www.instagram.com/one.love.initiative/" target="_blank">Instagram</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 The One Love Initiative · Charlotte, North Carolina</span>
+    <span>Partner: Crisis Assistance Ministry</span>
+  </div>
+</footer>
+
+<script>
+  // CURSOR
+  const cursor = document.getElementById('cursor');
+  const cursorRing = document.getElementById('cursorRing');
+  let mouseX = 0, mouseY = 0, ringX = 0, ringY = 0;
+
+  document.addEventListener('mousemove', e => {
+    mouseX = e.clientX; mouseY = e.clientY;
+    cursor.style.left = mouseX - 6 + 'px';
+    cursor.style.top = mouseY - 6 + 'px';
+  });
+
+  function animateRing() {
+    ringX += (mouseX - ringX - 18) * 0.12;
+    ringY += (mouseY - ringY - 18) * 0.12;
+    cursorRing.style.left = ringX + 'px';
+    cursorRing.style.top = ringY + 'px';
+    requestAnimationFrame(animateRing);
+  }
+  animateRing();
+
+  // PAGE NAVIGATION
+  function showPage(pageId) {
+    if (!pageId) return;
+    const transition = document.getElementById('pageTransition');
+    transition.className = 'page-transition entering';
+
+    setTimeout(() => {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById(pageId + '-page').classList.add('active');
+      window.scrollTo(0, 0);
+      transition.className = 'page-transition leaving';
+      setTimeout(() => { transition.className = 'page-transition'; }, 400);
+      initReveal();
+    }, 400);
+  }
+
+  // SCROLL REVEAL
+  function initReveal() {
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) entry.target.classList.add('visible');
+      });
+    }, { threshold: 0.1 });
+    reveals.forEach(el => { el.classList.remove('visible'); observer.observe(el); });
+  }
+
+  // FAQ TOGGLE
+  function toggleFaq(item) {
+    const isOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+    if (!isOpen) item.classList.add('open');
+  }
+
+  // FORM SUBMIT
+  function handleSubmit(e) {
+    e.preventDefault();
+    const btn = e.target.querySelector('button');
+    btn.textContent = 'Message Sent! ✓';
+    btn.style.background = '#22c55e';
+    setTimeout(() => { btn.textContent = 'Send Message'; btn.style.background = ''; }, 3000);
+  }
+
+  // INIT
+  window.addEventListener('load', initReveal);
+</script>
+</body>
+</html>
+
+<!-- OLI ASSISTANT STYLES -->
+<style>
+.oli-bubble { position: fixed; bottom: 28px; right: 28px; z-index: 1000; }
+.oli-trigger { width: 60px; height: 60px; border-radius: 50%; background: var(--purple); border: none; cursor: none; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; box-shadow: 0 8px 32px rgba(123,92,245,0.45); transition: transform 0.2s, box-shadow 0.2s; position: relative; }
+.oli-trigger:hover { transform: scale(1.08); box-shadow: 0 12px 40px rgba(123,92,245,0.6); }
+.oli-badge { position: absolute; top: -3px; right: -3px; width: 16px; height: 16px; background: #22c55e; border-radius: 50%; border: 2px solid var(--black); animation: pulseBadge2 2s ease-in-out infinite; }
+@keyframes pulseBadge2 { 0%,100%{transform:scale(1)}50%{transform:scale(1.25)} }
+.oli-window { position: absolute; bottom: 72px; right: 0; width: 340px; background: #161616; border: 1px solid rgba(255,255,255,0.07); border-radius: 16px; overflow: hidden; display: none; flex-direction: column; box-shadow: 0 24px 80px rgba(0,0,0,0.6); }
+.oli-window.open { display: flex; animation: oliPop 0.25s ease forwards; }
+@keyframes oliPop { from{opacity:0;transform:scale(0.92) translateY(12px)}to{opacity:1;transform:scale(1) translateY(0)} }
+.oli-header { background: var(--purple); padding: 14px 18px; display: flex; align-items: center; gap: 10px; }
+.oli-avatar-img { width: 34px; height: 34px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; }
+.oli-header-info h4 { font-size: 0.88rem; font-weight: 700; color: #fff; font-family: 'Montserrat', sans-serif; letter-spacing: 0.04em; }
+.oli-header-info p { font-size: 0.7rem; color: rgba(255,255,255,0.7); font-weight: 300; }
+.oli-close-btn { margin-left: auto; background: none; border: none; color: rgba(255,255,255,0.7); font-size: 1.1rem; cursor: none; transition: color 0.2s; padding: 0; }
+.oli-close-btn:hover { color: #fff; }
+.oli-messages { flex: 1; padding: 14px; overflow-y: auto; max-height: 300px; display: flex; flex-direction: column; gap: 10px; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.1) transparent; }
+.oli-msg { display: flex; gap: 8px; align-items: flex-start; }
+.oli-msg.user { flex-direction: row-reverse; }
+.oli-msg-av { width: 26px; height: 26px; border-radius: 50%; background: rgba(123,92,245,0.2); border: 1px solid var(--purple); display: flex; align-items: center; justify-content: center; font-size: 0.75rem; flex-shrink: 0; }
+.oli-msg.user .oli-msg-av { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.1); }
+.oli-msg-text { background: #111; border: 1px solid rgba(255,255,255,0.06); padding: 9px 13px; border-radius: 12px; border-top-left-radius: 2px; font-size: 0.82rem; line-height: 1.6; color: rgba(245,245,240,0.85); font-weight: 300; max-width: 230px; font-family: 'Montserrat', sans-serif; }
+.oli-msg.user .oli-msg-text { background: var(--purple); border-color: var(--purple); color: #fff; border-top-left-radius: 12px; border-top-right-radius: 2px; }
+.oli-typing-indicator { display: flex; gap: 4px; padding: 10px 13px; background: #111; border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; border-top-left-radius: 2px; width: fit-content; }
+.oli-typing-indicator span { width: 5px; height: 5px; border-radius: 50%; background: rgba(245,245,240,0.4); animation: td 1.2s ease-in-out infinite; }
+.oli-typing-indicator span:nth-child(2){animation-delay:0.2s}
+.oli-typing-indicator span:nth-child(3){animation-delay:0.4s}
+@keyframes td{0%,60%,100%{opacity:0.3;transform:translateY(0)}30%{opacity:1;transform:translateY(-4px)}}
+.oli-suggestions-row { padding: 0 14px 10px; display: flex; flex-wrap: wrap; gap: 6px; }
+.oli-chip { background: rgba(123,92,245,0.12); border: 1px solid rgba(123,92,245,0.25); color: rgba(245,245,240,0.75); padding: 5px 11px; border-radius: 20px; font-size: 0.72rem; cursor: none; transition: background 0.2s; font-family: 'Montserrat', sans-serif; }
+.oli-chip:hover { background: var(--purple); color: #fff; border-color: var(--purple); }
+.oli-input-row { padding: 10px 14px; border-top: 1px solid rgba(255,255,255,0.07); display: flex; gap: 8px; align-items: center; }
+.oli-text-input { flex: 1; background: #111; border: 1px solid rgba(255,255,255,0.08); color: #f5f5f0; padding: 9px 13px; border-radius: 20px; font-size: 0.8rem; font-family: 'Montserrat', sans-serif; outline: none; transition: border-color 0.2s; }
+.oli-text-input:focus { border-color: var(--purple); }
+.oli-text-input::placeholder { color: rgba(245,245,240,0.35); }
+.oli-send-btn { width: 34px; height: 34px; border-radius: 50%; background: var(--purple); border: none; cursor: none; display: flex; align-items: center; justify-content: center; transition: opacity 0.2s; flex-shrink: 0; font-size: 0.85rem; }
+.oli-send-btn:hover { opacity: 0.85; }
+
+/* NAV MOBILE TOGGLE */
+.nav-mobile-toggle { display: none; background: none; border: 1px solid var(--border); color: var(--white); padding: 8px 12px; border-radius: 4px; cursor: none; font-size: 0.9rem; }
+@media (max-width: 900px) {
+  .nav-mobile-toggle { display: block; }
+  .nav-links { display: none; position: absolute; top: 100%; left: 0; right: 0; background: rgba(8,8,8,0.98); flex-direction: column; padding: 20px 24px; gap: 16px; border-bottom: 1px solid var(--border); }
+  .nav-links.mobile-open { display: flex; }
+}
+</style>
+
+<!-- OLI ASSISTANT HTML -->
+<div class="oli-bubble">
+  <div class="oli-window" id="oliWindow">
+    <div class="oli-header">
+      <div class="oli-avatar-img">💜</div>
+      <div class="oli-header-info">
+        <h4>OLI</h4>
+        <p>One Love Initiative Assistant</p>
+      </div>
+      <button class="oli-close-btn" onclick="toggleOli()">✕</button>
+    </div>
+    <div class="oli-messages" id="oliMessages">
+      <div class="oli-msg">
+        <div class="oli-msg-av">💜</div>
+        <div class="oli-msg-text">Hi! I'm OLI, the One Love Initiative assistant. I can answer questions about our mission, drives, how to volunteer, donate, or get involved. What would you like to know?</div>
+      </div>
+    </div>
+    <div class="oli-suggestions-row" id="oliSuggestions">
+      <button class="oli-chip" onclick="sendSuggestion('What is an O.L.I Kit?')">What's an O.L.I Kit?</button>
+      <button class="oli-chip" onclick="sendSuggestion('How can I volunteer?')">How to volunteer?</button>
+      <button class="oli-chip" onclick="sendSuggestion('How do I donate?')">How to donate?</button>
+      <button class="oli-chip" onclick="sendSuggestion('What is your kit goal?')">Kit goal?</button>
+    </div>
+    <div class="oli-input-row">
+      <input class="oli-text-input" id="oliInput" placeholder="Ask me anything..." onkeydown="if(event.key==='Enter')sendOliMessage()"/>
+      <button class="oli-send-btn" onclick="sendOliMessage()">→</button>
+    </div>
+  </div>
+  <button class="oli-trigger" onclick="toggleOli()">
+    💬
+    <span class="oli-badge"></span>
+  </button>
+</div>
+
+<script>
+// OLI ASSISTANT
+let oliOpen = false;
+let oliHistory = [];
+
+const OLI_SYSTEM = `You are OLI, the friendly AI assistant for The One Love Initiative — a student-led nonprofit based in Charlotte, NC. You are helpful, warm, and enthusiastic about the mission.
+
+Key facts you know:
+- Founded by Prithivi Vijayakumar in 2025
+- Based in Charlotte, North Carolina
+- Mission: Mobilize students to assemble and distribute O.L.I Kits (essential supply bundles) for families in need
+- Current drive: Children's Hygiene Kit Drive — each kit contains kids toothbrush, toothpaste, kid-friendly soap/body wash, and kid-friendly lotion
+- Kit goal: 20,000 O.L.I Kits by end of summer 2025
+- Distribution partner: Crisis Assistance Ministry (Charlotte, NC)
+- Community partner: Hindu Center of Charlotte
+- Team: 3 active volunteers, 4 team members
+- Donation link: https://donate.stripe.com/3cIcMY53Y81g7MK0hl0kE00
+- Email: oneloveinitiative.official@gmail.com
+- Instagram: https://www.instagram.com/one.love.initiative/
+- Ways to help: volunteer, donate items, donate money, start a drive, partner with us
+- Currently collecting: kids toothbrushes, toothpaste, kid-friendly soap, kid-friendly lotion
+
+Keep responses concise (2-4 sentences max), friendly, and always encourage people to get involved. If someone asks how to donate money, share the Stripe link. If someone asks to volunteer or contact, share the email.`;
+
+function toggleOli() {
+  oliOpen = !oliOpen;
+  const win = document.getElementById('oliWindow');
+  if (win) win.classList.toggle('open', oliOpen);
+}
+
+function sendSuggestion(text) {
+  const input = document.getElementById('oliInput');
+  const sugg = document.getElementById('oliSuggestions');
+  if (input) input.value = text;
+  if (sugg) sugg.style.display = 'none';
+  sendOliMessage();
+}
+
+async function sendOliMessage() {
+  const input = document.getElementById('oliInput');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+
+  addOliMessage(text, 'user');
+  oliHistory.push({ role: 'user', content: text });
+
+  const typing = addTyping();
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: OLI_SYSTEM,
+        messages: oliHistory
+      })
+    });
+
+    const data = await res.json();
+    typing.remove();
+
+    const reply = data.content?.[0]?.text || "I'm having trouble connecting right now. Please email us at oneloveinitiative.official@gmail.com!";
+    addOliMessage(reply, 'oli');
+    oliHistory.push({ role: 'assistant', content: reply });
+
+  } catch(e) {
+    typing.remove();
+    addOliMessage("I'm having trouble connecting right now. Please reach out at oneloveinitiative.official@gmail.com!", 'oli');
+  }
+}
+
+function addOliMessage(text, role) {
+  const msgs = document.getElementById('oliMessages');
+  if (!msgs) return div;
+  const div = document.createElement('div');
+  div.className = 'oli-msg' + (role === 'user' ? ' user' : '');
+  div.innerHTML = `<div class="oli-msg-av">${role === 'user' ? '👤' : '💜'}</div><div class="oli-msg-text">${text}</div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+  return div;
+}
+
+function addTyping() {
+  const msgs = document.getElementById('oliMessages');
+  if (!msgs) return div;
+  const div = document.createElement('div');
+  div.className = 'oli-msg';
+  div.innerHTML = `<div class="oli-msg-av">💜</div><div class="oli-typing-indicator"><span></span><span></span><span></span></div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+  return div;
+}
+
+// MOBILE NAV TOGGLE
+document.addEventListener('DOMContentLoaded', () => {
+  const nav = document.querySelector('nav');
+  const toggle = document.createElement('button');
+  toggle.className = 'nav-mobile-toggle';
+  toggle.textContent = '☰';
+  toggle.onclick = () => {
+    document.querySelector('.nav-links').classList.toggle('mobile-open');
+  };
+  nav.appendChild(toggle);
+});
+</script>
+
+
+
+<!-- ===== NEW ADDITIONS: PROGRESS BAR, NEWSLETTER, GALLERY, TESTIMONIALS, DRIVES MAP ===== -->
+<style>
+/* DONATION PROGRESS */
+.donation-progress-section {
+  background: var(--off-black);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 80px 48px;
+}
+
+.progress-wrap {
+  max-width: 800px;
+  margin: 48px auto 0;
+}
+
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 16px;
+}
+
+.progress-current {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 3rem;
+  font-weight: 800;
+  color: var(--purple);
+  line-height: 1;
+}
+
+.progress-goal {
+  font-size: 0.8rem;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.progress-track {
+  height: 8px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.progress-fill-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--purple), #a78bfa);
+  border-radius: 4px;
+  width: 0%;
+  transition: width 1.5s ease;
+}
+
+.progress-pct {
+  font-size: 0.75rem;
+  color: var(--muted);
+  font-weight: 300;
+}
+
+.progress-pct span { color: var(--purple); font-weight: 700; }
+
+.progress-milestones {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 32px;
+  gap: 16px;
+}
+
+.milestone {
+  text-align: center;
+  flex: 1;
+  padding: 20px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  transition: border-color 0.3s;
+}
+
+.milestone.reached { border-color: var(--purple); background: var(--purple-dim); }
+
+.milestone-num {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--white);
+  margin-bottom: 4px;
+}
+
+.milestone.reached .milestone-num { color: var(--purple); }
+
+.milestone-label {
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* NEWSLETTER */
+.newsletter-section {
+  background: var(--card);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 80px 48px;
+}
+
+.newsletter-inner {
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.newsletter-form {
+  display: flex;
+  gap: 12px;
+  margin-top: 32px;
+}
+
+.newsletter-input {
+  flex: 1;
+  background: var(--off-black);
+  border: 1px solid var(--border);
+  color: var(--white);
+  padding: 14px 18px;
+  border-radius: 4px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.88rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.newsletter-input:focus { border-color: var(--purple); }
+.newsletter-input::placeholder { color: var(--muted); }
+
+.newsletter-btn {
+  background: var(--purple);
+  color: var(--white);
+  border: none;
+  padding: 14px 24px;
+  border-radius: 4px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity 0.2s;
+}
+
+.newsletter-btn:hover { opacity: 0.88; }
+.newsletter-note { font-size: 0.7rem; color: var(--muted); margin-top: 12px; font-weight: 300; }
+
+/* TESTIMONIALS */
+.testimonials-section { padding: 100px 48px; background: var(--black); }
+
+.testimonials-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-top: 64px;
+}
+
+.testimonial-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 36px;
+  position: relative;
+  transition: border-color 0.3s, transform 0.3s;
+}
+
+.testimonial-card:hover { border-color: rgba(123,92,245,0.3); transform: translateY(-4px); }
+
+.testimonial-quote-mark {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 4rem;
+  font-weight: 800;
+  color: var(--purple);
+  line-height: 0.8;
+  margin-bottom: 16px;
+  opacity: 0.4;
+}
+
+.testimonial-text {
+  font-size: 0.92rem;
+  line-height: 1.8;
+  color: rgba(245,245,240,0.75);
+  font-weight: 300;
+  font-style: italic;
+  margin-bottom: 24px;
+}
+
+.testimonial-empty {
+  font-size: 0.85rem;
+  color: rgba(245,245,240,0.2);
+  font-style: italic;
+  font-weight: 300;
+}
+
+.testimonial-author {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.testimonial-avatar {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: var(--purple-dim);
+  border: 1px solid var(--purple);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--purple);
+  flex-shrink: 0;
+}
+
+.testimonial-name { font-size: 0.82rem; font-weight: 700; color: var(--white); }
+.testimonial-role { font-size: 0.7rem; color: var(--muted); font-weight: 300; }
+
+/* GALLERY */
+.gallery-section { padding: 100px 48px; background: var(--off-black); }
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 64px;
+}
+
+.gallery-item {
+  aspect-ratio: 4/3;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  background: var(--card);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s;
+}
+
+.gallery-item:hover { transform: scale(1.02); }
+.gallery-item:first-child { grid-column: span 2; }
+
+.gallery-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 32px;
+  text-align: center;
+}
+
+.gallery-empty-icon { font-size: 2.5rem; opacity: 0.3; }
+.gallery-empty-text { font-size: 0.78rem; color: var(--muted); font-weight: 300; line-height: 1.6; }
+
+/* DRIVES MAP */
+.drives-section { padding: 100px 48px; background: var(--black); }
+
+.drives-list {
+  margin-top: 64px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.drive-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 28px;
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  transition: border-color 0.3s;
+}
+
+.drive-card:hover { border-color: rgba(123,92,245,0.3); }
+
+.drive-status {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  margin-top: 5px;
+  flex-shrink: 0;
+}
+
+.drive-status.active { background: #22c55e; box-shadow: 0 0 8px rgba(34,197,94,0.5); animation: activePulse 2s ease-in-out infinite; }
+.drive-status.upcoming { background: var(--purple); }
+.drive-status.planned { background: rgba(255,255,255,0.2); }
+
+@keyframes activePulse { 0%,100%{opacity:1}50%{opacity:0.5} }
+
+.drive-card-content h4 { font-size: 0.9rem; font-weight: 700; color: var(--white); margin-bottom: 4px; }
+.drive-card-content p { font-size: 0.8rem; color: var(--muted); font-weight: 300; line-height: 1.6; }
+.drive-card-tag {
+  display: inline-block;
+  margin-top: 10px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+.drive-card-tag.active { background: rgba(34,197,94,0.12); color: #22c55e; border: 1px solid rgba(34,197,94,0.25); }
+.drive-card-tag.upcoming { background: var(--purple-dim); color: var(--purple); border: 1px solid rgba(123,92,245,0.25); }
+.drive-card-tag.planned { background: rgba(255,255,255,0.04); color: var(--muted); border: 1px solid var(--border); }
+
+/* INSTAGRAM */
+.instagram-section { padding: 100px 48px; background: var(--card); border-top: 1px solid var(--border); }
+
+.instagram-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-top: 64px;
+}
+
+.instagram-item {
+  aspect-ratio: 1;
+  border-radius: 8px;
+  background: var(--off-black);
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: border-color 0.3s, transform 0.3s;
+  text-decoration: none;
+}
+
+.instagram-item:hover { border-color: rgba(123,92,245,0.4); transform: scale(1.03); }
+.instagram-item-icon { font-size: 1.8rem; opacity: 0.25; }
+.instagram-item-text { font-size: 0.68rem; color: var(--muted); text-align: center; font-weight: 300; padding: 0 12px; }
+
+.instagram-follow-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+  color: #fff;
+  padding: 14px 28px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  margin: 32px auto 0;
+  display: block;
+  width: fit-content;
+  transition: opacity 0.2s;
+}
+.instagram-follow-btn:hover { opacity: 0.88; }
+
+/* MOBILE RESPONSIVE */
+@media (max-width: 900px) {
+  .donation-progress-section { padding: 60px 24px; }
+  .progress-milestones { flex-wrap: wrap; }
+  .milestone { min-width: calc(50% - 8px); }
+  .newsletter-section { padding: 60px 24px; }
+  .newsletter-form { flex-direction: column; }
+  .testimonials-section { padding: 70px 24px; }
+  .testimonials-grid { grid-template-columns: 1fr; }
+  .gallery-section { padding: 70px 24px; }
+  .gallery-grid { grid-template-columns: 1fr 1fr; }
+  .gallery-item:first-child { grid-column: span 2; }
+  .drives-section { padding: 70px 24px; }
+  .drives-list { grid-template-columns: 1fr; }
+  .instagram-section { padding: 70px 24px; }
+  .instagram-grid { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+
+<script>
+// Inject new sections into pages after DOM loads
+document.addEventListener('DOMContentLoaded', function() {
+
+  // ===== HOME PAGE ADDITIONS =====
+  const homePage = document.getElementById('home-page');
+  if (homePage) {
+
+    // 1. DONATION PROGRESS BAR (after stats bar)
+    const statsBar = homePage.querySelector('.stats-bar');
+    if (statsBar) {
+      const progressSection = document.createElement('div');
+      progressSection.className = 'donation-progress-section reveal';
+      progressSection.innerHTML = `
+        <div class="section-inner">
+          <p class="section-label" style="text-align:center;">Our Progress</p>
+          <h2 class="section-title" style="text-align:center;">Working toward <em>20,000 kits</em></h2>
+          <div class="progress-wrap">
+            <div class="progress-header">
+              <div>
+                <div class="progress-current" id="progressCount">0</div>
+                <div style="font-size:0.72rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;margin-top:4px;">Kits Assembled</div>
+              </div>
+              <div class="progress-goal">Goal: 20,000 O.L.I Kits</div>
+            </div>
+            <div class="progress-track">
+              <div class="progress-fill-bar" id="progressFillBar"></div>
+            </div>
+            <div class="progress-pct"><span id="progressPct">0%</span> of our summer goal</div>
+            <div class="progress-milestones">
+              <div class="milestone" id="m500"><div class="milestone-num">500</div><div class="milestone-label">Kits</div></div>
+              <div class="milestone" id="m2500"><div class="milestone-num">2,500</div><div class="milestone-label">Kits</div></div>
+              <div class="milestone" id="m5000"><div class="milestone-num">5,000</div><div class="milestone-label">Kits</div></div>
+              <div class="milestone" id="m10000"><div class="milestone-num">10,000</div><div class="milestone-label">Kits</div></div>
+              <div class="milestone" id="m20000"><div class="milestone-num">20,000</div><div class="milestone-label">Goal 🎯</div></div>
+            </div>
+          </div>
+        </div>
+      `;
+      statsBar.after(progressSection);
+      // Animate progress bar
+      setTimeout(() => {
+        const kits = 0; // UPDATE THIS NUMBER as you assemble kits
+        const pct = (kits / 20000) * 100;
+        const bar = document.getElementById('progressFillBar');
+        const pctEl = document.getElementById('progressPct');
+        const countEl = document.getElementById('progressCount');
+        if (bar) bar.style.width = Math.max(pct, 0.5) + '%';
+        if (pctEl) pctEl.textContent = pct.toFixed(1) + '%';
+        if (countEl) countEl.textContent = kits.toLocaleString();
+        // Mark milestones reached
+        [['m500',500],['m2500',2500],['m5000',5000],['m10000',10000],['m20000',20000]].forEach(([id, threshold]) => {
+          const el = document.getElementById(id);
+          if (el && kits >= threshold) el.classList.add('reached');
+        });
+      }, 600);
+    }
+
+    // 2. TESTIMONIALS
+    const homeCta = homePage.querySelector('.cta-banner');
+    if (homeCta) {
+      const testimonialsSection = document.createElement('section');
+      testimonialsSection.className = 'testimonials-section';
+      testimonialsSection.innerHTML = `
+        <div class="section-inner">
+          <p class="section-label reveal">Voices</p>
+          <h2 class="section-title reveal">What people are<br><em>saying</em></h2>
+          <div class="testimonials-grid">
+            <div class="testimonial-card reveal">
+              <div class="testimonial-quote-mark">"</div>
+              <p class="testimonial-empty">Nothing yet — testimonials from volunteers and community members will appear here after our first drive.</p>
+            </div>
+            <div class="testimonial-card reveal reveal-delay-1">
+              <div class="testimonial-quote-mark">"</div>
+              <p class="testimonial-empty">Share your experience with us at oneloveinitiative.official@gmail.com and we'll feature your story here.</p>
+            </div>
+            <div class="testimonial-card reveal reveal-delay-2">
+              <div class="testimonial-quote-mark">"</div>
+              <p class="testimonial-empty">Know someone whose family received an O.L.I Kit? We'd love to hear their story too.</p>
+            </div>
+          </div>
+        </div>
+      `;
+      homeCta.before(testimonialsSection);
+    }
+
+    // 3. INSTAGRAM SECTION (before footer)
+    const homePageEnd = homeCta;
+    if (homePageEnd) {
+      const igSection = document.createElement('section');
+      igSection.className = 'instagram-section';
+      igSection.innerHTML = `
+        <div class="section-inner">
+          <p class="section-label reveal" style="text-align:center;">@one.love.initiative</p>
+          <h2 class="section-title reveal" style="text-align:center;">Follow us on<br><em>Instagram</em></h2>
+          <div class="instagram-grid reveal">
+            ${[1,2,3,4,5,6,7,8].map(() => `
+              <a href="https://www.instagram.com/one.love.initiative/" target="_blank" class="instagram-item">
+                <span class="instagram-item-icon">📷</span>
+                <span class="instagram-item-text">Nothing yet — follow us to see our first posts!</span>
+              </a>
+            `).join('')}
+          </div>
+          <a href="https://www.instagram.com/one.love.initiative/" target="_blank" class="instagram-follow-btn">
+            📸 Follow @one.love.initiative
+          </a>
+        </div>
+      `;
+      homePageEnd.after(igSection);
+    }
+
+    // 4. NEWSLETTER
+    const igSec = homePage.querySelector('.instagram-section');
+    if (igSec) {
+      const newsletterSection = document.createElement('section');
+      newsletterSection.className = 'newsletter-section';
+      newsletterSection.innerHTML = `
+        <div class="newsletter-inner reveal">
+          <p class="section-label">Stay in the loop</p>
+          <h2 class="section-title">Get updates on<br><em>every drive</em></h2>
+          <p style="font-size:0.9rem;color:var(--muted);font-weight:300;line-height:1.75;margin-top:16px;">Be the first to know about upcoming drives, new kit initiatives, and ways to get involved. No spam, ever.</p>
+          <div class="newsletter-form">
+            <input class="newsletter-input" type="email" placeholder="your@email.com" id="newsletterEmail"/>
+            <button class="newsletter-btn" onclick="handleNewsletter()">Subscribe</button>
+          </div>
+          <p class="newsletter-note">We respect your privacy. Unsubscribe anytime.</p>
+        </div>
+      `;
+      igSec.after(newsletterSection);
+    }
+  }
+
+  // ===== GET INVOLVED PAGE — DRIVES =====
+  const involvedPage = document.getElementById('involved-page');
+  if (involvedPage) {
+    const drivesSection = document.createElement('section');
+    drivesSection.className = 'drives-section';
+    drivesSection.innerHTML = `
+      <div class="section-inner">
+        <p class="section-label reveal">Active & Upcoming</p>
+        <h2 class="section-title reveal">Find a drive<br><em>near you</em></h2>
+        <p class="section-sub reveal" style="margin-top:16px;">Here's where we're currently running and planning drives across Charlotte. More locations coming soon.</p>
+        <div class="drives-list reveal" style="margin-top:48px;">
+          <div class="drive-card">
+            <div class="drive-status active"></div>
+            <div class="drive-card-content">
+              <h4>Pilot Neighborhood Drive</h4>
+              <p>Our first local drive, organized within our neighborhood community. Collecting children's hygiene kit items for distribution through Crisis Assistance Ministry.</p>
+              <span class="drive-card-tag active">Active</span>
+            </div>
+          </div>
+          <div class="drive-card">
+            <div class="drive-status upcoming"></div>
+            <div class="drive-card-content">
+              <h4>Hindu Center of Charlotte</h4>
+              <p>Partnership drive in the works with the Hindu Center of Charlotte. A major opportunity to expand our volunteer base and kit production.</p>
+              <span class="drive-card-tag upcoming">In Progress</span>
+            </div>
+          </div>
+          <div class="drive-card">
+            <div class="drive-status planned"></div>
+            <div class="drive-card-content">
+              <h4>School Drive — TBD</h4>
+              <p>Nothing yet — we're actively reaching out to schools across Charlotte to set up our first school-based drive. Interested? Get in touch.</p>
+              <span class="drive-card-tag planned">Planned</span>
+            </div>
+          </div>
+          <div class="drive-card">
+            <div class="drive-status planned"></div>
+            <div class="drive-card-content">
+              <h4>Business Partnership Drive — TBD</h4>
+              <p>Nothing yet — we're looking for local businesses to partner with for donation drives. If your business wants to get involved, reach out.</p>
+              <span class="drive-card-tag planned">Planned</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    involvedPage.appendChild(drivesSection);
+  }
+
+  // ===== OUR WORK PAGE — GALLERY =====
+  const workPage = document.getElementById('work-page');
+  if (workPage) {
+    const gallerySection = document.createElement('section');
+    gallerySection.className = 'gallery-section';
+    gallerySection.innerHTML = `
+      <div class="section-inner">
+        <p class="section-label reveal">Photo Gallery</p>
+        <h2 class="section-title reveal">Our work<br><em>in action</em></h2>
+        <p class="section-sub reveal" style="margin-top:16px;">Real photos from our drives and kit assembly sessions will appear here. Check back after our first drive!</p>
+        <div class="gallery-grid reveal" style="margin-top:48px;">
+          ${[1,2,3,4,5,6].map((i, idx) => `
+            <div class="gallery-item">
+              <div class="gallery-empty-state">
+                <span class="gallery-empty-icon">${['📷','🤝','📦','💜','🧴','✨'][idx]}</span>
+                <p class="gallery-empty-text">Nothing yet<br/>Photos from Drive ${idx < 2 ? '1' : '2+'} coming soon</p>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+    workPage.appendChild(gallerySection);
+  }
+
+  initReveal();
+});
+
+// Newsletter handler
+function handleNewsletter() {
+  const email = document.getElementById('newsletterEmail');
+  if (!email || !email.value || !email.value.includes('@')) {
+    if (email) { email.style.borderColor = '#ef4444'; setTimeout(() => email.style.borderColor = '', 1500); }
+    return;
+  }
+  // Opens mailto as fallback since we don't have a backend
+  window.location.href = 'mailto:oneloveinitiative.official@gmail.com?subject=Newsletter Signup&body=Please add me to your mailing list: ' + email.value;
+  email.value = '';
+  email.placeholder = 'Thanks for subscribing! ✓';
+  email.style.borderColor = '#22c55e';
+}
+</script>
