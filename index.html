@@ -1891,9 +1891,13 @@ async function sendOliMessage() {
   const typing = addTyping();
 
   try {
-    const res = await fetch('/api/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+  method: 'POST',
+  headers: { 
+    'Content-Type': 'application/json',
+    'x-api-key': 'sk-ant-api03-g6lCHV6qQBvQRDhPvUESMFzS_Izgt-bBcBI1-tVWa4I4iLxUY5pARbQuNrPayomENj11aJ8U0wheEnV1x-BU8Q-Xl_HgQAA',
+    'anthropic-version': '2023-06-01'
+  },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 1000,
