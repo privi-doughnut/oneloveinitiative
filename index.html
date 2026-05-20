@@ -1891,8 +1891,7 @@ async function sendOliMessage() {
   const typing = addTyping();
 
   try {
-   const res = await fetch('/api/chat', {
-  method: 'POST',
+const res = await fetch('https://oli-api-proxy.its-the-prithivi-show.workers.dev', {  method: 'POST',
   headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
