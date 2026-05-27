@@ -1110,6 +1110,7 @@
     <li><a href="#" onclick="showPage('press')">Press</a></li>
     <li><a href="#" onclick="showPage('faq')">FAQ</a></li>
     <li><a href="#" onclick="showPage('contact')">Contact</a></li>
+    <li><a href="#" onclick="showPage('howtogive')">How to Give</a></li>
     <li><a href="https://donate.stripe.com/3cIcMY53Y81g7MK0hl0kE00" target="_blank" class="nav-donate">Donate</a></li>
   </ul>
 </nav>
@@ -1136,10 +1137,10 @@
   </section>
 
   <div class="stats-bar">
-    <div class="stat reveal"><div class="stat-num">0</div><div class="stat-label">Kits Distributed</div></div>
-    <div class="stat reveal reveal-delay-1"><div class="stat-num">3</div><div class="stat-label">Active Volunteers</div></div>
-    <div class="stat reveal reveal-delay-2"><div class="stat-num">1</div><div class="stat-label">Drives Organized</div></div>
-    <div class="stat reveal reveal-delay-3"><div class="stat-num">1</div><div class="stat-label">Partner Organizations</div></div>
+    <div class="stat reveal"><div class="stat-num" data-admin="stat-kits">0</div><div class="stat-label">Kits Distributed</div></div>
+    <div class="stat reveal reveal-delay-1"><div class="stat-num" data-admin="stat-volunteers">3</div><div class="stat-label">Active Volunteers</div></div>
+    <div class="stat reveal reveal-delay-2"><div class="stat-num" data-admin="stat-drives">1</div><div class="stat-label">Drives Organized</div></div>
+    <div class="stat reveal reveal-delay-3"><div class="stat-num" data-admin="stat-partners">1</div><div class="stat-label">Partner Organizations</div></div>
   </div>
 
   <section>
@@ -1265,26 +1266,7 @@
     <div class="section-inner">
       <p class="section-label reveal">The Team</p>
       <h2 class="section-title reveal">Student leaders dedicated<br><em>to community impact</em></h2>
-      <div class="team-grid">
-        <div class="team-card reveal">
-          <div class="team-avatar">PV</div>
-          <div class="team-name">Prithivi Vijayakumar</div>
-          <div class="team-role">Founder</div>
-          <p class="team-bio">Leading the vision, strategy, and community outreach efforts of the One Love Initiative. Passionate about proving that student-led action can create real community impact.</p>
-        </div>
-        <div class="team-card reveal reveal-delay-1">
-          <div class="team-avatar">ST</div>
-          <div class="team-name">Saket Talap</div>
-          <div class="team-role">Director of Operations</div>
-          <p class="team-bio">Coordinating drive logistics, kit assembly operations, and volunteer scheduling to keep the initiative running smoothly and efficiently.</p>
-        </div>
-        <div class="team-card reveal reveal-delay-2">
-          <div class="team-avatar">RR</div>
-          <div class="team-name">Rishi Ramesh</div>
-          <div class="team-role">Marketing &amp; Outreach Head</div>
-          <p class="team-bio">Spreading awareness of the One Love Initiative to schools, organizations, and the wider Charlotte community through strategic outreach and content.</p>
-        </div>
-      </div>
+      <div class="team-grid" id="oli-team-grid"></div>
     </div>
   </section>
 </div>
@@ -1655,6 +1637,91 @@
   </section>
 </div>
 
+<!-- ===== HOW TO GIVE / TAX DEDUCTION PAGE ===== -->
+<div class="page" id="howtogive-page">
+  <section style="padding-top:160px;">
+    <div class="section-inner">
+      <p class="section-label reveal">How to Give</p>
+      <h2 class="section-title reveal">Two ways to donate —<br><em>one is tax-deductible</em></h2>
+      <p class="section-sub reveal" style="margin-top:16px;">Everything you need to know before giving. We want your donation to work best for you.</p>
+
+      <div class="value-card reveal" style="margin-top:56px;max-width:720px;">
+        <div class="value-icon">📋</div>
+        <h3 class="value-title">Our Legal Status</h3>
+        <p class="value-text">The One Love Initiative is a student-led community initiative — not yet a standalone 501(c)(3). Direct donations to OLI through Stripe are <strong style="color:var(--white);">not tax-deductible</strong>. However, through our fiscal sponsorship arrangement with Crisis Assistance Ministry — a registered 501(c)(3) — donors <strong style="color:var(--white);">can</strong> receive a full tax deduction.</p>
+      </div>
+
+      <div class="mission-grid reveal" style="margin-top:64px;">
+        <div>
+          <p class="section-label" style="color:#22c55e;letter-spacing:0.18em;">✓ Tax Deductible</p>
+          <h3 class="section-title" style="font-size:1.7rem;margin-bottom:16px;">Donate through<br><em>Crisis Assistance Ministry</em></h3>
+          <p style="font-size:0.95rem;line-height:1.8;color:var(--muted);font-weight:300;margin-bottom:28px;">CAM is our fiscal sponsor and a fully registered 501(c)(3). Donations made through them, designated for the One Love Initiative, are fully tax-deductible and go directly toward our kits.</p>
+          <p class="section-label" style="margin-bottom:20px;">Step-by-step</p>
+          <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:32px;">
+            <div style="display:flex;align-items:flex-start;gap:16px;">
+              <div class="step-num" style="width:34px;height:34px;font-size:0.9rem;flex-shrink:0;margin-bottom:0;">1</div>
+              <div style="font-size:0.92rem;line-height:1.7;color:rgba(245,245,240,0.8);padding-top:4px;">Go to <a href="https://crisisassistance.org/donate" target="_blank" style="color:var(--purple);">crisisassistance.org/donate</a></div>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:16px;">
+              <div class="step-num" style="width:34px;height:34px;font-size:0.9rem;flex-shrink:0;margin-bottom:0;">2</div>
+              <div style="font-size:0.92rem;line-height:1.7;color:rgba(245,245,240,0.8);padding-top:4px;">Fill in your donation amount and details</div>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:16px;">
+              <div class="step-num" style="width:34px;height:34px;font-size:0.9rem;flex-shrink:0;margin-bottom:0;">3</div>
+              <div style="font-size:0.92rem;line-height:1.7;color:rgba(245,245,240,0.8);padding-top:4px;">In the <strong style="color:var(--white);">"Designation"</strong> or <strong style="color:var(--white);">"Notes"</strong> field, write: <strong style="color:var(--purple);">One Love Initiative</strong></div>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:16px;">
+              <div class="step-num" style="width:34px;height:34px;font-size:0.9rem;flex-shrink:0;margin-bottom:0;">4</div>
+              <div style="font-size:0.92rem;line-height:1.7;color:rgba(245,245,240,0.8);padding-top:4px;">Complete your donation — CAM will earmark funds for OLI and issue a tax receipt</div>
+            </div>
+          </div>
+          <a href="https://crisisassistance.org/donate" target="_blank" class="btn-primary">Donate via CAM →</a>
+        </div>
+
+        <div>
+          <p class="section-label" style="color:var(--muted);letter-spacing:0.18em;">No tax deduction</p>
+          <h3 class="section-title" style="font-size:1.7rem;margin-bottom:16px;">Donate directly<br><em>to OLI</em></h3>
+          <p style="font-size:0.95rem;line-height:1.8;color:var(--muted);font-weight:300;margin-bottom:28px;">Prefer to give directly to us? Donate through our Stripe page. Funds go straight to OLI for supplies and operations. This donation is <strong style="color:var(--white);">not tax-deductible</strong>.</p>
+          <div class="value-card" style="margin-bottom:28px;">
+            <div class="value-icon">⚡</div>
+            <h3 class="value-title">Fast &amp; Direct</h3>
+            <p class="value-text">100% of your donation goes directly to OLI for bulk supply purchasing and kit assembly. No intermediary, instant processing via Stripe.</p>
+          </div>
+          <a href="https://donate.stripe.com/3cIcMY53Y81g7MK0hl0kE00" target="_blank" class="btn-outline">Donate via Stripe →</a>
+        </div>
+      </div>
+
+      <div class="kit-section reveal" style="margin-top:80px;padding:56px;border-radius:4px;">
+        <p class="section-label">Transparency</p>
+        <h3 class="section-title" style="font-size:1.8rem;margin-bottom:8px;">How your money<br><em>is used</em></h3>
+        <div class="values-grid" style="margin-top:40px;">
+          <div class="value-card">
+            <div class="value-icon">🧴</div>
+            <h3 class="value-title">Supplies</h3>
+            <p class="value-text">The majority of funds go directly toward purchasing hygiene items — toothbrushes, toothpaste, soap, and lotion — in bulk for kit assembly.</p>
+          </div>
+          <div class="value-card">
+            <div class="value-icon">📦</div>
+            <h3 class="value-title">Assembly</h3>
+            <p class="value-text">A small portion covers packaging and materials needed to put kits together efficiently and neatly for distribution.</p>
+          </div>
+          <div class="value-card">
+            <div class="value-icon">🚗</div>
+            <h3 class="value-title">Logistics</h3>
+            <p class="value-text">Minimal funds cover transportation and coordination costs for delivering assembled kits to Crisis Assistance Ministry.</p>
+          </div>
+          <div class="value-card">
+            <div class="value-icon">📊</div>
+            <h3 class="value-title">Operations</h3>
+            <p class="value-text">We keep overhead at an absolute minimum. No salaries, no office. Just students, supplies, and community.</p>
+          </div>
+        </div>
+        <p style="margin-top:32px;font-size:0.88rem;color:var(--muted);font-weight:300;line-height:1.75;">Questions about how funds are used? Email <a href="mailto:oneloveinitiative.official@gmail.com" style="color:var(--purple);">oneloveinitiative.official@gmail.com</a>. We maintain full records of every expense.</p>
+      </div>
+    </div>
+  </section>
+</div>
+
 <!-- FOOTER -->
 <footer>
   <div class="footer-grid">
@@ -1676,10 +1743,12 @@
       <a href="#" onclick="showPage('press')">Press & Media</a>
       <a href="#" onclick="showPage('faq')">FAQ</a>
       <a href="#" onclick="showPage('contact')">Contact</a>
+      <a href="#" onclick="showPage('howtogive')">How to Give</a>
     </div>
     <div class="footer-col">
       <h4>Take Action</h4>
       <a href="https://donate.stripe.com/3cIcMY53Y81g7MK0hl0kE00" target="_blank">Donate Now</a>
+      <a href="#" onclick="showPage('howtogive')">Tax Deduction Info</a>
       <a href="#" onclick="showPage('involved')">Volunteer</a>
       <a href="#" onclick="showPage('involved')">Start a Drive</a>
       <a href="https://www.instagram.com/one.love.initiative/" target="_blank">Instagram</a>
@@ -1687,9 +1756,29 @@
   </div>
   <div class="footer-bottom">
     <span>© 2025 The One Love Initiative · Charlotte, North Carolina</span>
-    <span>Partner: Crisis Assistance Ministry</span>
+    <span>Partner: Crisis Assistance Ministry · <a href="/admin.html" style="color:inherit;opacity:0.3;text-decoration:none;">admin</a></span>
   </div>
 </footer>
+
+<script id="oli-data" type="application/json">
+{
+  "stats": {"kits": 0, "volunteers": 3, "drives": 1, "partners": 1},
+  "kitCount": 0,
+  "team": [
+    {"initials": "PV", "name": "Prithivi Vijayakumar", "role": "Founder", "bio": "Leading the vision, strategy, and community outreach efforts of the One Love Initiative. Passionate about proving that student-led action can create real community impact."},
+    {"initials": "ST", "name": "Saket Talap", "role": "Director of Operations", "bio": "Coordinating drive logistics, kit assembly operations, and volunteer scheduling to keep the initiative running smoothly and efficiently."},
+    {"initials": "RR", "name": "Rishi Ramesh", "role": "Marketing & Outreach Head", "bio": "Spreading awareness of the One Love Initiative to schools, organizations, and the wider Charlotte community through strategic outreach and content."}
+  ],
+  "testimonials": [],
+  "drives": [
+    {"status": "active", "title": "Pilot Neighborhood Drive", "desc": "Our first local drive, organized within our neighborhood community. Collecting children's hygiene kit items for distribution through Crisis Assistance Ministry.", "tag": "Active"},
+    {"status": "upcoming", "title": "Hindu Center of Charlotte", "desc": "Partnership drive in the works with the Hindu Center of Charlotte. A major opportunity to expand our volunteer base and kit production.", "tag": "In Progress"},
+    {"status": "planned", "title": "School Drive — TBD", "desc": "Nothing yet — we're actively reaching out to schools across Charlotte to set up our first school-based drive. Interested? Get in touch.", "tag": "Planned"},
+    {"status": "planned", "title": "Business Partnership Drive — TBD", "desc": "Nothing yet — we're looking for local businesses to partner with for donation drives. If your business wants to get involved, reach out.", "tag": "Planned"}
+  ],
+  "gallery": []
+}
+</script>
 
 <script>
   // CURSOR
@@ -1715,6 +1804,7 @@
   // PAGE NAVIGATION
   function showPage(pageId) {
     if (!pageId) return;
+    document.querySelector('.nav-links').classList.remove('mobile-open');
     const transition = document.getElementById('pageTransition');
     transition.className = 'page-transition entering';
 
@@ -2351,14 +2441,34 @@ document.addEventListener('DOMContentLoaded', () => {
 </style>
 
 <script>
-// Inject new sections into pages after DOM loads
 document.addEventListener('DOMContentLoaded', function() {
+  const d = JSON.parse(document.getElementById('oli-data').textContent);
 
-  // ===== HOME PAGE ADDITIONS =====
+  // Apply stats from data
+  const statMap = {'stat-kits':'kits','stat-volunteers':'volunteers','stat-drives':'drives','stat-partners':'partners'};
+  Object.entries(statMap).forEach(([attr, key]) => {
+    const el = document.querySelector('[data-admin="' + attr + '"]');
+    if (el) el.textContent = d.stats[key];
+  });
+
+  // Render team
+  const teamGrid = document.getElementById('oli-team-grid');
+  if (teamGrid && d.team && d.team.length) {
+    teamGrid.innerHTML = d.team.map((m, i) => `
+      <div class="team-card reveal${i > 0 ? ' reveal-delay-' + Math.min(i, 3) : ''}">
+        <div class="team-avatar">${m.initials}</div>
+        <div class="team-name">${m.name}</div>
+        <div class="team-role">${m.role}</div>
+        <p class="team-bio">${m.bio}</p>
+      </div>
+    `).join('');
+  }
+
+  // ===== HOME PAGE =====
   const homePage = document.getElementById('home-page');
   if (homePage) {
 
-    // 1. DONATION PROGRESS BAR (after stats bar)
+    // 1. DONATION PROGRESS BAR
     const statsBar = homePage.querySelector('.stats-bar');
     if (statsBar) {
       const progressSection = document.createElement('div');
@@ -2375,9 +2485,7 @@ document.addEventListener('DOMContentLoaded', function() {
               </div>
               <div class="progress-goal">Goal: 20,000 O.L.I Kits</div>
             </div>
-            <div class="progress-track">
-              <div class="progress-fill-bar" id="progressFillBar"></div>
-            </div>
+            <div class="progress-track"><div class="progress-fill-bar" id="progressFillBar"></div></div>
             <div class="progress-pct"><span id="progressPct">0%</span> of our summer goal</div>
             <div class="progress-milestones">
               <div class="milestone" id="m500"><div class="milestone-num">500</div><div class="milestone-label">Kits</div></div>
@@ -2387,12 +2495,10 @@ document.addEventListener('DOMContentLoaded', function() {
               <div class="milestone" id="m20000"><div class="milestone-num">20,000</div><div class="milestone-label">Goal 🎯</div></div>
             </div>
           </div>
-        </div>
-      `;
+        </div>`;
       statsBar.after(progressSection);
-      // Animate progress bar
       setTimeout(() => {
-        const kits = 0; // UPDATE THIS NUMBER as you assemble kits
+        const kits = d.kitCount || 0;
         const pct = (kits / 20000) * 100;
         const bar = document.getElementById('progressFillBar');
         const pctEl = document.getElementById('progressPct');
@@ -2400,7 +2506,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (bar) bar.style.width = Math.max(pct, 0.5) + '%';
         if (pctEl) pctEl.textContent = pct.toFixed(1) + '%';
         if (countEl) countEl.textContent = kits.toLocaleString();
-        // Mark milestones reached
         [['m500',500],['m2500',2500],['m5000',5000],['m10000',10000],['m20000',20000]].forEach(([id, threshold]) => {
           const el = document.getElementById(id);
           if (el && kits >= threshold) el.classList.add('reached');
@@ -2411,33 +2516,28 @@ document.addEventListener('DOMContentLoaded', function() {
     // 2. TESTIMONIALS
     const homeCta = homePage.querySelector('.cta-banner');
     if (homeCta) {
+      const hasTestimonials = d.testimonials && d.testimonials.length > 0;
+      const cards = hasTestimonials
+        ? d.testimonials.map((t, i) => `
+            <div class="testimonial-card reveal${i > 0 ? ' reveal-delay-' + Math.min(i,2) : ''}">
+              <div class="testimonial-quote-mark">"</div>
+              <p class="testimonial-text">${t.text}</p>
+              <div class="testimonial-author">
+                <div class="testimonial-avatar">${t.initials || '?'}</div>
+                <div><div class="testimonial-name">${t.name}</div><div class="testimonial-role">${t.role || ''}</div></div>
+              </div>
+            </div>`).join('')
+        : `<div class="testimonial-card reveal"><div class="testimonial-quote-mark">"</div><p class="testimonial-empty">Nothing yet — testimonials from volunteers and community members will appear here after our first drive.</p></div>
+           <div class="testimonial-card reveal reveal-delay-1"><div class="testimonial-quote-mark">"</div><p class="testimonial-empty">Share your experience with us at oneloveinitiative.official@gmail.com and we'll feature your story here.</p></div>
+           <div class="testimonial-card reveal reveal-delay-2"><div class="testimonial-quote-mark">"</div><p class="testimonial-empty">Know someone whose family received an O.L.I Kit? We'd love to hear their story too.</p></div>`;
       const testimonialsSection = document.createElement('section');
       testimonialsSection.className = 'testimonials-section';
-      testimonialsSection.innerHTML = `
-        <div class="section-inner">
-          <p class="section-label reveal">Voices</p>
-          <h2 class="section-title reveal">What people are<br><em>saying</em></h2>
-          <div class="testimonials-grid">
-            <div class="testimonial-card reveal">
-              <div class="testimonial-quote-mark">"</div>
-              <p class="testimonial-empty">Nothing yet — testimonials from volunteers and community members will appear here after our first drive.</p>
-            </div>
-            <div class="testimonial-card reveal reveal-delay-1">
-              <div class="testimonial-quote-mark">"</div>
-              <p class="testimonial-empty">Share your experience with us at oneloveinitiative.official@gmail.com and we'll feature your story here.</p>
-            </div>
-            <div class="testimonial-card reveal reveal-delay-2">
-              <div class="testimonial-quote-mark">"</div>
-              <p class="testimonial-empty">Know someone whose family received an O.L.I Kit? We'd love to hear their story too.</p>
-            </div>
-          </div>
-        </div>
-      `;
+      testimonialsSection.innerHTML = `<div class="section-inner"><p class="section-label reveal">Voices</p><h2 class="section-title reveal">What people are<br><em>saying</em></h2><div class="testimonials-grid">${cards}</div></div>`;
       homeCta.before(testimonialsSection);
     }
 
-    // 3. INSTAGRAM SECTION (before footer)
-    const homePageEnd = homeCta;
+    // 3. INSTAGRAM
+    const homePageEnd = homePage.querySelector('.cta-banner');
     if (homePageEnd) {
       const igSection = document.createElement('section');
       igSection.className = 'instagram-section';
@@ -2446,18 +2546,10 @@ document.addEventListener('DOMContentLoaded', function() {
           <p class="section-label reveal" style="text-align:center;">@one.love.initiative</p>
           <h2 class="section-title reveal" style="text-align:center;">Follow us on<br><em>Instagram</em></h2>
           <div class="instagram-grid reveal">
-            ${[1,2,3,4,5,6,7,8].map(() => `
-              <a href="https://www.instagram.com/one.love.initiative/" target="_blank" class="instagram-item">
-                <span class="instagram-item-icon">📷</span>
-                <span class="instagram-item-text">Nothing yet — follow us to see our first posts!</span>
-              </a>
-            `).join('')}
+            ${[1,2,3,4,5,6,7,8].map(() => `<a href="https://www.instagram.com/one.love.initiative/" target="_blank" class="instagram-item"><span class="instagram-item-icon">📷</span><span class="instagram-item-text">Nothing yet — follow us to see our first posts!</span></a>`).join('')}
           </div>
-          <a href="https://www.instagram.com/one.love.initiative/" target="_blank" class="instagram-follow-btn">
-            📸 Follow @one.love.initiative
-          </a>
-        </div>
-      `;
+          <a href="https://www.instagram.com/one.love.initiative/" target="_blank" class="instagram-follow-btn">📸 Follow @one.love.initiative</a>
+        </div>`;
       homePageEnd.after(igSection);
     }
 
@@ -2476,8 +2568,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <button class="newsletter-btn" onclick="handleNewsletter()">Subscribe</button>
           </div>
           <p class="newsletter-note">We respect your privacy. Unsubscribe anytime.</p>
-        </div>
-      `;
+        </div>`;
       igSec.after(newsletterSection);
     }
   }
@@ -2485,6 +2576,15 @@ document.addEventListener('DOMContentLoaded', function() {
   // ===== GET INVOLVED PAGE — DRIVES =====
   const involvedPage = document.getElementById('involved-page');
   if (involvedPage) {
+    const driveCards = (d.drives || []).map(drive => `
+      <div class="drive-card">
+        <div class="drive-status ${drive.status}"></div>
+        <div class="drive-card-content">
+          <h4>${drive.title}</h4>
+          <p>${drive.desc}</p>
+          <span class="drive-card-tag ${drive.status}">${drive.tag}</span>
+        </div>
+      </div>`).join('');
     const drivesSection = document.createElement('section');
     drivesSection.className = 'drives-section';
     drivesSection.innerHTML = `
@@ -2492,67 +2592,37 @@ document.addEventListener('DOMContentLoaded', function() {
         <p class="section-label reveal">Active & Upcoming</p>
         <h2 class="section-title reveal">Find a drive<br><em>near you</em></h2>
         <p class="section-sub reveal" style="margin-top:16px;">Here's where we're currently running and planning drives across Charlotte. More locations coming soon.</p>
-        <div class="drives-list reveal" style="margin-top:48px;">
-          <div class="drive-card">
-            <div class="drive-status active"></div>
-            <div class="drive-card-content">
-              <h4>Pilot Neighborhood Drive</h4>
-              <p>Our first local drive, organized within our neighborhood community. Collecting children's hygiene kit items for distribution through Crisis Assistance Ministry.</p>
-              <span class="drive-card-tag active">Active</span>
-            </div>
-          </div>
-          <div class="drive-card">
-            <div class="drive-status upcoming"></div>
-            <div class="drive-card-content">
-              <h4>Hindu Center of Charlotte</h4>
-              <p>Partnership drive in the works with the Hindu Center of Charlotte. A major opportunity to expand our volunteer base and kit production.</p>
-              <span class="drive-card-tag upcoming">In Progress</span>
-            </div>
-          </div>
-          <div class="drive-card">
-            <div class="drive-status planned"></div>
-            <div class="drive-card-content">
-              <h4>School Drive — TBD</h4>
-              <p>Nothing yet — we're actively reaching out to schools across Charlotte to set up our first school-based drive. Interested? Get in touch.</p>
-              <span class="drive-card-tag planned">Planned</span>
-            </div>
-          </div>
-          <div class="drive-card">
-            <div class="drive-status planned"></div>
-            <div class="drive-card-content">
-              <h4>Business Partnership Drive — TBD</h4>
-              <p>Nothing yet — we're looking for local businesses to partner with for donation drives. If your business wants to get involved, reach out.</p>
-              <span class="drive-card-tag planned">Planned</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    `;
+        <div class="drives-list reveal" style="margin-top:48px;">${driveCards}</div>
+      </div>`;
     involvedPage.appendChild(drivesSection);
   }
 
   // ===== OUR WORK PAGE — GALLERY =====
   const workPage = document.getElementById('work-page');
   if (workPage) {
+    const hasPhotos = d.gallery && d.gallery.length > 0;
+    const galleryItems = hasPhotos
+      ? d.gallery.map((photo, idx) => `
+          <div class="gallery-item"${idx === 0 ? ' style="grid-column:span 2"' : ''}>
+            <img src="${photo.url}" alt="${photo.caption || ''}" style="width:100%;height:100%;object-fit:cover;"/>
+            ${photo.caption ? `<div style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.6);padding:8px 12px;font-size:0.75rem;color:var(--white);">${photo.caption}</div>` : ''}
+          </div>`).join('')
+      : ['📷','🤝','📦','💜','🧴','✨'].map((icon, idx) => `
+          <div class="gallery-item">
+            <div class="gallery-empty-state">
+              <span class="gallery-empty-icon">${icon}</span>
+              <p class="gallery-empty-text">Nothing yet<br/>Photos from Drive ${idx < 2 ? '1' : '2+'} coming soon</p>
+            </div>
+          </div>`).join('');
     const gallerySection = document.createElement('section');
     gallerySection.className = 'gallery-section';
     gallerySection.innerHTML = `
       <div class="section-inner">
         <p class="section-label reveal">Photo Gallery</p>
         <h2 class="section-title reveal">Our work<br><em>in action</em></h2>
-        <p class="section-sub reveal" style="margin-top:16px;">Real photos from our drives and kit assembly sessions will appear here. Check back after our first drive!</p>
-        <div class="gallery-grid reveal" style="margin-top:48px;">
-          ${[1,2,3,4,5,6].map((i, idx) => `
-            <div class="gallery-item">
-              <div class="gallery-empty-state">
-                <span class="gallery-empty-icon">${['📷','🤝','📦','💜','🧴','✨'][idx]}</span>
-                <p class="gallery-empty-text">Nothing yet<br/>Photos from Drive ${idx < 2 ? '1' : '2+'} coming soon</p>
-              </div>
-            </div>
-          `).join('')}
-        </div>
-      </div>
-    `;
+        <p class="section-sub reveal" style="margin-top:16px;">${hasPhotos ? 'Photos from our drives and kit assembly sessions.' : 'Real photos from our drives and kit assembly sessions will appear here. Check back after our first drive!'}</p>
+        <div class="gallery-grid reveal" style="margin-top:48px;">${galleryItems}</div>
+      </div>`;
     workPage.appendChild(gallerySection);
   }
 
@@ -2566,10 +2636,15 @@ function handleNewsletter() {
     if (email) { email.style.borderColor = '#ef4444'; setTimeout(() => email.style.borderColor = '', 1500); }
     return;
   }
-  // Opens mailto as fallback since we don't have a backend
-  window.location.href = 'mailto:oneloveinitiative.official@gmail.com?subject=Newsletter Signup&body=Please add me to your mailing list: ' + email.value;
+  const addr = encodeURIComponent(email.value);
+  fetch('https://script.google.com/macros/s/AKfycbzJG_GSUYcRHz70pTjTyvOuUFQ2MksPO8gGtwL62SKa_08fuDwgO03EA3NIZwoDCfU3lg/exec', {
+    method: 'POST', mode: 'no-cors',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({email: email.value})
+  });
   email.value = '';
   email.placeholder = 'Thanks for subscribing! ✓';
   email.style.borderColor = '#22c55e';
+  setTimeout(() => { email.placeholder = 'your@email.com'; email.style.borderColor = ''; }, 4000);
 }
 </script>

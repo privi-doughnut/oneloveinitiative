@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>OLI Admin — One Love Initiative</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --black: #080808; --off-black: #111111; --card: #161616;
+      --border: rgba(255,255,255,0.07); --white: #F5F5F0;
+      --muted: rgba(245,245,240,0.45); --purple: #7B5CF5;
+      --purple-dim: rgba(123,92,245,0.15); --green: #22c55e; --red: #ef4444;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Montserrat', sans-serif; background: var(--black); color: var(--white); min-height: 100vh; }
+
+    /* GATE */
+    #gate { min-height: 100vh; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 24px; }
+    .gate-logo { font-size: 1.4rem; letter-spacing: 0.08em; }
+    .gate-logo span { color: var(--purple); }
+    .gate-sub { font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); }
+    .gate-form { display: flex; flex-direction: column; gap: 12px; width: 300px; }
+    .gate-error { font-size: 0.75rem; color: var(--red); text-align: center; display: none; }
+
+    /* LAYOUT */
+    #admin { display: none; }
+    .admin-layout { display: flex; min-height: 100vh; }
+
+    /* SIDEBAR */
+    .sidebar { width: 220px; background: var(--off-black); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0; z-index: 10; }
+    .sidebar-brand { padding: 22px 18px; border-bottom: 1px solid var(--border); }
+    .sidebar-brand-name { font-size: 0.88rem; letter-spacing: 0.06em; font-weight: 600; }
+    .sidebar-brand-name span { color: var(--purple); }
+    .sidebar-brand-sub { font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-top: 3px; }
+    .sidebar-nav { flex: 1; padding: 12px 0; overflow-y: auto; }
+    .sidebar-nav a { display: flex; align-items: center; gap: 10px; padding: 10px 18px; font-size: 0.78rem; font-weight: 500; color: var(--muted); text-decoration: none; cursor: pointer; transition: color 0.2s, background 0.2s; letter-spacing: 0.03em; }
+    .sidebar-nav a:hover { color: var(--white); background: rgba(255,255,255,0.03); }
+    .sidebar-nav a.active { color: var(--white); background: var(--purple-dim); border-right: 2px solid var(--purple); }
+    .nav-icon { font-size: 0.95rem; width: 18px; text-align: center; }
+    .sidebar-footer { padding: 14px 18px; border-top: 1px solid var(--border); }
+    .sidebar-footer a { font-size: 0.72rem; color: var(--muted); text-decoration: none; }
+    .sidebar-footer a:hover { color: var(--purple); }
+
+    /* MAIN */
+    .admin-main { margin-left: 220px; flex: 1; padding: 36px 40px; max-width: calc(100vw - 220px); }
+
+    /* PANELS */
+    .section-panel { display: none; }
+    .section-panel.active { display: block; }
+    .panel-header { margin-bottom: 28px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
+    .panel-title { font-size: 1.5rem; font-weight: 400; margin-bottom: 5px; }
+    .panel-title em { color: var(--purple); font-style: italic; }
+    .panel-sub { font-size: 0.82rem; color: var(--muted); font-weight: 300; }
+
+    /* CARDS */
+    .admin-card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 24px; margin-bottom: 18px; }
+    .admin-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+    .admin-card-title { font-size: 0.88rem; font-weight: 600; letter-spacing: 0.03em; }
+
+    /* FORMS */
+    .form-group { display: flex; flex-direction: column; gap: 5px; margin-bottom: 14px; }
+    .form-label { font-size: 0.62rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+    .form-input, .form-textarea, .form-select { background: var(--off-black); border: 1px solid var(--border); color: var(--white); padding: 10px 13px; font-family: 'Montserrat', sans-serif; font-size: 0.86rem; border-radius: 4px; outline: none; transition: border-color 0.2s; width: 100%; }
+    .form-input:focus, .form-textarea:focus, .form-select:focus { border-color: var(--purple); }
+    .form-textarea { resize: vertical; min-height: 78px; }
+    .form-select option { background: var(--card); }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+    /* BUTTONS */
+    .btn { padding: 9px 18px; font-family: 'Montserrat', sans-serif; font-size: 0.76rem; font-weight: 600; letter-spacing: 0.07em; border: none; border-radius: 4px; cursor: pointer; transition: opacity 0.2s; }
+    .btn:hover { opacity: 0.85; }
+    .btn-purple { background: var(--purple); color: var(--white); }
+    .btn-outline { background: transparent; color: var(--white); border: 1px solid var(--border); }
+    .btn-outline:hover { border-color: var(--purple); opacity: 1; }
+    .btn-danger { background: rgba(239,68,68,0.1); color: var(--red); border: 1px solid rgba(239,68,68,0.2); }
+    .btn-danger:hover { background: rgba(239,68,68,0.2); opacity: 1; }
+    .btn-green { background: var(--green); color: #000; font-weight: 700; }
+    .btn-sm { padding: 5px 12px; font-size: 0.68rem; }
+    .btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    /* STATS GRID */
+    .stats-edit-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+
+    /* ITEM ROWS */
+    .item-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+    .item-row { background: var(--off-black); border: 1px solid var(--border); border-radius: 6px; padding: 14px 18px; display: flex; align-items: center; gap: 14px; }
+    .item-row-info { flex: 1; }
+    .item-row-name { font-size: 0.86rem; font-weight: 600; margin-bottom: 2px; }
+    .item-row-sub { font-size: 0.72rem; color: var(--muted); font-weight: 300; }
+    .item-row-actions { display: flex; gap: 6px; flex-shrink: 0; }
+
+    /* INLINE EDIT */
+    .inline-edit { background: var(--off-black); border: 1px solid var(--purple); border-radius: 6px; padding: 18px; margin-top: 14px; display: none; }
+    .inline-edit.open { display: block; }
+
+    /* BADGES */
+    .badge { display: inline-block; padding: 3px 9px; border-radius: 20px; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+    .badge-active { background: rgba(34,197,94,0.12); color: var(--green); border: 1px solid rgba(34,197,94,0.25); }
+    .badge-upcoming { background: var(--purple-dim); color: var(--purple); border: 1px solid rgba(123,92,245,0.25); }
+    .badge-planned { background: rgba(255,255,255,0.04); color: var(--muted); border: 1px solid var(--border); }
+
+    /* PUBLISH STATUS */
+    .publish-status { display: none; align-items: center; gap: 10px; padding: 13px 16px; border-radius: 6px; font-size: 0.8rem; margin-bottom: 18px; }
+    .publish-status.show { display: flex; }
+    .publish-status.success { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.25); color: var(--green); }
+    .publish-status.error { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.25); color: var(--red); }
+    .publish-status.loading { background: rgba(123,92,245,0.1); border: 1px solid rgba(123,92,245,0.25); color: var(--purple); }
+
+    /* HISTORY */
+    .history-item { background: var(--off-black); border: 1px solid var(--border); border-radius: 6px; padding: 12px 16px; display: flex; align-items: center; gap: 14px; margin-bottom: 8px; }
+    .history-item-info { flex: 1; }
+    .history-item-msg { font-size: 0.82rem; font-weight: 500; margin-bottom: 2px; }
+    .history-item-meta { font-size: 0.68rem; color: var(--muted); font-weight: 300; }
+
+    /* GALLERY PREVIEW */
+    .gallery-preview { width: 56px; height: 56px; border-radius: 4px; object-fit: cover; background: var(--border); flex-shrink: 0; }
+
+    /* TOAST */
+    .toast { position: fixed; bottom: 24px; right: 24px; background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 12px 18px; font-size: 0.8rem; z-index: 9999; transform: translateY(60px); opacity: 0; transition: all 0.25s ease; max-width: 300px; pointer-events: none; }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast.success { border-color: rgba(34,197,94,0.4); color: var(--green); }
+    .toast.error { border-color: rgba(239,68,68,0.4); color: var(--red); }
+
+    /* DASHBOARD */
+    .dash-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
+    .dash-stat { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 22px; text-align: center; }
+    .dash-stat-num { font-size: 2.2rem; font-weight: 800; color: var(--purple); line-height: 1; }
+    .dash-stat-label { font-size: 0.65rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin-top: 6px; }
+
+    /* UNSAVED DOT */
+    .unsaved-dot { width: 7px; height: 7px; border-radius: 50%; background: #f59e0b; display: inline-block; margin-left: 6px; }
+
+    /* TOKEN BANNER */
+    .token-banner { background: rgba(123,92,245,0.08); border: 1px solid rgba(123,92,245,0.2); border-radius: 8px; padding: 14px 18px; margin-bottom: 22px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+    .token-banner p { font-size: 0.8rem; color: var(--muted); flex: 1; min-width: 200px; }
+
+    /* AVATAR */
+    .team-avatar-sm { width: 38px; height: 38px; border-radius: 50%; background: var(--purple-dim); border: 1px solid var(--purple); display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; color: var(--purple); flex-shrink: 0; }
+
+    h3 { font-size: 0.95rem; font-weight: 600; margin-bottom: 14px; }
+    .divider { height: 1px; background: var(--border); margin: 24px 0; }
+    .empty-state { text-align: center; padding: 36px; color: var(--muted); font-size: 0.82rem; font-weight: 300; }
+  </style>
+</head>
+<body>
+
+<!-- PASSWORD GATE -->
+<div id="gate">
+  <div style="text-align:center;margin-bottom:28px;">
+    <div class="gate-logo">One <span>Love</span> Initiative</div>
+    <div class="gate-sub" style="margin-top:6px;">Admin Panel</div>
+  </div>
+  <form class="gate-form" onsubmit="checkPassword(event)">
+    <input class="form-input" type="password" id="pwInput" placeholder="Admin password" autofocus/>
+    <button type="submit" class="btn btn-purple">Enter →</button>
+    <div class="gate-error" id="gateError">Incorrect password.</div>
+  </form>
+</div>
+
+<!-- ADMIN PANEL -->
+<div id="admin">
+  <div class="admin-layout">
+
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="sidebar-brand-name">One <span>Love</span> Initiative</div>
+        <div class="sidebar-brand-sub">Admin Panel</div>
+      </div>
+      <nav class="sidebar-nav">
+        <a onclick="showSection('dashboard')" class="active" id="nav-dashboard"><span class="nav-icon">📊</span> Dashboard</a>
+        <a onclick="showSection('stats')" id="nav-stats"><span class="nav-icon">🔢</span> Stats &amp; Progress</a>
+        <a onclick="showSection('team')" id="nav-team"><span class="nav-icon">👥</span> Team Members</a>
+        <a onclick="showSection('drives')" id="nav-drives"><span class="nav-icon">📦</span> Drives</a>
+        <a onclick="showSection('gallery')" id="nav-gallery"><span class="nav-icon">📷</span> Gallery</a>
+        <a onclick="showSection('testimonials')" id="nav-testimonials"><span class="nav-icon">💬</span> Testimonials</a>
+        <a onclick="showSection('publish')" id="nav-publish"><span class="nav-icon">🚀</span> Publish <span class="unsaved-dot" id="unsavedDot" style="display:none;"></span></a>
+      </nav>
+      <div class="sidebar-footer">
+        <a href="/" target="_blank">← Back to Site</a>
+      </div>
+    </aside>
+
+    <main class="admin-main">
+
+      <!-- TOKEN BANNER -->
+      <div class="token-banner" id="tokenBanner" style="display:none;">
+        <p>Enter your GitHub token to load and publish site content.</p>
+        <input class="form-input" id="tokenInputBanner" type="password" placeholder="github_pat_..." style="max-width:260px;"/>
+        <button class="btn btn-purple btn-sm" onclick="saveToken('tokenInputBanner')">Connect</button>
+      </div>
+
+      <!-- DASHBOARD -->
+      <div class="section-panel active" id="panel-dashboard">
+        <div class="panel-header">
+          <h1 class="panel-title">Dashboard</h1>
+          <p class="panel-sub">Current status of the One Love Initiative.</p>
+        </div>
+        <div class="dash-grid">
+          <div class="dash-stat"><div class="dash-stat-num" id="dash-kits">—</div><div class="dash-stat-label">Kits Distributed</div></div>
+          <div class="dash-stat"><div class="dash-stat-num" id="dash-volunteers">—</div><div class="dash-stat-label">Active Volunteers</div></div>
+          <div class="dash-stat"><div class="dash-stat-num" id="dash-drives-count">—</div><div class="dash-stat-label">Drives Organized</div></div>
+          <div class="dash-stat"><div class="dash-stat-num" id="dash-partners">—</div><div class="dash-stat-label">Partner Organizations</div></div>
+        </div>
+        <div class="admin-card">
+          <div class="admin-card-header"><div class="admin-card-title">Kit Assembly Progress</div></div>
+          <div style="font-size:2.8rem;font-weight:800;color:var(--purple);" id="dash-kitCount">—</div>
+          <div style="font-size:0.72rem;color:var(--muted);margin-top:4px;">of 20,000 kits assembled</div>
+          <div style="margin-top:14px;height:6px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;">
+            <div id="dash-bar" style="height:100%;background:var(--purple);border-radius:3px;width:0%;transition:width 1s;"></div>
+          </div>
+        </div>
+        <div class="btn-group" style="margin-top:20px;">
+          <button class="btn btn-purple" onclick="fetchFromGitHub()">↻ Refresh from GitHub</button>
+          <a href="/" target="_blank" class="btn btn-outline">View Live Site →</a>
+        </div>
+      </div>
+
+      <!-- STATS -->
+      <div class="section-panel" id="panel-stats">
+        <div class="panel-header">
+          <h1 class="panel-title">Stats &amp; <em>Progress</em></h1>
+          <p class="panel-sub">Update the numbers shown on the homepage stats bar and progress tracker.</p>
+        </div>
+        <div class="admin-card">
+          <div class="admin-card-header"><div class="admin-card-title">Homepage Stats Bar</div></div>
+          <div class="stats-edit-grid">
+            <div class="form-group"><label class="form-label">Kits Distributed</label><input class="form-input" type="number" id="edit-kits" min="0" oninput="markChanged()"/></div>
+            <div class="form-group"><label class="form-label">Active Volunteers</label><input class="form-input" type="number" id="edit-volunteers" min="0" oninput="markChanged()"/></div>
+            <div class="form-group"><label class="form-label">Drives Organized</label><input class="form-input" type="number" id="edit-drives-stat" min="0" oninput="markChanged()"/></div>
+            <div class="form-group"><label class="form-label">Partner Organizations</label><input class="form-input" type="number" id="edit-partners" min="0" oninput="markChanged()"/></div>
+          </div>
+        </div>
+        <div class="admin-card">
+          <div class="admin-card-header"><div class="admin-card-title">Kit Assembly Progress Bar</div></div>
+          <div class="form-group"><label class="form-label">Total Kits Assembled</label><input class="form-input" type="number" id="edit-kitCount" min="0" oninput="markChanged()"/></div>
+          <p style="font-size:0.75rem;color:var(--muted);font-weight:300;">This drives the progress bar and milestone markers on the homepage.</p>
+        </div>
+        <button class="btn btn-purple" onclick="saveStats()">Save Stats</button>
+      </div>
+
+      <!-- TEAM -->
+      <div class="section-panel" id="panel-team">
+        <div class="panel-header">
+          <h1 class="panel-title">Team <em>Members</em></h1>
+          <p class="panel-sub">Manage who appears on the About page.</p>
+        </div>
+        <div id="team-list"></div>
+        <div class="admin-card">
+          <div class="admin-card-header"><div class="admin-card-title">Add New Member</div></div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Initials</label><input class="form-input" id="nm-initials" placeholder="PV" maxlength="3"/></div>
+            <div class="form-group"><label class="form-label">Full Name</label><input class="form-input" id="nm-name" placeholder="Prithivi Vijayakumar"/></div>
+          </div>
+          <div class="form-group"><label class="form-label">Role / Title</label><input class="form-input" id="nm-role" placeholder="Founder"/></div>
+          <div class="form-group"><label class="form-label">Bio</label><textarea class="form-textarea" id="nm-bio" placeholder="Short bio..."></textarea></div>
+          <button class="btn btn-purple" onclick="addTeamMember()">Add Member</button>
+        </div>
+      </div>
+
+      <!-- DRIVES -->
+      <div class="section-panel" id="panel-drives">
+        <div class="panel-header">
+          <h1 class="panel-title">Donation <em>Drives</em></h1>
+          <p class="panel-sub">Manage drives shown on the Get Involved page.</p>
+        </div>
+        <div id="drives-list"></div>
+        <div class="admin-card">
+          <div class="admin-card-header"><div class="admin-card-title">Add New Drive</div></div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Drive Title</label><input class="form-input" id="nd-title" placeholder="School Drive at Providence High"/></div>
+            <div class="form-group"><label class="form-label">Status</label>
+              <select class="form-select" id="nd-status">
+                <option value="active">Active</option>
+                <option value="upcoming">Upcoming / In Progress</option>
+                <option value="planned" selected>Planned</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group"><label class="form-label">Tag Label (e.g. Active, In Progress, Planned)</label><input class="form-input" id="nd-tag" placeholder="Planned"/></div>
+          <div class="form-group"><label class="form-label">Description</label><textarea class="form-textarea" id="nd-desc" placeholder="Drive details..."></textarea></div>
+          <button class="btn btn-purple" onclick="addDrive()">Add Drive</button>
+        </div>
+      </div>
+
+      <!-- GALLERY -->
+      <div class="section-panel" id="panel-gallery">
+        <div class="panel-header">
+          <h1 class="panel-title">Photo <em>Gallery</em></h1>
+          <p class="panel-sub">Manage photos on the Our Work page. Add an image URL from any hosted image.</p>
+        </div>
+        <div id="gallery-list"></div>
+        <div class="admin-card">
+          <div class="admin-card-header"><div class="admin-card-title">Add New Photo</div></div>
+          <div class="form-group"><label class="form-label">Image URL</label><input class="form-input" id="np-url" placeholder="https://..." type="url"/></div>
+          <div class="form-group"><label class="form-label">Caption (optional)</label><input class="form-input" id="np-caption" placeholder="Kit assembly at the Hindu Center, May 2025"/></div>
+          <button class="btn btn-purple" onclick="addPhoto()">Add Photo</button>
+        </div>
+      </div>
+
+      <!-- TESTIMONIALS -->
+      <div class="section-panel" id="panel-testimonials">
+        <div class="panel-header">
+          <h1 class="panel-title">Community <em>Testimonials</em></h1>
+          <p class="panel-sub">Quotes shown on the homepage. Add them after your first drive!</p>
+        </div>
+        <div id="testimonials-list"></div>
+        <div class="admin-card">
+          <div class="admin-card-header"><div class="admin-card-title">Add New Testimonial</div></div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Name</label><input class="form-input" id="nt-name" placeholder="Jane Smith"/></div>
+            <div class="form-group"><label class="form-label">Initials</label><input class="form-input" id="nt-initials" placeholder="JS" maxlength="3"/></div>
+          </div>
+          <div class="form-group"><label class="form-label">Role / Description</label><input class="form-input" id="nt-role" placeholder="Volunteer · Drive #1"/></div>
+          <div class="form-group"><label class="form-label">Quote</label><textarea class="form-textarea" id="nt-text" placeholder="Their testimonial..."></textarea></div>
+          <button class="btn btn-purple" onclick="addTestimonial()">Add Testimonial</button>
+        </div>
+      </div>
+
+      <!-- PUBLISH -->
+      <div class="section-panel" id="panel-publish">
+        <div class="panel-header">
+          <h1 class="panel-title">Publish to <em>GitHub</em></h1>
+          <p class="panel-sub">Push your changes live. Cloudflare picks up the update within ~30 seconds.</p>
+        </div>
+        <div class="publish-status" id="publishStatus"></div>
+        <div class="admin-card">
+          <div class="admin-card-header"><div class="admin-card-title">GitHub Connection</div></div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">GitHub Personal Access Token</label><input class="form-input" type="password" id="ghTokenInput" placeholder="github_pat_..."/></div>
+            <div style="display:flex;align-items:flex-end;padding-bottom:14px;"><button class="btn btn-outline" onclick="saveToken('ghTokenInput')">Save Token</button></div>
+          </div>
+          <p style="font-size:0.7rem;color:var(--muted);font-weight:300;">Stored in sessionStorage only — never sent anywhere except the GitHub API.</p>
+        </div>
+        <div class="admin-card">
+          <div class="admin-card-header"><div class="admin-card-title">Publish Changes</div></div>
+          <div class="form-group"><label class="form-label">Commit Message</label><input class="form-input" id="commitMsg" value="Admin panel update"/></div>
+          <div class="btn-group">
+            <button class="btn btn-green" onclick="publishChanges()">🚀 Publish Live</button>
+            <button class="btn btn-outline" onclick="fetchFromGitHub()">↻ Reload from GitHub</button>
+          </div>
+        </div>
+        <div class="admin-card">
+          <div class="admin-card-header">
+            <div class="admin-card-title">Version History</div>
+            <button class="btn btn-outline btn-sm" onclick="loadHistory()">Load History</button>
+          </div>
+          <div id="history-list"><p style="font-size:0.8rem;color:var(--muted);font-weight:300;">Click "Load History" to see recent commits to index.html.</p></div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const ADMIN_PASS = 'OneLove4All!';
+const REPO = 'privi-doughnut/oneloveinitiative';
+const FILE = 'index.html';
+
+let state = null;
+let fileSha = null;
+let hasChanges = false;
+let undoStack = [];
+let ghToken = sessionStorage.getItem('ghToken') || '';
+
+// ── AUTH ──────────────────────────────────────────────────────────────
+function checkPassword(e) {
+  e.preventDefault();
+  if (document.getElementById('pwInput').value === ADMIN_PASS) {
+    document.getElementById('gate').style.display = 'none';
+    document.getElementById('admin').style.display = 'block';
+    initAdmin();
+  } else {
+    const err = document.getElementById('gateError');
+    err.style.display = 'block';
+    document.getElementById('pwInput').value = '';
+    document.getElementById('pwInput').focus();
+    setTimeout(() => err.style.display = 'none', 3000);
+  }
+}
+
+function initAdmin() {
+  if (ghToken) {
+    document.getElementById('ghTokenInput').value = ghToken;
+    fetchFromGitHub();
+  } else {
+    document.getElementById('tokenBanner').style.display = 'flex';
+  }
+}
+
+// ── TOKEN ─────────────────────────────────────────────────────────────
+function saveToken(inputId) {
+  const val = document.getElementById(inputId).value.trim();
+  if (!val) return;
+  ghToken = val;
+  sessionStorage.setItem('ghToken', ghToken);
+  document.getElementById('tokenBanner').style.display = 'none';
+  document.getElementById('ghTokenInput').value = ghToken;
+  fetchFromGitHub();
+  toast('GitHub token saved', 'success');
+}
+
+// ── GITHUB API ────────────────────────────────────────────────────────
+async function fetchFromGitHub() {
+  if (!ghToken) { document.getElementById('tokenBanner').style.display = 'flex'; showSection('publish'); return; }
+  try {
+    const res = await fetch(`https://api.github.com/repos/${REPO}/contents/${FILE}`, {
+      headers: { Authorization: `Bearer ${ghToken}`, Accept: 'application/vnd.github.v3+json' }
+    });
+    if (!res.ok) throw new Error('GitHub API error ' + res.status);
+    const data = await res.json();
+    fileSha = data.sha;
+    const content = b64decode(data.content);
+    const match = content.match(/<script id="oli-data" type="application\/json">([\s\S]*?)<\/script>/);
+    if (!match) throw new Error('oli-data block not found — make sure index.html is up to date');
+    state = JSON.parse(match[1].trim());
+    renderAll();
+    toast('Loaded latest data from GitHub', 'success');
+  } catch (err) {
+    toast('Load failed: ' + err.message, 'error');
+  }
+}
+
+async function publishChanges() {
+  if (!ghToken) { document.getElementById('tokenBanner').style.display = 'flex'; showSection('publish'); return; }
+  if (!state) { toast('Load data from GitHub first', 'error'); return; }
+  const commitMsg = document.getElementById('commitMsg').value.trim() || 'Admin panel update';
+  setPublishStatus('loading', '⏳ Publishing...');
+  try {
+    const getRes = await fetch(`https://api.github.com/repos/${REPO}/contents/${FILE}`, {
+      headers: { Authorization: `Bearer ${ghToken}`, Accept: 'application/vnd.github.v3+json' }
+    });
+    const getData = await getRes.json();
+    fileSha = getData.sha;
+    const current = b64decode(getData.content);
+    const newJson = JSON.stringify(state, null, 2);
+    const updated = current.replace(
+      /(<script id="oli-data" type="application\/json">)([\s\S]*?)(<\/script>)/,
+      `$1\n${newJson}\n$3`
+    );
+    const putRes = await fetch(`https://api.github.com/repos/${REPO}/contents/${FILE}`, {
+      method: 'PUT',
+      headers: { Authorization: `Bearer ${ghToken}`, 'Content-Type': 'application/json', Accept: 'application/vnd.github.v3+json' },
+      body: JSON.stringify({ message: commitMsg, content: b64encode(updated), sha: fileSha })
+    });
+    if (!putRes.ok) { const e = await putRes.json(); throw new Error(e.message || 'Publish failed'); }
+    setPublishStatus('success', '✓ Published! Site will update in ~30 seconds.');
+    hasChanges = false;
+    updateUnsavedDot();
+    toast('Live! Changes deploying now.', 'success');
+  } catch (err) {
+    setPublishStatus('error', '✗ ' + err.message);
+    toast('Publish failed: ' + err.message, 'error');
+  }
+}
+
+async function loadHistory() {
+  if (!ghToken) return;
+  const container = document.getElementById('history-list');
+  container.innerHTML = '<p style="font-size:0.8rem;color:var(--muted);">Loading...</p>';
+  try {
+    const res = await fetch(`https://api.github.com/repos/${REPO}/commits?path=${FILE}&per_page=10`, {
+      headers: { Authorization: `Bearer ${ghToken}`, Accept: 'application/vnd.github.v3+json' }
+    });
+    const commits = await res.json();
+    if (!commits.length) { container.innerHTML = '<p class="empty-state">No commits found.</p>'; return; }
+    container.innerHTML = commits.map(c => `
+      <div class="history-item">
+        <div class="history-item-info">
+          <div class="history-item-msg">${esc(c.commit.message.split('\n')[0])}</div>
+          <div class="history-item-meta">${new Date(c.commit.author.date).toLocaleString()} · ${c.sha.slice(0,7)}</div>
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="restoreCommit('${c.sha}')">Restore</button>
+      </div>`).join('');
+  } catch (err) {
+    container.innerHTML = '<p style="color:var(--red);font-size:0.8rem;">Failed to load history.</p>';
+  }
+}
+
+async function restoreCommit(sha) {
+  if (!confirm('Restore this version? Unsaved changes will be lost.')) return;
+  try {
+    const res = await fetch(`https://api.github.com/repos/${REPO}/contents/${FILE}?ref=${sha}`, {
+      headers: { Authorization: `Bearer ${ghToken}`, Accept: 'application/vnd.github.v3+json' }
+    });
+    const data = await res.json();
+    const content = b64decode(data.content);
+    const match = content.match(/<script id="oli-data" type="application\/json">([\s\S]*?)<\/script>/);
+    if (!match) throw new Error('oli-data not found in that version');
+    state = JSON.parse(match[1].trim());
+    renderAll();
+    markChanged();
+    toast('Restored. Click Publish to go live.', 'success');
+  } catch (err) {
+    toast('Restore failed: ' + err.message, 'error');
+  }
+}
+
+// ── RENDER ────────────────────────────────────────────────────────────
+function renderAll() {
+  if (!state) return;
+  // Dashboard
+  document.getElementById('dash-kits').textContent = state.stats.kits;
+  document.getElementById('dash-volunteers').textContent = state.stats.volunteers;
+  document.getElementById('dash-drives-count').textContent = state.stats.drives;
+  document.getElementById('dash-partners').textContent = state.stats.partners;
+  const kits = state.kitCount || 0;
+  document.getElementById('dash-kitCount').textContent = kits.toLocaleString();
+  document.getElementById('dash-bar').style.width = Math.max((kits / 20000) * 100, 0.3) + '%';
+  // Stats form
+  document.getElementById('edit-kits').value = state.stats.kits;
+  document.getElementById('edit-volunteers').value = state.stats.volunteers;
+  document.getElementById('edit-drives-stat').value = state.stats.drives;
+  document.getElementById('edit-partners').value = state.stats.partners;
+  document.getElementById('edit-kitCount').value = kits;
+  // Lists
+  renderTeamList();
+  renderDrivesList();
+  renderGalleryList();
+  renderTestimonialsList();
+}
+
+// TEAM
+function renderTeamList() {
+  const c = document.getElementById('team-list');
+  if (!state.team || !state.team.length) { c.innerHTML = '<div class="empty-state">No team members yet.</div>'; return; }
+  c.innerHTML = state.team.map((m, i) => `
+    <div class="admin-card">
+      <div class="admin-card-header">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div class="team-avatar-sm">${esc(m.initials)}</div>
+          <div>
+            <div class="admin-card-title">${esc(m.name)}</div>
+            <div style="font-size:0.7rem;color:var(--purple);letter-spacing:0.1em;text-transform:uppercase;margin-top:2px;">${esc(m.role)}</div>
+          </div>
+        </div>
+        <div class="btn-group">
+          <button class="btn btn-outline btn-sm" onclick="toggleEdit('team-edit-${i}')">Edit</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteTeamMember(${i})">Delete</button>
+        </div>
+      </div>
+      <p style="font-size:0.8rem;color:var(--muted);font-weight:300;line-height:1.6;">${esc(m.bio)}</p>
+      <div class="inline-edit" id="team-edit-${i}">
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Initials</label><input class="form-input" id="te-initials-${i}" value="${esc(m.initials)}" maxlength="3"/></div>
+          <div class="form-group"><label class="form-label">Full Name</label><input class="form-input" id="te-name-${i}" value="${esc(m.name)}"/></div>
+        </div>
+        <div class="form-group"><label class="form-label">Role</label><input class="form-input" id="te-role-${i}" value="${esc(m.role)}"/></div>
+        <div class="form-group"><label class="form-label">Bio</label><textarea class="form-textarea" id="te-bio-${i}">${esc(m.bio)}</textarea></div>
+        <div class="btn-group">
+          <button class="btn btn-purple btn-sm" onclick="saveTeamMember(${i})">Save</button>
+          <button class="btn btn-outline btn-sm" onclick="toggleEdit('team-edit-${i}')">Cancel</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function saveTeamMember(i) {
+  pushUndo();
+  state.team[i] = {
+    initials: document.getElementById('te-initials-' + i).value.trim(),
+    name: document.getElementById('te-name-' + i).value.trim(),
+    role: document.getElementById('te-role-' + i).value.trim(),
+    bio: document.getElementById('te-bio-' + i).value.trim()
+  };
+  renderTeamList(); markChanged(); toast('Team member updated', 'success');
+}
+
+function deleteTeamMember(i) {
+  if (!confirm('Remove ' + state.team[i].name + '?')) return;
+  pushUndo(); state.team.splice(i, 1); renderTeamList(); markChanged();
+}
+
+function addTeamMember() {
+  const name = document.getElementById('nm-name').value.trim();
+  const role = document.getElementById('nm-role').value.trim();
+  if (!name || !role) { toast('Name and role are required', 'error'); return; }
+  pushUndo();
+  state.team.push({
+    initials: document.getElementById('nm-initials').value.trim() || name.slice(0,2).toUpperCase(),
+    name, role,
+    bio: document.getElementById('nm-bio').value.trim()
+  });
+  renderTeamList(); markChanged();
+  ['nm-initials','nm-name','nm-role','nm-bio'].forEach(id => document.getElementById(id).value = '');
+  toast('Team member added', 'success');
+}
+
+// DRIVES
+function renderDrivesList() {
+  const c = document.getElementById('drives-list');
+  if (!state.drives || !state.drives.length) { c.innerHTML = '<div class="empty-state">No drives yet.</div>'; return; }
+  c.innerHTML = state.drives.map((d, i) => `
+    <div class="admin-card">
+      <div class="admin-card-header">
+        <div>
+          <div class="admin-card-title">${esc(d.title)}</div>
+          <div style="margin-top:5px;"><span class="badge badge-${d.status}">${esc(d.tag)}</span></div>
+        </div>
+        <div class="btn-group">
+          <button class="btn btn-outline btn-sm" onclick="toggleEdit('drive-edit-${i}')">Edit</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteDrive(${i})">Delete</button>
+        </div>
+      </div>
+      <p style="font-size:0.8rem;color:var(--muted);font-weight:300;line-height:1.6;">${esc(d.desc)}</p>
+      <div class="inline-edit" id="drive-edit-${i}">
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Title</label><input class="form-input" id="de-title-${i}" value="${esc(d.title)}"/></div>
+          <div class="form-group"><label class="form-label">Status</label>
+            <select class="form-select" id="de-status-${i}">
+              <option value="active"${d.status==='active'?' selected':''}>Active</option>
+              <option value="upcoming"${d.status==='upcoming'?' selected':''}>Upcoming</option>
+              <option value="planned"${d.status==='planned'?' selected':''}>Planned</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group"><label class="form-label">Tag Label</label><input class="form-input" id="de-tag-${i}" value="${esc(d.tag)}"/></div>
+        <div class="form-group"><label class="form-label">Description</label><textarea class="form-textarea" id="de-desc-${i}">${esc(d.desc)}</textarea></div>
+        <div class="btn-group">
+          <button class="btn btn-purple btn-sm" onclick="saveDrive(${i})">Save</button>
+          <button class="btn btn-outline btn-sm" onclick="toggleEdit('drive-edit-${i}')">Cancel</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function saveDrive(i) {
+  pushUndo();
+  state.drives[i] = {
+    title: document.getElementById('de-title-' + i).value.trim(),
+    status: document.getElementById('de-status-' + i).value,
+    tag: document.getElementById('de-tag-' + i).value.trim(),
+    desc: document.getElementById('de-desc-' + i).value.trim()
+  };
+  renderDrivesList(); markChanged(); toast('Drive updated', 'success');
+}
+
+function deleteDrive(i) {
+  if (!confirm('Delete this drive?')) return;
+  pushUndo(); state.drives.splice(i, 1); renderDrivesList(); markChanged();
+}
+
+function addDrive() {
+  const title = document.getElementById('nd-title').value.trim();
+  const desc = document.getElementById('nd-desc').value.trim();
+  if (!title || !desc) { toast('Title and description are required', 'error'); return; }
+  const status = document.getElementById('nd-status').value;
+  const tag = document.getElementById('nd-tag').value.trim() || status.charAt(0).toUpperCase() + status.slice(1);
+  pushUndo();
+  state.drives.push({ title, status, tag, desc });
+  renderDrivesList(); markChanged();
+  ['nd-title','nd-tag','nd-desc'].forEach(id => document.getElementById(id).value = '');
+  toast('Drive added', 'success');
+}
+
+// GALLERY
+function renderGalleryList() {
+  const c = document.getElementById('gallery-list');
+  if (!state.gallery || !state.gallery.length) { c.innerHTML = '<div class="empty-state">No photos yet. Add the first one below.</div>'; return; }
+  c.innerHTML = state.gallery.map((photo, i) => `
+    <div class="admin-card">
+      <div class="admin-card-header">
+        <div style="display:flex;align-items:center;gap:14px;">
+          <img src="${esc(photo.url)}" class="gallery-preview" onerror="this.style.opacity='0.2'"/>
+          <div>
+            <div class="admin-card-title">${esc(photo.caption || 'No caption')}</div>
+            <div style="font-size:0.7rem;color:var(--muted);margin-top:3px;max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(photo.url)}</div>
+          </div>
+        </div>
+        <button class="btn btn-danger btn-sm" onclick="deletePhoto(${i})">Delete</button>
+      </div>
+    </div>`).join('');
+}
+
+function addPhoto() {
+  const url = document.getElementById('np-url').value.trim();
+  if (!url) { toast('Image URL is required', 'error'); return; }
+  pushUndo();
+  state.gallery.push({ url, caption: document.getElementById('np-caption').value.trim() });
+  renderGalleryList(); markChanged();
+  document.getElementById('np-url').value = '';
+  document.getElementById('np-caption').value = '';
+  toast('Photo added', 'success');
+}
+
+function deletePhoto(i) {
+  if (!confirm('Remove this photo?')) return;
+  pushUndo(); state.gallery.splice(i, 1); renderGalleryList(); markChanged();
+}
+
+// TESTIMONIALS
+function renderTestimonialsList() {
+  const c = document.getElementById('testimonials-list');
+  if (!state.testimonials || !state.testimonials.length) { c.innerHTML = '<div class="empty-state">No testimonials yet. Add them after your first drive!</div>'; return; }
+  c.innerHTML = state.testimonials.map((t, i) => `
+    <div class="admin-card">
+      <div class="admin-card-header">
+        <div>
+          <div class="admin-card-title">${esc(t.name)}</div>
+          <div style="font-size:0.7rem;color:var(--purple);margin-top:2px;">${esc(t.role || '')}</div>
+        </div>
+        <button class="btn btn-danger btn-sm" onclick="deleteTestimonial(${i})">Delete</button>
+      </div>
+      <p style="font-size:0.85rem;color:var(--muted);font-style:italic;font-weight:300;line-height:1.65;">"${esc(t.text)}"</p>
+    </div>`).join('');
+}
+
+function addTestimonial() {
+  const name = document.getElementById('nt-name').value.trim();
+  const text = document.getElementById('nt-text').value.trim();
+  if (!name || !text) { toast('Name and quote are required', 'error'); return; }
+  pushUndo();
+  state.testimonials.push({
+    name, text,
+    initials: document.getElementById('nt-initials').value.trim() || name.slice(0,2).toUpperCase(),
+    role: document.getElementById('nt-role').value.trim()
+  });
+  renderTestimonialsList(); markChanged();
+  ['nt-name','nt-initials','nt-role','nt-text'].forEach(id => document.getElementById(id).value = '');
+  toast('Testimonial added', 'success');
+}
+
+function deleteTestimonial(i) {
+  if (!confirm('Remove this testimonial?')) return;
+  pushUndo(); state.testimonials.splice(i, 1); renderTestimonialsList(); markChanged();
+}
+
+function saveStats() {
+  pushUndo();
+  state.stats.kits = parseInt(document.getElementById('edit-kits').value) || 0;
+  state.stats.volunteers = parseInt(document.getElementById('edit-volunteers').value) || 0;
+  state.stats.drives = parseInt(document.getElementById('edit-drives-stat').value) || 0;
+  state.stats.partners = parseInt(document.getElementById('edit-partners').value) || 0;
+  state.kitCount = parseInt(document.getElementById('edit-kitCount').value) || 0;
+  renderAll(); markChanged(); toast('Stats saved — click Publish to go live', 'success');
+}
+
+// ── UNDO ──────────────────────────────────────────────────────────────
+function pushUndo() { undoStack.push(JSON.stringify(state)); if (undoStack.length > 50) undoStack.shift(); }
+function undo() { if (!undoStack.length) return; state = JSON.parse(undoStack.pop()); renderAll(); toast('Undone', 'success'); }
+document.addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && e.key === 'z') { e.preventDefault(); undo(); } });
+
+// ── UI HELPERS ────────────────────────────────────────────────────────
+function showSection(id) {
+  document.querySelectorAll('.section-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+  document.querySelectorAll('.sidebar-nav a').forEach(a => a.classList.remove('active'));
+  document.getElementById('nav-' + id).classList.add('active');
+}
+
+function toggleEdit(id) {
+  const el = document.getElementById(id);
+  const isOpen = el.classList.contains('open');
+  document.querySelectorAll('.inline-edit').forEach(e => e.classList.remove('open'));
+  if (!isOpen) el.classList.add('open');
+}
+
+function markChanged() { hasChanges = true; updateUnsavedDot(); }
+function updateUnsavedDot() { document.getElementById('unsavedDot').style.display = hasChanges ? 'inline-block' : 'none'; }
+
+function setPublishStatus(type, msg) {
+  const el = document.getElementById('publishStatus');
+  el.className = 'publish-status show ' + type;
+  el.textContent = msg;
+  if (type === 'success') setTimeout(() => el.classList.remove('show'), 7000);
+}
+
+function toast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + (type || '');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.className = 'toast', 3000);
+}
+
+function esc(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function b64decode(b64) {
+  const binary = atob(b64.replace(/\n/g, ''));
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  return new TextDecoder('utf-8').decode(bytes);
+}
+
+function b64encode(str) {
+  const bytes = new TextEncoder().encode(str);
+  let binary = '';
+  bytes.forEach(b => binary += String.fromCharCode(b));
+  return btoa(binary);
+}
+</script>
+</body>
+</html>
