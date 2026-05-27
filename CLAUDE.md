@@ -99,6 +99,50 @@ Key terms of the drafted Fiscal Sponsorship MOU with CAM:
 - The chatbot fetch call in `index.html` goes to the proxy URL, NOT directly to Anthropic
 - OLI input is a `<textarea>` — Enter sends, Shift+Enter for new line
 
+#### OLI's Personality & System Prompt
+
+OLI is intentionally designed to be warm, friendly, and enthusiastic — not robotic or formal. She is NOT broken and should NOT be "improved" unless explicitly asked. Her system prompt is hardcoded in index.html and reads:
+
+> "You are OLI, the friendly AI assistant for The One Love Initiative — a student-led nonprofit based in Charlotte, NC. You are helpful, warm, and enthusiastic about the mission. Keep responses concise (2-4 sentences max), friendly, and always encourage people to get involved. If someone asks how to donate money, share the Stripe link. If someone asks to volunteer or contact, share the email."
+
+Key facts OLI knows:
+- Founded by Prithivi Vijayakumar in 2025
+- Current drive: Children's Hygiene Kit Drive
+- Kit goal: 20,000 O.L.I Kits by end of summer 2025
+- Distribution partner: Crisis Assistance Ministry
+- Community partner: Hindu Center of Charlotte
+- Donation link: https://donate.stripe.com/3cIcMY53Y81g7MK0hl0kE00
+- Email: oneloveinitiative.official@gmail.com
+- Instagram: https://www.instagram.com/one.love.initiative/
+
+**Do not change OLI's tone, personality, response length, or system prompt unless Privi explicitly asks.**
+
+#### OLI Development History (important context — read before touching anything)
+
+OLI went through a very long and painful setup process. Here is the full history so you understand why things are the way they are:
+
+1. Originally, OLI called the Anthropic API directly from the browser (https://api.anthropic.com/v1/messages). This caused a CORS error because browsers block direct API calls from frontend code.
+
+2. We tried adding a worker.js to the GitHub repo to act as a proxy, along with a wrangler.toml to configure Cloudflare. This repeatedly broke the site because Cloudflare kept treating the deployment as static-only and refused to activate the Worker script or allow environment variables.
+
+3. We tried adding an ASSETS binding in Cloudflare dashboard, adding wrangler.toml with various configurations, connecting the domain as a custom domain on the Worker — none of it worked reliably.
+
+4. The solution that finally worked: a completely SEPARATE standalone Cloudflare Worker called `oli-api-proxy` (not connected to the GitHub repo at all), with the `ANTHROPIC_API_KEY` stored as a secret on that Worker. The index.html fetch call points to `https://oli-api-proxy.its-the-prithivi-show.workers.dev`.
+
+5. The model string must be `claude-sonnet-4-5` — using `claude-sonnet-4-20250514` causes a `not_found_error` from the Anthropic API.
+
+6. The API key starts with `sk-ant-api03-g61...` (note: `g61` with the number one, not `g6l` with a lowercase L — this typo caused hours of debugging).
+
+7. The `oli-api-proxy` Worker is managed entirely through the Cloudflare dashboard, not through the GitHub repo. Do not try to replicate its functionality inside the repo.
+
+**If OLI stops working, the most likely causes in order are:**
+- Wrong model string in index.html
+- Fetch URL pointing to Anthropic directly instead of the proxy
+- `ANTHROPIC_API_KEY` expired or revoked on the `oli-api-proxy` Worker in Cloudflare dashboard
+- The `oli-api-proxy` Worker itself having an issue (check Cloudflare dashboard)
+
+OLI's personality is intentionally warm, friendly, and concise (2-4 sentences). Do not change her tone or system prompt unless Privi explicitly asks.
+
 ### Integrations
 - **Donations:** Stripe — https://donate.stripe.com/3cIcMY53Y81g7MK0hl0kE00
 - **Banking:** Relay
