@@ -36,21 +36,24 @@
       background: var(--purple);
       border-radius: 50%;
       position: fixed;
+      top: 0; left: 0;
       pointer-events: none;
       z-index: 9999;
-      transition: transform 0.15s ease, width 0.2s, height 0.2s;
+      will-change: transform;
+      transition: scale 0.15s ease, opacity 0.2s;
       mix-blend-mode: screen;
     }
+    .cursor.expanded { scale: 2.5; }
     .cursor-ring {
       width: 36px; height: 36px;
       border: 1px solid rgba(123,92,245,0.5);
       border-radius: 50%;
       position: fixed;
+      top: 0; left: 0;
       pointer-events: none;
       z-index: 9998;
-      transition: transform 0.35s ease;
+      will-change: transform;
     }
-    a:hover ~ .cursor, button:hover ~ .cursor { transform: scale(2.5); }
 
     /* NAV */
     nav {
@@ -1013,6 +1016,7 @@
       opacity: 0;
       transform: translateY(32px);
       transition: opacity 0.7s ease, transform 0.7s ease;
+      will-change: transform, opacity;
     }
 
     .reveal.visible {
@@ -1788,18 +1792,23 @@
 
   document.addEventListener('mousemove', e => {
     mouseX = e.clientX; mouseY = e.clientY;
-    cursor.style.left = mouseX - 6 + 'px';
-    cursor.style.top = mouseY - 6 + 'px';
-  });
+    cursor.style.transform = `translate3d(${mouseX - 6}px,${mouseY - 6}px,0)`;
+  }, { passive: true });
 
   function animateRing() {
-    ringX += (mouseX - ringX - 18) * 0.12;
-    ringY += (mouseY - ringY - 18) * 0.12;
-    cursorRing.style.left = ringX + 'px';
-    cursorRing.style.top = ringY + 'px';
+    ringX += (mouseX - ringX - 18) * 0.15;
+    ringY += (mouseY - ringY - 18) * 0.15;
+    cursorRing.style.transform = `translate3d(${ringX}px,${ringY}px,0)`;
     requestAnimationFrame(animateRing);
   }
   animateRing();
+
+  document.addEventListener('mouseover', e => {
+    if (e.target.closest('a, button')) cursor.classList.add('expanded');
+  }, { passive: true });
+  document.addEventListener('mouseout', e => {
+    if (e.target.closest('a, button')) cursor.classList.remove('expanded');
+  }, { passive: true });
 
   // PAGE NAVIGATION
   function showPage(pageId) {
@@ -1821,7 +1830,12 @@
   // SCROLL REVEAL
   const revealObserver = new IntersectionObserver(entries => {
     entries.forEach(entry => {
-      if (entry.isIntersecting) entry.target.classList.add('visible');
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        entry.target.addEventListener('transitionend', () => {
+          entry.target.style.willChange = 'auto';
+        }, { once: true });
+      }
     });
   }, { threshold: 0.1 });
 
