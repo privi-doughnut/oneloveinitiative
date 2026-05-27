@@ -1602,21 +1602,21 @@
           <form class="contact-form" onsubmit="handleSubmit(event)">
             <div class="form-row">
               <div class="form-field">
-                <label>First Name</label>
-                <input type="text" placeholder="Your first name" required/>
+                <label for="cf-first">First Name</label>
+                <input id="cf-first" type="text" placeholder="Your first name" required/>
               </div>
               <div class="form-field">
-                <label>Last Name</label>
-                <input type="text" placeholder="Your last name"/>
+                <label for="cf-last">Last Name</label>
+                <input id="cf-last" type="text" placeholder="Your last name"/>
               </div>
             </div>
             <div class="form-field">
-              <label>Email</label>
-              <input type="email" placeholder="your@email.com" required/>
+              <label for="cf-email">Email</label>
+              <input id="cf-email" type="email" placeholder="your@email.com" required/>
             </div>
             <div class="form-field">
-              <label>I want to</label>
-              <select>
+              <label for="cf-interest">I want to</label>
+              <select id="cf-interest">
                 <option>Volunteer</option>
                 <option>Donate Items</option>
                 <option>Start a Drive</option>
@@ -1626,8 +1626,8 @@
               </select>
             </div>
             <div class="form-field">
-              <label>Message</label>
-              <textarea placeholder="Tell us how you'd like to get involved..." required></textarea>
+              <label for="cf-message">Message</label>
+              <textarea id="cf-message" placeholder="Tell us how you'd like to get involved..." required></textarea>
             </div>
             <button type="submit" class="btn-primary" style="align-self:flex-start;border:none;">Send Message</button>
           </form>
@@ -1819,14 +1819,18 @@
   }
 
   // SCROLL REVEAL
+  const revealObserver = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) entry.target.classList.add('visible');
+    });
+  }, { threshold: 0.1 });
+
   function initReveal() {
-    const reveals = document.querySelectorAll('.reveal');
-    const observer = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) entry.target.classList.add('visible');
-      });
-    }, { threshold: 0.1 });
-    reveals.forEach(el => { el.classList.remove('visible'); observer.observe(el); });
+    revealObserver.disconnect();
+    document.querySelectorAll('.reveal').forEach(el => {
+      el.classList.remove('visible');
+      revealObserver.observe(el);
+    });
   }
 
   // FAQ TOGGLE
@@ -1839,8 +1843,18 @@
   // FORM SUBMIT
   function handleSubmit(e) {
     e.preventDefault();
-    const btn = e.target.querySelector('button');
-    btn.textContent = 'Message Sent! ✓';
+    const form = e.target;
+    const inputs = form.querySelectorAll('input, select, textarea');
+    const firstName = inputs[0].value.trim();
+    const lastName = inputs[1].value.trim();
+    const email = inputs[2].value.trim();
+    const interest = inputs[3].value;
+    const message = inputs[4].value.trim();
+    const subject = encodeURIComponent(`OLI Contact: ${interest} — ${firstName} ${lastName}`);
+    const body = encodeURIComponent(`Name: ${firstName} ${lastName}\nEmail: ${email}\nI want to: ${interest}\n\n${message}`);
+    window.location.href = `mailto:oneloveinitiative.official@gmail.com?subject=${subject}&body=${body}`;
+    const btn = form.querySelector('button');
+    btn.textContent = 'Opening Email... ✓';
     btn.style.background = '#22c55e';
     setTimeout(() => { btn.textContent = 'Send Message'; btn.style.background = ''; }, 3000);
   }
@@ -1999,6 +2013,7 @@ async function sendOliMessage() {
 
   addOliMessage(text, 'user');
   oliHistory.push({ role: 'user', content: text });
+  if (oliHistory.length > 20) oliHistory = oliHistory.slice(-20);
 
   const typing = addTyping();
 
@@ -2029,10 +2044,17 @@ async function sendOliMessage() {
 
 function addOliMessage(text, role) {
   const msgs = document.getElementById('oliMessages');
-  if (!msgs) return div;
+  if (!msgs) return null;
   const div = document.createElement('div');
   div.className = 'oli-msg' + (role === 'user' ? ' user' : '');
-  div.innerHTML = `<div class="oli-msg-av">${role === 'user' ? '👤' : '💜'}</div><div class="oli-msg-text">${text}</div>`;
+  const av = document.createElement('div');
+  av.className = 'oli-msg-av';
+  av.textContent = role === 'user' ? '👤' : '💜';
+  const bubble = document.createElement('div');
+  bubble.className = 'oli-msg-text';
+  bubble.textContent = text;
+  div.appendChild(av);
+  div.appendChild(bubble);
   msgs.appendChild(div);
   msgs.scrollTop = msgs.scrollHeight;
   return div;
@@ -2040,7 +2062,7 @@ function addOliMessage(text, role) {
 
 function addTyping() {
   const msgs = document.getElementById('oliMessages');
-  if (!msgs) return div;
+  if (!msgs) return null;
   const div = document.createElement('div');
   div.className = 'oli-msg';
   div.innerHTML = `<div class="oli-msg-av">💜</div><div class="oli-typing-indicator"><span></span><span></span><span></span></div>`;
@@ -2055,6 +2077,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const toggle = document.createElement('button');
   toggle.className = 'nav-mobile-toggle';
   toggle.textContent = '☰';
+  toggle.setAttribute('aria-label', 'Toggle navigation');
   toggle.onclick = () => {
     document.querySelector('.nav-links').classList.toggle('mobile-open');
   };
