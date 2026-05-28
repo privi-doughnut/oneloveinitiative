@@ -50,8 +50,9 @@ export default {
       // amount_total is in smallest currency unit (cents); divide by 100 for USD
       const amount  = session.amount_total ? (session.amount_total / 100).toFixed(2) : '';
 
+      const transactionId = session.payment_intent || session.id || '';
       if (email) {
-        await sendDonationThanks(email, name, amount, env);
+        await sendDonationThanks(email, name, amount, transactionId, env);
       }
     }
 
@@ -66,7 +67,7 @@ export default {
 // ----------------------------------------------------------
 // Call Apps Script to send the thank-you email
 // ----------------------------------------------------------
-async function sendDonationThanks(email, name, amount, env) {
+async function sendDonationThanks(email, name, amount, transactionId, env) {
   try {
     const res = await fetch(env.APPS_SCRIPT_URL, {
       method: 'POST',
@@ -76,7 +77,8 @@ async function sendDonationThanks(email, name, amount, env) {
         secret: env.INTERNAL_SECRET,
         email,
         name,
-        amount
+        amount,
+        transaction_id: transactionId
       })
     });
     if (!res.ok) {
