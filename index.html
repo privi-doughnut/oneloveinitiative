@@ -151,6 +151,22 @@
       50% { opacity: 0.7; transform: scale(1.05); }
     }
 
+    .hero-blob {
+      position: absolute;
+      top: 52%; left: 48%;
+      width: 560px; height: 450px;
+      background: radial-gradient(ellipse at 38% 42%, rgba(123,92,245,0.09), transparent 68%);
+      pointer-events: none;
+      animation: blobMorph 22s ease-in-out infinite;
+    }
+    @keyframes blobMorph {
+      0%   { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; transform: translate(-50%,-50%) rotate(0deg) scale(1); }
+      25%  { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; transform: translate(-50%,-50%) rotate(4deg) scale(1.04); }
+      50%  { border-radius: 50% 40% 30% 60% / 30% 50% 70% 50%; transform: translate(-50%,-50%) rotate(0deg) scale(0.97); }
+      75%  { border-radius: 40% 70% 60% 30% / 60% 40% 40% 60%; transform: translate(-50%,-50%) rotate(-4deg) scale(1.02); }
+      100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; transform: translate(-50%,-50%) rotate(0deg) scale(1); }
+    }
+
     .hero-eyebrow {
       font-size: 0.72rem;
       letter-spacing: 0.22em;
@@ -316,9 +332,25 @@
       line-height: 1.2;
       color: var(--white);
       margin-bottom: 20px;
+      background: linear-gradient(to right, #F5F5F0 0%, #F5F5F0 22%, rgba(185,160,255,0.38) 45%, #F5F5F0 68%, #F5F5F0 100%);
+      background-size: 200% 100%;
+      background-position: 100% 0;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: headingShimmer 6s ease-in-out infinite;
+    }
+    @keyframes headingShimmer {
+      0%, 15%  { background-position: 100% 0; }
+      75%, 100% { background-position: -100% 0; }
     }
 
-    .section-title em { font-style: italic; color: var(--purple); font-weight: 300; }
+    .section-title em {
+      font-style: italic;
+      font-weight: 300;
+      color: var(--purple);
+      -webkit-text-fill-color: var(--purple);
+    }
 
     .section-sub {
       font-size: 1rem;
@@ -532,7 +564,7 @@
       transition: transform 0.4s;
     }
 
-    .value-card:hover { border-color: rgba(123,92,245,0.3); transform: translateY(-4px); }
+    .value-card:hover { border-color: rgba(123,92,245,0.3); }
     .value-card:hover::before { transform: scaleX(1); }
 
     .value-icon { font-size: 2rem; margin-bottom: 20px; }
@@ -608,7 +640,7 @@
       transition: border-color 0.3s, transform 0.3s;
     }
 
-    .team-card:hover { border-color: rgba(123,92,245,0.3); transform: translateY(-4px); }
+    .team-card:hover { border-color: rgba(123,92,245,0.3); }
 
     .team-avatar {
       width: 72px; height: 72px;
@@ -711,7 +743,7 @@
       transition: border-color 0.3s, transform 0.3s;
     }
 
-    .involved-card:hover { border-color: rgba(123,92,245,0.3); transform: translateY(-4px); }
+    .involved-card:hover { border-color: rgba(123,92,245,0.3); }
 
     .involved-icon { font-size: 2rem; margin-bottom: 20px; }
 
@@ -1094,6 +1126,18 @@
       .footer-bottom { flex-direction: column; gap: 12px; text-align: center; }
       .partner-card { flex-direction: column; gap: 24px; padding: 32px; }
     }
+
+    /* GLOBAL GRAIN */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 9993;
+      opacity: 0.028;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 180px 180px;
+    }
   </style>
 </head>
 <body>
@@ -1126,6 +1170,7 @@
     <div class="hero-noise"></div>
     <div class="hero-glow"></div>
     <div class="hero-glow-2"></div>
+    <div class="hero-blob"></div>
     <p class="hero-eyebrow">Charlotte, North Carolina · Est. 2025</p>
     <h1 class="hero-title"><span style="display:block;font-size:clamp(2.5rem,7vw,6.5rem);letter-spacing:0.08em;font-weight:800;line-height:1;">THE ONE LOVE</span><span class="outline" style="display:block;font-size:clamp(4rem,12vw,11rem);letter-spacing:0.02em;line-height:0.9;">INITIATIVE</span></h1>
     <div class="hero-subtitle-row">
@@ -2485,7 +2530,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const statMap = {'stat-kits':'kits','stat-volunteers':'volunteers','stat-drives':'drives','stat-partners':'partners'};
   Object.entries(statMap).forEach(([attr, key]) => {
     const el = document.querySelector('[data-admin="' + attr + '"]');
-    if (el) el.textContent = d.stats[key];
+    if (el) { el.dataset.countTarget = d.stats[key]; el.textContent = '0'; }
   });
 
   // Render team
@@ -2665,6 +2710,110 @@ document.addEventListener('DOMContentLoaded', function() {
 
   initReveal();
 });
+
+// ── AESTHETIC FEATURES ──────────────────────────────────────────────────────
+
+// 1. STATS COUNT-UP
+(function() {
+  function countUp(el, target) {
+    const dur = 1200, start = performance.now();
+    function tick(now) {
+      const t = Math.min((now - start) / dur, 1);
+      el.textContent = Math.round((1 - Math.pow(1 - t, 3)) * target).toLocaleString();
+      if (t < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting && e.target.dataset.countTarget) {
+        countUp(e.target, +e.target.dataset.countTarget);
+        obs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.5 });
+  window.addEventListener('load', () => {
+    document.querySelectorAll('[data-count-target]').forEach(el => obs.observe(el));
+  });
+})();
+
+// 2. TEXT SCRAMBLE on section headings
+(function() {
+  const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+  function scramble(el) {
+    const nodes = [];
+    el.childNodes.forEach(n => { if (n.nodeType === 3 && n.textContent.trim()) nodes.push({n, orig: n.textContent}); });
+    if (!nodes.length) return;
+    const start = performance.now(), dur = 500;
+    function tick(now) {
+      const t = Math.min((now - start) / dur, 1);
+      nodes.forEach(({n, orig}) => {
+        let out = '';
+        for (let i = 0; i < orig.length; i++) {
+          if (/[\s\n]/.test(orig[i])) { out += orig[i]; continue; }
+          out += i / orig.length < t * 1.25 ? orig[i] : CHARS[Math.floor(Math.random() * CHARS.length)];
+        }
+        n.textContent = out;
+      });
+      if (t < 1) requestAnimationFrame(tick);
+      else nodes.forEach(({n, orig}) => n.textContent = orig);
+    }
+    requestAnimationFrame(tick);
+  }
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting && !e.target.dataset.scrambled) {
+        e.target.dataset.scrambled = '1';
+        scramble(e.target);
+      }
+    });
+  }, { threshold: 0.3 });
+  window.addEventListener('load', () => {
+    document.querySelectorAll('.section-title').forEach(el => obs.observe(el));
+  });
+})();
+
+// 3. 3D CARD TILT (desktop only)
+(function() {
+  if (!window.matchMedia('(pointer: fine)').matches) return;
+  const SEL = '.team-card, .value-card, .involved-card';
+  document.addEventListener('mousemove', e => {
+    const card = e.target.closest(SEL);
+    if (!card) return;
+    const r = card.getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width - 0.5;
+    const y = (e.clientY - r.top) / r.height - 0.5;
+    card.style.transform = `perspective(560px) rotateX(${-y * 7}deg) rotateY(${x * 7}deg) translateY(-6px) translateZ(8px)`;
+    card.style.transition = 'border-color 0.3s';
+  }, { passive: true });
+  document.addEventListener('mouseout', e => {
+    const card = e.target.closest(SEL);
+    if (!card || card.contains(e.relatedTarget)) return;
+    card.style.transition = 'transform 0.5s ease, border-color 0.3s';
+    card.style.transform = '';
+  }, { passive: true });
+})();
+
+// 4. CURSOR SPARKLE TRAIL (desktop only)
+(function() {
+  if (!window.matchMedia('(pointer: fine)').matches) return;
+  let last = 0;
+  document.addEventListener('mousemove', e => {
+    const now = Date.now();
+    if (now - last < 45) return;
+    last = now;
+    const s = document.createElement('div');
+    s.style.cssText = `position:fixed;width:3px;height:3px;border-radius:50%;background:rgba(123,92,245,0.6);pointer-events:none;z-index:9994;will-change:transform,opacity;transform:translate3d(${e.clientX - 1.5}px,${e.clientY - 1.5}px,0);transition:opacity 0.35s ease,transform 0.35s ease;`;
+    document.body.appendChild(s);
+    requestAnimationFrame(() => {
+      s.style.opacity = '0';
+      s.style.transform = `translate3d(${e.clientX - 1.5}px,${e.clientY - 1.5}px,0) scale(0)`;
+    });
+    setTimeout(() => s.remove(), 380);
+  }, { passive: true });
+})();
+
+// ────────────────────────────────────────────────────────────────────────────
 
 // Newsletter handler
 function handleNewsletter() {
