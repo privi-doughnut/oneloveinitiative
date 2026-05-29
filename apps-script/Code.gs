@@ -138,6 +138,12 @@ function doPost(e) {
     return json({ok: true});
   }
 
+  if (data.action === 'volunteer_signup') {
+    if (!data.email) return json({ok: false, error: 'missing email'});
+    saveVolunteer(data);
+    return json({ok: true});
+  }
+
   // Newsletter subscribe
   const email = (data.email || '').trim().toLowerCase();
   if (!email || !email.includes('@')) return json({ok: false, error: 'invalid email'});
@@ -199,6 +205,25 @@ function unsubscribeEmail(email) {
       return;
     }
   }
+}
+
+function saveVolunteer(data) {
+  const ss = SpreadsheetApp.openById(SHEET_ID);
+  let sheet = ss.getSheetByName('Volunteers');
+  if (!sheet) {
+    sheet = ss.insertSheet('Volunteers');
+    sheet.appendRow(['Timestamp', 'Name', 'Email', 'Phone', 'Age/Grade', 'Availability', 'Interests']);
+    sheet.setFrozenRows(1);
+  }
+  sheet.appendRow([
+    new Date().toISOString(),
+    data.name || '',
+    (data.email || '').trim().toLowerCase(),
+    data.phone || '',
+    data.age || '',
+    data.availability || '',
+    data.interests || ''
+  ]);
 }
 
 function getSubscribers() {

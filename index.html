@@ -1127,6 +1127,63 @@
       .partner-card { flex-direction: column; gap: 24px; padding: 32px; }
     }
 
+    /* DRIVE COUNTDOWN */
+    .countdown-section { background: var(--off-black); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .countdown-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+    .countdown-label { font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--purple); font-weight: 600; margin-bottom: 12px; }
+    .countdown-title { font-size: clamp(1.6rem, 3vw, 2.4rem); font-weight: 800; line-height: 1.2; margin-bottom: 8px; }
+    .countdown-date { font-size: 0.85rem; color: var(--muted); font-weight: 300; margin-bottom: 40px; }
+    .countdown-grid { display: flex; gap: 16px; }
+    .countdown-unit { text-align: center; min-width: 72px; }
+    .countdown-num { font-size: clamp(2rem, 4vw, 3.2rem); font-weight: 800; color: var(--white); line-height: 1; display: block; font-variant-numeric: tabular-nums; }
+    .countdown-unit-label { font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-top: 6px; display: block; }
+    .countdown-sep { font-size: clamp(2rem, 4vw, 3.2rem); font-weight: 300; color: var(--purple); line-height: 1; align-self: flex-start; padding-top: 2px; }
+    .poster-box { aspect-ratio: 3/4; border: 2px dashed var(--border); border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; background: var(--card); position: relative; overflow: hidden; max-height: 420px; }
+    .poster-box img { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; }
+    .poster-placeholder-text { font-size: 0.75rem; color: var(--muted); text-align: center; font-weight: 300; }
+    .poster-placeholder-icon { font-size: 2.4rem; opacity: 0.4; }
+    @media (max-width: 900px) {
+      .countdown-inner { grid-template-columns: 1fr; gap: 40px; }
+      .poster-box { max-height: 280px; }
+    }
+
+    /* IMPACT STATS */
+    .impact-section { background: linear-gradient(135deg, rgba(123,92,245,0.08) 0%, transparent 60%); }
+    .impact-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; margin-top: 64px; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    .impact-stat { padding: 48px 32px; text-align: center; border-right: 1px solid var(--border); background: var(--card); transition: background 0.3s; }
+    .impact-stat:last-child { border-right: none; }
+    .impact-stat:hover { background: rgba(123,92,245,0.08); }
+    .impact-num { font-size: clamp(2.4rem, 4vw, 3.6rem); font-weight: 800; color: var(--purple); display: block; line-height: 1; }
+    .impact-suffix { font-size: clamp(1.4rem, 2.5vw, 2rem); font-weight: 800; color: var(--purple); }
+    .impact-label { font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin-top: 10px; font-weight: 500; }
+    @media (max-width: 900px) { .impact-grid { grid-template-columns: 1fr 1fr; } .impact-stat { border-right: none; border-bottom: 1px solid var(--border); } }
+
+    /* VOLUNTEER FORM */
+    .vol-form-section { background: var(--off-black); }
+    .vol-form { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 48px; }
+    .vol-field { display: flex; flex-direction: column; gap: 8px; }
+    .vol-field.full { grid-column: span 2; }
+    .vol-label { font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+    .vol-input { background: var(--card); border: 1px solid var(--border); color: var(--white); padding: 14px 18px; border-radius: 6px; font-family: 'Montserrat', sans-serif; font-size: 0.88rem; outline: none; transition: border-color 0.2s; }
+    .vol-input:focus { border-color: var(--purple); }
+    .vol-input::placeholder { color: var(--muted); }
+    .vol-checks { display: flex; flex-wrap: wrap; gap: 10px; }
+    .vol-check { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+    .vol-check input { accent-color: var(--purple); width: 15px; height: 15px; cursor: pointer; }
+    .vol-check span { font-size: 0.82rem; color: rgba(245,245,240,0.7); }
+    .vol-submit { grid-column: span 2; margin-top: 8px; }
+    .vol-btn { background: var(--purple); color: var(--white); border: none; padding: 14px 36px; border-radius: 6px; font-family: 'Montserrat', sans-serif; font-size: 0.82rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: opacity 0.2s; }
+    .vol-btn:hover { opacity: 0.85; }
+    @media (max-width: 900px) { .vol-form { grid-template-columns: 1fr; } .vol-field.full, .vol-submit { grid-column: span 1; } }
+
+    /* INSTAGRAM */
+    .instagram-section { background: var(--off-black); border-top: 1px solid var(--border); }
+    .ig-embed-wrap { margin-top: 48px; display: flex; flex-direction: column; align-items: center; gap: 24px; }
+    .ig-cta-strip { display: flex; align-items: center; gap: 16px; margin-top: 8px; flex-wrap: wrap; justify-content: center; }
+    .ig-follow-btn { display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045); color: #fff; padding: 12px 28px; border-radius: 30px; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.08em; text-decoration: none; transition: opacity 0.2s; }
+    .ig-follow-btn:hover { opacity: 0.85; }
+    .ig-handle { font-size: 0.8rem; color: var(--muted); }
+
     /* GLOBAL GRAIN */
     body::after {
       content: '';
@@ -1245,6 +1302,61 @@
           <div class="kit-goal-label">O.L.I Kit Goal · Summer 2025</div>
           <div class="progress-bar"><div class="progress-fill"></div></div>
           <p style="font-size:0.78rem;color:var(--muted);margin-top:16px;position:relative;">We're just getting started. Every donation brings us closer.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- IMPACT STATS -->
+  <section class="impact-section">
+    <div class="section-inner">
+      <p class="section-label reveal" style="text-align:center;">By the Numbers</p>
+      <h2 class="section-title reveal" style="text-align:center;">Our impact<br><em>so far</em></h2>
+      <div class="impact-grid">
+        <div class="impact-stat reveal">
+          <span class="impact-num" data-count-target="0">0</span>
+          <span class="impact-label">Kits Packed</span>
+        </div>
+        <div class="impact-stat reveal reveal-delay-1">
+          <span class="impact-num" data-count-target="3">3</span>
+          <span class="impact-label">Active Volunteers</span>
+        </div>
+        <div class="impact-stat reveal reveal-delay-2">
+          <span class="impact-num" data-count-target="1">1</span>
+          <span class="impact-label">Drives Organized</span>
+        </div>
+        <div class="impact-stat reveal reveal-delay-3">
+          <span class="impact-num" data-count-target="20000">0</span><span class="impact-suffix">+</span>
+          <span class="impact-label">Kit Goal</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DRIVE COUNTDOWN -->
+  <section class="countdown-section">
+    <div class="section-inner">
+      <div class="countdown-inner">
+        <div class="reveal">
+          <p class="countdown-label">Next Drive</p>
+          <h2 class="countdown-title">Children's Hygiene<br>Kit Drive</h2>
+          <p class="countdown-date">May 31, 2026 · 5:00 PM · Location TBD</p>
+          <div class="countdown-grid" id="countdown-grid">
+            <div class="countdown-unit"><span class="countdown-num" id="cd-days">--</span><span class="countdown-unit-label">Days</span></div>
+            <span class="countdown-sep">:</span>
+            <div class="countdown-unit"><span class="countdown-num" id="cd-hours">--</span><span class="countdown-unit-label">Hours</span></div>
+            <span class="countdown-sep">:</span>
+            <div class="countdown-unit"><span class="countdown-num" id="cd-mins">--</span><span class="countdown-unit-label">Mins</span></div>
+            <span class="countdown-sep">:</span>
+            <div class="countdown-unit"><span class="countdown-num" id="cd-secs">--</span><span class="countdown-unit-label">Secs</span></div>
+          </div>
+          <div style="margin-top:36px;">
+            <a href="#" class="btn-primary" onclick="showPage('involved')">Sign Up to Volunteer</a>
+          </div>
+        </div>
+        <div class="poster-box reveal reveal-delay-1" id="drive-poster-box">
+          <span class="poster-placeholder-icon">🖼️</span>
+          <p class="poster-placeholder-text">Drive poster coming soon</p>
         </div>
       </div>
     </div>
@@ -1433,6 +1545,58 @@
           <a href="#" class="btn-primary" onclick="showPage('contact')">Connect</a>
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- VOLUNTEER SIGNUP FORM -->
+  <section class="vol-form-section" style="padding-top:0;">
+    <div class="section-inner">
+      <p class="section-label reveal">Join the Team</p>
+      <h2 class="section-title reveal">Sign up to<br><em>volunteer</em></h2>
+      <p class="section-sub reveal" style="margin-top:16px;">Fill out the form below and we'll reach out with everything you need to get started. No experience required — just a willingness to show up.</p>
+      <form class="vol-form" id="vol-form" onsubmit="handleVolunteer(event)">
+        <div class="vol-field">
+          <label class="vol-label" for="vol-name">Full Name</label>
+          <input class="vol-input" type="text" id="vol-name" placeholder="Prithivi Vijayakumar" required/>
+        </div>
+        <div class="vol-field">
+          <label class="vol-label" for="vol-email">Email Address</label>
+          <input class="vol-input" type="email" id="vol-email" placeholder="you@email.com" required/>
+        </div>
+        <div class="vol-field">
+          <label class="vol-label" for="vol-phone">Phone Number</label>
+          <input class="vol-input" type="tel" id="vol-phone" placeholder="(704) 555-0100"/>
+        </div>
+        <div class="vol-field">
+          <label class="vol-label" for="vol-age">Age / Grade</label>
+          <input class="vol-input" type="text" id="vol-age" placeholder="e.g. 17 / 11th Grade"/>
+        </div>
+        <div class="vol-field full">
+          <label class="vol-label">Availability</label>
+          <div class="vol-checks">
+            <label class="vol-check"><input type="checkbox" name="avail" value="Weekday mornings"/><span>Weekday mornings</span></label>
+            <label class="vol-check"><input type="checkbox" name="avail" value="Weekday afternoons"/><span>Weekday afternoons</span></label>
+            <label class="vol-check"><input type="checkbox" name="avail" value="Weekday evenings"/><span>Weekday evenings</span></label>
+            <label class="vol-check"><input type="checkbox" name="avail" value="Weekend mornings"/><span>Weekend mornings</span></label>
+            <label class="vol-check"><input type="checkbox" name="avail" value="Weekend afternoons"/><span>Weekend afternoons</span></label>
+          </div>
+        </div>
+        <div class="vol-field full">
+          <label class="vol-label">Interests</label>
+          <div class="vol-checks">
+            <label class="vol-check"><input type="checkbox" name="interest" value="Kit assembly"/><span>Kit assembly</span></label>
+            <label class="vol-check"><input type="checkbox" name="interest" value="Drive coordination"/><span>Drive coordination</span></label>
+            <label class="vol-check"><input type="checkbox" name="interest" value="Social media"/><span>Social media</span></label>
+            <label class="vol-check"><input type="checkbox" name="interest" value="School outreach"/><span>School outreach</span></label>
+            <label class="vol-check"><input type="checkbox" name="interest" value="Fundraising"/><span>Fundraising</span></label>
+            <label class="vol-check"><input type="checkbox" name="interest" value="Photography/video"/><span>Photography / video</span></label>
+          </div>
+        </div>
+        <div class="vol-submit">
+          <button class="vol-btn" type="submit" id="vol-btn">Submit Application →</button>
+          <p id="vol-msg" style="margin-top:12px;font-size:0.82rem;display:none;"></p>
+        </div>
+      </form>
     </div>
   </section>
 
@@ -2625,14 +2789,25 @@ document.addEventListener('DOMContentLoaded', function() {
       igSection.className = 'instagram-section';
       igSection.innerHTML = `
         <div class="section-inner">
-          <p class="section-label reveal" style="text-align:center;">@one.love.initiative</p>
+          <p class="section-label reveal" style="text-align:center;">Stay Connected</p>
           <h2 class="section-title reveal" style="text-align:center;">Follow us on<br><em>Instagram</em></h2>
-          <div class="instagram-grid reveal">
-            ${[1,2,3,4,5,6,7,8].map(() => `<a href="https://www.instagram.com/one.love.initiative/" target="_blank" class="instagram-item"><span class="instagram-item-icon">📷</span><span class="instagram-item-text">Nothing yet — follow us to see our first posts!</span></a>`).join('')}
+          <div class="ig-embed-wrap reveal">
+            <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/one.love.initiative/" data-instgrm-version="14" style="background:#161616;border:1px solid rgba(255,255,255,0.07);border-radius:12px;max-width:500px;width:100%;padding:0;margin:0;"></blockquote>
+            <div class="ig-cta-strip">
+              <a class="ig-follow-btn" href="https://www.instagram.com/one.love.initiative/" target="_blank">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                Follow @one.love.initiative
+              </a>
+              <span class="ig-handle">See our latest posts and drives</span>
+            </div>
           </div>
-          <a href="https://www.instagram.com/one.love.initiative/" target="_blank" class="instagram-follow-btn">📸 Follow @one.love.initiative</a>
         </div>`;
       homePageEnd.after(igSection);
+      // Load Instagram embed script
+      const s = document.createElement('script');
+      s.src = 'https://www.instagram.com/embed.js';
+      s.async = true;
+      document.body.appendChild(s);
     }
 
     // 4. NEWSLETTER
@@ -2814,6 +2989,68 @@ document.addEventListener('DOMContentLoaded', function() {
 })();
 
 // ────────────────────────────────────────────────────────────────────────────
+
+// Drive countdown
+(function() {
+  const target = new Date('2026-05-31T17:00:00');
+  function pad(n) { return String(n).padStart(2, '0'); }
+  function tick() {
+    const diff = target - Date.now();
+    if (diff <= 0) {
+      ['cd-days','cd-hours','cd-mins','cd-secs'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = '00'; });
+      return;
+    }
+    const days  = Math.floor(diff / 86400000);
+    const hours = Math.floor((diff % 86400000) / 3600000);
+    const mins  = Math.floor((diff % 3600000)  / 60000);
+    const secs  = Math.floor((diff % 60000)    / 1000);
+    const d = document.getElementById('cd-days');   if (d) d.textContent = days;
+    const h = document.getElementById('cd-hours');  if (h) h.textContent = pad(hours);
+    const m = document.getElementById('cd-mins');   if (m) m.textContent = pad(mins);
+    const s = document.getElementById('cd-secs');   if (s) s.textContent = pad(secs);
+  }
+  tick();
+  setInterval(tick, 1000);
+})();
+
+// Volunteer form handler
+async function handleVolunteer(e) {
+  e.preventDefault();
+  const btn = document.getElementById('vol-btn');
+  const msg = document.getElementById('vol-msg');
+  const avail    = [...document.querySelectorAll('input[name="avail"]:checked')].map(el => el.value).join(', ');
+  const interest = [...document.querySelectorAll('input[name="interest"]:checked')].map(el => el.value).join(', ');
+  const payload = {
+    action:     'volunteer_signup',
+    name:       document.getElementById('vol-name').value.trim(),
+    email:      document.getElementById('vol-email').value.trim(),
+    phone:      document.getElementById('vol-phone').value.trim(),
+    age:        document.getElementById('vol-age').value.trim(),
+    availability: avail,
+    interests:  interest
+  };
+  btn.disabled = true;
+  btn.textContent = 'Submitting…';
+  try {
+    await fetch('https://script.google.com/macros/s/AKfycbzJG_GSUYcRHz70pTjTyvOuUFQ2MksPO8gGtwL62SKa_08fuDwgO03EA3NIZwoDCfU3lg/exec', {
+      method: 'POST', mode: 'no-cors',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(payload)
+    });
+    btn.textContent = 'Application Sent ✓';
+    btn.style.background = '#22c55e';
+    msg.style.display = 'block';
+    msg.style.color = '#22c55e';
+    msg.textContent = "We got it! We'll be in touch soon with next steps.";
+    document.getElementById('vol-form').reset();
+  } catch(_) {
+    btn.disabled = false;
+    btn.textContent = 'Submit Application →';
+    msg.style.display = 'block';
+    msg.style.color = '#ef4444';
+    msg.textContent = 'Something went wrong — please email us directly at oneloveinitiative.official@gmail.com';
+  }
+}
 
 // Newsletter handler
 function handleNewsletter() {
