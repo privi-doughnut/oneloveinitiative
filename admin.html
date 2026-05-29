@@ -141,6 +141,26 @@
     h3 { font-size: 0.95rem; font-weight: 600; margin-bottom: 14px; }
     .divider { height: 1px; background: var(--border); margin: 24px 0; }
     .empty-state { text-align: center; padding: 36px; color: var(--muted); font-size: 0.82rem; font-weight: 300; }
+
+    /* VISUAL EDITOR */
+    #panel-editor.active { display: flex; flex-direction: column; height: 100vh; margin: -36px -40px; padding: 0; overflow: hidden; }
+    .editor-toolbar { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--border); flex-shrink: 0; background: var(--off-black); flex-wrap: wrap; }
+    .editor-toolbar-title { font-size: 0.82rem; font-weight: 600; }
+    .editor-page-tabs { display: flex; gap: 4px; flex-wrap: wrap; flex: 1; }
+    .editor-page-tab { padding: 5px 11px; font-family: 'Montserrat', sans-serif; font-size: 0.65rem; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; border: 1px solid var(--border); border-radius: 4px; cursor: pointer; color: var(--muted); background: transparent; transition: all 0.15s; }
+    .editor-page-tab:hover { color: var(--white); border-color: rgba(255,255,255,0.2); }
+    .editor-page-tab.active-tab { background: var(--purple-dim); color: var(--purple); border-color: rgba(123,92,245,0.4); }
+    .editor-body { display: flex; flex: 1; overflow: hidden; }
+    .editor-frame-wrap { flex: 1; overflow: hidden; }
+    .editor-frame-wrap iframe { width: 100%; height: 100%; border: none; display: block; }
+    .editor-changes-panel { width: 270px; flex-shrink: 0; display: flex; flex-direction: column; border-left: 1px solid var(--border); background: var(--off-black); }
+    .editor-changes-header { padding: 13px 14px; border-bottom: 1px solid var(--border); font-size: 0.78rem; font-weight: 600; }
+    .editor-changes-body { flex: 1; overflow-y: auto; padding: 8px; }
+    .editor-changes-footer { padding: 10px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 6px; }
+    .edit-change-card { border: 1px solid var(--border); border-radius: 6px; padding: 10px; margin-bottom: 7px; background: var(--card); }
+    .edit-change-from { font-size: 0.7rem; color: #f87171; text-decoration: line-through; margin-bottom: 3px; line-height: 1.4; word-break: break-word; }
+    .edit-change-to { font-size: 0.7rem; color: var(--green); line-height: 1.4; word-break: break-word; }
+    .editor-hint { font-size: 0.68rem; color: var(--muted); font-weight: 300; line-height: 1.5; padding: 12px; text-align: center; }
   </style>
 </head>
 <body>
@@ -174,6 +194,8 @@
         <a onclick="showSection('drives')" id="nav-drives"><span class="nav-icon">📦</span> Drives</a>
         <a onclick="showSection('gallery')" id="nav-gallery"><span class="nav-icon">📷</span> Gallery</a>
         <a onclick="showSection('testimonials')" id="nav-testimonials"><span class="nav-icon">💬</span> Testimonials</a>
+        <a onclick="showSection('countdown')" id="nav-countdown"><span class="nav-icon">⏱️</span> Countdown</a>
+        <a onclick="showSection('editor')" id="nav-editor"><span class="nav-icon">🎨</span> Visual Editor</a>
         <a onclick="showSection('publish')" id="nav-publish"><span class="nav-icon">🚀</span> Publish <span class="unsaved-dot" id="unsavedDot" style="display:none;"></span></a>
       </nav>
       <div class="sidebar-footer">
@@ -314,6 +336,56 @@
           <div class="form-group"><label class="form-label">Role / Description</label><input class="form-input" id="nt-role" placeholder="Volunteer · Drive #1"/></div>
           <div class="form-group"><label class="form-label">Quote</label><textarea class="form-textarea" id="nt-text" placeholder="Their testimonial..."></textarea></div>
           <button class="btn btn-purple" onclick="addTestimonial()">Add Testimonial</button>
+        </div>
+      </div>
+
+      <!-- COUNTDOWN -->
+      <div class="section-panel" id="panel-countdown">
+        <div class="panel-header">
+          <h1 class="panel-title">Drive <em>Countdown</em></h1>
+          <p class="panel-sub">Control the countdown timer and poster displayed on the homepage.</p>
+        </div>
+        <div class="admin-card">
+          <div class="admin-card-header"><div class="admin-card-title">Countdown Settings</div></div>
+          <div class="form-group"><label class="form-label">Drive Title</label><input class="form-input" id="cd-title-input" placeholder="Children's Hygiene Kit Drive" oninput="markChanged()"/></div>
+          <div class="form-group"><label class="form-label">Drive Date &amp; Time</label><input class="form-input" type="datetime-local" id="cd-date-input" oninput="markChanged()"/></div>
+          <div class="form-group"><label class="form-label">Location</label><input class="form-input" id="cd-location-input" placeholder="Location TBD" oninput="markChanged()"/></div>
+          <div class="form-group"><label class="form-label">Drive Poster URL</label><input class="form-input" type="url" id="cd-poster-input" placeholder="https://... (leave blank to show placeholder)" oninput="markChanged()"/></div>
+          <p style="font-size:0.72rem;color:var(--muted);font-weight:300;margin-top:4px;">The date drives both the display text and live countdown. Use a hosted image URL for the poster (e.g. Google Drive direct link, Imgur).</p>
+        </div>
+        <button class="btn btn-purple" onclick="saveCountdown()">Save Countdown</button>
+      </div>
+
+      <!-- VISUAL EDITOR -->
+      <div class="section-panel" id="panel-editor">
+        <div class="editor-toolbar">
+          <div class="editor-toolbar-title">Visual Editor</div>
+          <div class="editor-page-tabs">
+            <button class="editor-page-tab active-tab" onclick="editorNav('home',this)">Home</button>
+            <button class="editor-page-tab" onclick="editorNav('about',this)">About</button>
+            <button class="editor-page-tab" onclick="editorNav('work',this)">Our Work</button>
+            <button class="editor-page-tab" onclick="editorNav('involved',this)">Get Involved</button>
+            <button class="editor-page-tab" onclick="editorNav('donate',this)">Donate</button>
+          </div>
+          <button class="btn btn-outline btn-sm" id="editor-toggle-btn" onclick="toggleEditMode()" style="min-width:130px;">Enable Editing</button>
+          <button class="btn btn-outline btn-sm" onclick="reloadEditorFrame()">↻ Reload</button>
+        </div>
+        <div class="editor-body">
+          <div class="editor-frame-wrap">
+            <iframe id="editor-iframe" src="about:blank" title="Site Preview"></iframe>
+          </div>
+          <div class="editor-changes-panel">
+            <div class="editor-changes-header">
+              Pending Changes <span id="change-count" style="color:var(--purple);font-size:0.78rem;"></span>
+            </div>
+            <div class="editor-changes-body" id="edit-changes-list">
+              <div class="editor-hint">Enable editing above, then click any text on the site to edit it in place.</div>
+            </div>
+            <div class="editor-changes-footer">
+              <button class="btn btn-green" id="publish-text-btn" onclick="publishTextChanges()" disabled>Publish Text Changes</button>
+              <button class="btn btn-outline btn-sm" onclick="clearEditChanges()">Clear All</button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -521,6 +593,7 @@ function renderAll() {
   renderDrivesList();
   renderGalleryList();
   renderTestimonialsList();
+  renderCountdown();
 }
 
 // TEAM
@@ -749,6 +822,7 @@ function showSection(id) {
   document.getElementById('panel-' + id).classList.add('active');
   document.querySelectorAll('.sidebar-nav a').forEach(a => a.classList.remove('active'));
   document.getElementById('nav-' + id).classList.add('active');
+  if (id === 'editor' && !editorFrameLoaded) loadEditorFrame();
 }
 
 function toggleEdit(id) {
@@ -793,6 +867,235 @@ function b64encode(str) {
   let binary = '';
   bytes.forEach(b => binary += String.fromCharCode(b));
   return btoa(binary);
+}
+
+// ── COUNTDOWN ─────────────────────────────────────────────────────────
+function renderCountdown() {
+  if (!state || !state.countdown) return;
+  const c = state.countdown;
+  document.getElementById('cd-title-input').value = c.title || '';
+  const dateInput = document.getElementById('cd-date-input');
+  if (c.date) dateInput.value = c.date.slice(0, 16);
+  document.getElementById('cd-location-input').value = c.location || '';
+  document.getElementById('cd-poster-input').value = c.posterUrl || '';
+}
+
+function saveCountdown() {
+  if (!state) { toast('Load data from GitHub first', 'error'); return; }
+  pushUndo();
+  state.countdown = {
+    title:    document.getElementById('cd-title-input').value.trim(),
+    date:     document.getElementById('cd-date-input').value,
+    location: document.getElementById('cd-location-input').value.trim(),
+    posterUrl: document.getElementById('cd-poster-input').value.trim()
+  };
+  markChanged();
+  toast('Countdown saved — click Publish to go live', 'success');
+}
+
+// ── VISUAL EDITOR ─────────────────────────────────────────────────────
+let editChanges = [];
+let editModeActive = false;
+let currentEditorPage = 'home';
+let editorFrameLoaded = false;
+
+function loadEditorFrame() {
+  const iframe = document.getElementById('editor-iframe');
+  editorFrameLoaded = false;
+  editModeActive = false;
+  updateEditorToggleBtn();
+  iframe.src = '/';
+  iframe.onload = function() {
+    editorFrameLoaded = true;
+    try {
+      if (currentEditorPage !== 'home') iframe.contentWindow.showPage(currentEditorPage);
+    } catch(e) {}
+    if (editModeActive) enableEditing();
+  };
+}
+
+function reloadEditorFrame() {
+  editModeActive = false;
+  updateEditorToggleBtn();
+  loadEditorFrame();
+}
+
+function editorNav(page, btn) {
+  currentEditorPage = page;
+  document.querySelectorAll('.editor-page-tab').forEach(b => b.classList.remove('active-tab'));
+  btn.classList.add('active-tab');
+  if (!editorFrameLoaded) { loadEditorFrame(); return; }
+  try {
+    document.getElementById('editor-iframe').contentWindow.showPage(page);
+    if (editModeActive) setTimeout(enableEditing, 200);
+  } catch(e) { loadEditorFrame(); }
+}
+
+function toggleEditMode() {
+  if (!editorFrameLoaded) { toast('Page is still loading — try again in a moment', 'error'); return; }
+  editModeActive = !editModeActive;
+  updateEditorToggleBtn();
+  if (editModeActive) enableEditing(); else disableEditing();
+}
+
+function updateEditorToggleBtn() {
+  const btn = document.getElementById('editor-toggle-btn');
+  if (!btn) return;
+  if (editModeActive) {
+    btn.textContent = 'Editing ON';
+    btn.className = 'btn btn-purple btn-sm';
+  } else {
+    btn.textContent = 'Enable Editing';
+    btn.className = 'btn btn-outline btn-sm';
+  }
+  btn.style.minWidth = '130px';
+}
+
+function enableEditing() {
+  const iframe = document.getElementById('editor-iframe');
+  if (!iframe.contentDocument || !iframe.contentDocument.body) return;
+  const doc = iframe.contentDocument;
+
+  let s = doc.getElementById('oli-editor-style');
+  if (!s) { s = doc.createElement('style'); s.id = 'oli-editor-style'; doc.head.appendChild(s); }
+  s.textContent = [
+    '[data-oli-edit]:hover { outline: 2px dashed rgba(123,92,245,0.9) !important; cursor: text !important; }',
+    '[data-oli-edit]:focus { outline: 2px solid #7B5CF5 !important; outline-offset: 3px; background: rgba(123,92,245,0.07) !important; }',
+    '.cursor,.cursor-ring { display: none !important; }'
+  ].join('\n');
+
+  iframe.contentWindow._onEditChange = function(id, origHtml, newHtml) {
+    recordEditChange(id, origHtml, newHtml);
+  };
+
+  let idx = 0;
+  doc.querySelectorAll('h1,h2,h3,h4,h5,h6,p,li,blockquote').forEach(el => {
+    if (el.hasAttribute('data-oli-edit')) return;
+    if (el.closest('nav,.chatbot-widget,.chatbot-messages,.chatbot-input-row,[data-oli-edit]')) return;
+    if (!el.textContent.trim()) return;
+    const hasBlock = [...el.children].some(c => /^(DIV|P|H[1-6]|SECTION|UL|OL|LI|ARTICLE)$/.test(c.tagName));
+    if (hasBlock) return;
+    const id = 'e' + (idx++);
+    el.setAttribute('data-oli-edit', id);
+    el.setAttribute('data-oli-orig', el.innerHTML.trim());
+    el.setAttribute('contenteditable', 'true');
+    el.setAttribute('spellcheck', 'false');
+    el.addEventListener('blur', function() {
+      const o = this.getAttribute('data-oli-orig');
+      const n = this.innerHTML.trim();
+      if (o !== n && typeof window._onEditChange === 'function') {
+        window._onEditChange(this.getAttribute('data-oli-edit'), o, n);
+        this.setAttribute('data-oli-orig', n);
+      }
+    });
+  });
+}
+
+function disableEditing() {
+  const iframe = document.getElementById('editor-iframe');
+  if (!iframe.contentDocument) return;
+  const doc = iframe.contentDocument;
+  const s = doc.getElementById('oli-editor-style');
+  if (s) s.remove();
+  doc.querySelectorAll('[data-oli-edit]').forEach(el => {
+    el.removeAttribute('contenteditable');
+    el.removeAttribute('data-oli-edit');
+    el.removeAttribute('data-oli-orig');
+    el.removeAttribute('spellcheck');
+  });
+}
+
+function recordEditChange(id, origHtml, newHtml) {
+  const i = editChanges.findIndex(c => c.id === id);
+  if (i >= 0) {
+    if (editChanges[i].origHtml === newHtml) editChanges.splice(i, 1);
+    else editChanges[i].newHtml = newHtml;
+  } else {
+    editChanges.push({ id, origHtml, newHtml });
+  }
+  renderEditChanges();
+  if (editChanges.length) markChanged();
+}
+
+function stripTags(html) {
+  const d = document.createElement('div');
+  d.innerHTML = html;
+  return d.textContent || '';
+}
+
+function renderEditChanges() {
+  const c = document.getElementById('edit-changes-list');
+  const btn = document.getElementById('publish-text-btn');
+  const ct = document.getElementById('change-count');
+  ct.textContent = editChanges.length ? '(' + editChanges.length + ')' : '';
+  if (!editChanges.length) {
+    c.innerHTML = '<div class="editor-hint">Enable editing above, then click any text on the site to edit it in place.</div>';
+    btn.disabled = true;
+    return;
+  }
+  btn.disabled = false;
+  c.innerHTML = editChanges.map((ch, i) => {
+    const fromText = stripTags(ch.origHtml).slice(0, 80);
+    const toText   = stripTags(ch.newHtml).slice(0, 80);
+    return '<div class="edit-change-card">' +
+      '<div style="font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:5px;">Change ' + (i+1) + '</div>' +
+      '<div class="edit-change-from">' + esc(fromText) + (fromText.length >= 80 ? '…' : '') + '</div>' +
+      '<div class="edit-change-to">' + esc(toText) + (toText.length >= 80 ? '…' : '') + '</div>' +
+      '<button class="btn btn-danger btn-sm" style="margin-top:8px;" onclick="removeEditChange(' + i + ')">Remove</button>' +
+      '</div>';
+  }).join('');
+}
+
+function removeEditChange(i) {
+  editChanges.splice(i, 1);
+  renderEditChanges();
+}
+
+function clearEditChanges() {
+  if (editChanges.length && !confirm('Clear all pending text changes?')) return;
+  editChanges = [];
+  renderEditChanges();
+}
+
+async function publishTextChanges() {
+  if (!editChanges.length) { toast('No text changes to publish', 'error'); return; }
+  if (!ghToken) { toast('GitHub token required', 'error'); showSection('publish'); return; }
+  const btn = document.getElementById('publish-text-btn');
+  btn.disabled = true; btn.textContent = 'Publishing…';
+  try {
+    const res = await fetch('https://api.github.com/repos/' + REPO + '/contents/' + FILE, {
+      headers: { Authorization: 'Bearer ' + ghToken, Accept: 'application/vnd.github.v3+json' }
+    });
+    const data = await res.json();
+    fileSha = data.sha;
+    let content = b64decode(data.content);
+    let applied = 0;
+    for (const ch of editChanges) {
+      if (content.includes(ch.origHtml)) {
+        content = content.split(ch.origHtml).join(ch.newHtml);
+        applied++;
+      }
+    }
+    if (!applied) {
+      toast('No matches found in source — the text may have changed. Reload and try again.', 'error');
+      btn.disabled = false; btn.textContent = 'Publish Text Changes';
+      return;
+    }
+    const msg = 'Visual editor: ' + applied + ' text change' + (applied > 1 ? 's' : '');
+    const put = await fetch('https://api.github.com/repos/' + REPO + '/contents/' + FILE, {
+      method: 'PUT',
+      headers: { Authorization: 'Bearer ' + ghToken, 'Content-Type': 'application/json', Accept: 'application/vnd.github.v3+json' },
+      body: JSON.stringify({ message: msg, content: b64encode(content), sha: fileSha })
+    });
+    if (!put.ok) { const e = await put.json(); throw new Error(e.message || 'Publish failed'); }
+    toast(applied + ' change' + (applied > 1 ? 's' : '') + ' published live!', 'success');
+    editChanges = [];
+    renderEditChanges();
+    setTimeout(() => { const f = document.getElementById('editor-iframe'); f.src = f.src; }, 3000);
+  } catch(err) {
+    toast('Publish failed: ' + err.message, 'error');
+  }
+  btn.disabled = false; btn.textContent = 'Publish Text Changes';
 }
 </script>
 </body>

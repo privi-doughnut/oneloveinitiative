@@ -1339,8 +1339,8 @@
       <div class="countdown-inner">
         <div class="reveal">
           <p class="countdown-label">Next Drive</p>
-          <h2 class="countdown-title">Children's Hygiene<br>Kit Drive</h2>
-          <p class="countdown-date">May 31, 2026 · 5:00 PM · Location TBD</p>
+          <h2 class="countdown-title" id="cd-drive-title">Children's Hygiene Kit Drive</h2>
+          <p class="countdown-date" id="cd-drive-date">May 31, 2026 · 5:00 PM · Location TBD</p>
           <div class="countdown-grid" id="countdown-grid">
             <div class="countdown-unit"><span class="countdown-num" id="cd-days">--</span><span class="countdown-unit-label">Days</span></div>
             <span class="countdown-sep">:</span>
@@ -1989,7 +1989,13 @@
     {"status": "planned", "title": "School Drive — TBD", "desc": "Nothing yet — we're actively reaching out to schools across Charlotte to set up our first school-based drive. Interested? Get in touch.", "tag": "Planned"},
     {"status": "planned", "title": "Business Partnership Drive — TBD", "desc": "Nothing yet — we're looking for local businesses to partner with for donation drives. If your business wants to get involved, reach out.", "tag": "Planned"}
   ],
-  "gallery": []
+  "gallery": [],
+  "countdown": {
+    "title": "Children's Hygiene Kit Drive",
+    "date": "2026-05-31T17:00:00",
+    "location": "Location TBD",
+    "posterUrl": ""
+  }
 }
 </script>
 
@@ -2990,9 +2996,28 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // ────────────────────────────────────────────────────────────────────────────
 
-// Drive countdown
+// Drive countdown — driven by oli-data.countdown
 (function() {
-  const target = new Date('2026-05-31T17:00:00');
+  const oliData = JSON.parse(document.getElementById('oli-data').textContent);
+  const cd = (oliData && oliData.countdown) || {};
+
+  const titleEl = document.getElementById('cd-drive-title');
+  if (titleEl && cd.title) titleEl.textContent = cd.title;
+
+  const dateEl = document.getElementById('cd-drive-date');
+  if (dateEl && cd.date) {
+    const dt = new Date(cd.date);
+    const dateStr = dt.toLocaleDateString('en-US', {month:'long', day:'numeric', year:'numeric'});
+    const timeStr = dt.toLocaleTimeString('en-US', {hour:'numeric', minute:'2-digit'});
+    dateEl.textContent = dateStr + ' · ' + timeStr + (cd.location ? ' · ' + cd.location : '');
+  }
+
+  const posterBox = document.getElementById('drive-poster-box');
+  if (posterBox && cd.posterUrl) {
+    posterBox.innerHTML = '<img src="' + cd.posterUrl.replace(/"/g, '&quot;') + '" alt="Drive poster" style="width:100%;height:100%;object-fit:cover;border-radius:10px;"/>';
+  }
+
+  const target = cd.date ? new Date(cd.date) : new Date('2026-05-31T17:00:00');
   function pad(n) { return String(n).padStart(2, '0'); }
   function tick() {
     const diff = target - Date.now();
