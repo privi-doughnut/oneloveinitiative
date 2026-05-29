@@ -1132,7 +1132,9 @@
     .countdown-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
     .countdown-label { font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--purple); font-weight: 600; margin-bottom: 12px; }
     .countdown-title { font-size: clamp(1.6rem, 3vw, 2.4rem); font-weight: 800; line-height: 1.2; margin-bottom: 8px; }
-    .countdown-date { font-size: 0.85rem; color: var(--muted); font-weight: 300; margin-bottom: 40px; }
+    .countdown-date { font-size: 0.85rem; color: var(--muted); font-weight: 300; margin-bottom: 6px; }
+    .countdown-locations { font-size: 0.82rem; color: var(--muted); font-weight: 300; margin-bottom: 40px; display: none; }
+    .countdown-locations.visible { display: block; }
     .countdown-grid { display: flex; gap: 16px; }
     .countdown-unit { text-align: center; min-width: 72px; }
     .countdown-num { font-size: clamp(2rem, 4vw, 3.2rem); font-weight: 800; color: var(--white); line-height: 1; display: block; font-variant-numeric: tabular-nums; }
@@ -1340,7 +1342,8 @@
         <div class="reveal">
           <p class="countdown-label">Next Drive</p>
           <h2 class="countdown-title" id="cd-drive-title">Children's Hygiene Kit Drive</h2>
-          <p class="countdown-date" id="cd-drive-date">May 31, 2026 · 5:00 PM · Location TBD</p>
+          <p class="countdown-date" id="cd-drive-date">May 31, 2026 · 5:00 PM</p>
+          <p class="countdown-locations" id="cd-locations"></p>
           <div class="countdown-grid" id="countdown-grid">
             <div class="countdown-unit"><span class="countdown-num" id="cd-days">--</span><span class="countdown-unit-label">Days</span></div>
             <span class="countdown-sep">:</span>
@@ -2033,7 +2036,7 @@
   "countdown": {
     "title": "Children's Hygiene Kit Drive",
     "date": "2026-05-31T17:00",
-    "location": "*Two Locations; See poster.",
+    "locations": ["*Two Locations; See poster."],
     "posterUrl": "https://kommodo.ai/i/T4xvPg7mPDbvCYiFLTks"
   }
 }
@@ -2988,7 +2991,16 @@ document.addEventListener('DOMContentLoaded', function() {
     const dt = new Date(cd.date);
     const dateStr = dt.toLocaleDateString('en-US', {month:'long', day:'numeric', year:'numeric'});
     const timeStr = dt.toLocaleTimeString('en-US', {hour:'numeric', minute:'2-digit'});
-    dateEl.textContent = dateStr + ' · ' + timeStr + (cd.location ? ' · ' + cd.location : '');
+    dateEl.textContent = dateStr + ' · ' + timeStr;
+  }
+
+  const locsEl = document.getElementById('cd-locations');
+  if (locsEl) {
+    const locs = (cd.locations && cd.locations.length) ? cd.locations : (cd.location ? [cd.location] : []);
+    if (locs.length) {
+      locsEl.textContent = locs.join(' · ');
+      locsEl.classList.add('visible');
+    }
   }
 
   const posterBox = document.getElementById('drive-poster-box');

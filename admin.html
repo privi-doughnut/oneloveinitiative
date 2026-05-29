@@ -349,7 +349,11 @@
           <div class="admin-card-header"><div class="admin-card-title">Countdown Settings</div></div>
           <div class="form-group"><label class="form-label">Drive Title</label><input class="form-input" id="cd-title-input" placeholder="Children's Hygiene Kit Drive" oninput="markChanged()"/></div>
           <div class="form-group"><label class="form-label">Drive Date &amp; Time</label><input class="form-input" type="datetime-local" id="cd-date-input" oninput="markChanged()"/></div>
-          <div class="form-group"><label class="form-label">Location</label><input class="form-input" id="cd-location-input" placeholder="Location TBD" oninput="markChanged()"/></div>
+          <div class="form-group">
+            <label class="form-label">Locations</label>
+            <div id="cd-locations-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:10px;"></div>
+            <button class="btn btn-outline btn-sm" type="button" onclick="addCountdownLocation()">+ Add Location</button>
+          </div>
           <div class="form-group"><label class="form-label">Drive Poster URL</label><input class="form-input" type="url" id="cd-poster-input" placeholder="https://... (leave blank to show placeholder)" oninput="markChanged()"/></div>
           <p style="font-size:0.72rem;color:var(--muted);font-weight:300;margin-top:4px;">The date drives both the display text and live countdown. Use a hosted image URL for the poster (e.g. Google Drive direct link, Imgur).</p>
         </div>
@@ -876,17 +880,57 @@ function renderCountdown() {
   document.getElementById('cd-title-input').value = c.title || '';
   const dateInput = document.getElementById('cd-date-input');
   if (c.date) dateInput.value = c.date.slice(0, 16);
-  document.getElementById('cd-location-input').value = c.location || '';
   document.getElementById('cd-poster-input').value = c.posterUrl || '';
+  renderCountdownLocations();
+}
+
+function renderCountdownLocations() {
+  if (!state || !state.countdown) return;
+  const c = state.countdown;
+  const locs = (c.locations && c.locations.length) ? c.locations : (c.location ? [c.location] : []);
+  const container = document.getElementById('cd-locations-list');
+  if (!locs.length) {
+    container.innerHTML = '<div style="font-size:0.75rem;color:var(--muted);font-weight:300;padding:4px 0;">No locations added yet.</div>';
+    return;
+  }
+  container.innerHTML = locs.map((loc, i) => `
+    <div style="display:flex;gap:8px;align-items:center;">
+      <input class="form-input" style="flex:1;" value="${esc(loc)}" id="cd-loc-${i}" placeholder="e.g. Harris Teeter on Providence Rd" oninput="markChanged()"/>
+      <button class="btn btn-danger btn-sm" onclick="removeCountdownLocation(${i})" style="flex-shrink:0;">&times;</button>
+    </div>`).join('');
+}
+
+function addCountdownLocation() {
+  if (!state) { toast('Load data from GitHub first', 'error'); return; }
+  if (!state.countdown) state.countdown = {};
+  if (!Array.isArray(state.countdown.locations)) {
+    state.countdown.locations = state.countdown.location ? [state.countdown.location] : [];
+    delete state.countdown.location;
+  }
+  state.countdown.locations.push('');
+  renderCountdownLocations();
+  markChanged();
+  const inputs = document.querySelectorAll('[id^="cd-loc-"]');
+  if (inputs.length) inputs[inputs.length - 1].focus();
+}
+
+function removeCountdownLocation(i) {
+  if (!state || !state.countdown || !state.countdown.locations) return;
+  state.countdown.locations.splice(i, 1);
+  renderCountdownLocations();
+  markChanged();
 }
 
 function saveCountdown() {
   if (!state) { toast('Load data from GitHub first', 'error'); return; }
   pushUndo();
+  if (!state.countdown) state.countdown = {};
+  const locInputs = document.querySelectorAll('[id^="cd-loc-"]');
+  const locations = [...locInputs].map(el => el.value.trim()).filter(Boolean);
   state.countdown = {
-    title:    document.getElementById('cd-title-input').value.trim(),
-    date:     document.getElementById('cd-date-input').value,
-    location: document.getElementById('cd-location-input').value.trim(),
+    title:     document.getElementById('cd-title-input').value.trim(),
+    date:      document.getElementById('cd-date-input').value,
+    locations: locations,
     posterUrl: document.getElementById('cd-poster-input').value.trim()
   };
   markChanged();
