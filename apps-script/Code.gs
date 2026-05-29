@@ -93,7 +93,7 @@ function getTemplate(category) {
       Logger.log('Failed to fetch template: ' + url + ' → ' + res.getResponseCode());
       return null;
     }
-    templates = JSON.parse(res.getContentText());
+    templates = JSON.parse(res.getContentText('UTF-8'));
     // Cache up to 100KB — if list is larger split or skip caching
     const serialized = JSON.stringify(templates);
     if (serialized.length < 100000) cache.put(cacheKey, serialized, 3600);
