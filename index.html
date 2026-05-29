@@ -41,7 +41,6 @@
       z-index: 9999;
       will-change: transform;
       transition: scale 0.15s ease, opacity 0.2s;
-      mix-blend-mode: screen;
     }
     .cursor.expanded { scale: 2.5; }
     .cursor-ring {
@@ -53,6 +52,7 @@
       pointer-events: none;
       z-index: 9998;
       will-change: transform;
+      transition: transform 0.07s ease;
     }
 
     /* NAV */
@@ -2043,20 +2043,12 @@
   // CURSOR
   const cursor = document.getElementById('cursor');
   const cursorRing = document.getElementById('cursorRing');
-  let mouseX = 0, mouseY = 0, ringX = 0, ringY = 0;
 
   document.addEventListener('mousemove', e => {
-    mouseX = e.clientX; mouseY = e.clientY;
-    cursor.style.transform = `translate3d(${mouseX - 6}px,${mouseY - 6}px,0)`;
+    const x = e.clientX, y = e.clientY;
+    cursor.style.transform = `translate3d(${x - 6}px,${y - 6}px,0)`;
+    cursorRing.style.transform = `translate3d(${x - 18}px,${y - 18}px,0)`;
   }, { passive: true });
-
-  function animateRing() {
-    ringX += (mouseX - ringX - 18) * 0.15;
-    ringY += (mouseY - ringY - 18) * 0.15;
-    cursorRing.style.transform = `translate3d(${ringX}px,${ringY}px,0)`;
-    requestAnimationFrame(animateRing);
-  }
-  animateRing();
 
   document.addEventListener('mouseover', e => {
     if (e.target.closest('a, button')) cursor.classList.add('expanded');
@@ -2958,41 +2950,6 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 })();
 
-// 2. TEXT SCRAMBLE on section headings
-(function() {
-  const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-  function scramble(el) {
-    const nodes = [];
-    el.childNodes.forEach(n => { if (n.nodeType === 3 && n.textContent.trim()) nodes.push({n, orig: n.textContent}); });
-    if (!nodes.length) return;
-    const start = performance.now(), dur = 500;
-    function tick(now) {
-      const t = Math.min((now - start) / dur, 1);
-      nodes.forEach(({n, orig}) => {
-        let out = '';
-        for (let i = 0; i < orig.length; i++) {
-          if (/[\s\n]/.test(orig[i])) { out += orig[i]; continue; }
-          out += i / orig.length < t * 1.25 ? orig[i] : CHARS[Math.floor(Math.random() * CHARS.length)];
-        }
-        n.textContent = out;
-      });
-      if (t < 1) requestAnimationFrame(tick);
-      else nodes.forEach(({n, orig}) => n.textContent = orig);
-    }
-    requestAnimationFrame(tick);
-  }
-  const obs = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (e.isIntersecting && !e.target.dataset.scrambled) {
-        e.target.dataset.scrambled = '1';
-        scramble(e.target);
-      }
-    });
-  }, { threshold: 0.3 });
-  window.addEventListener('load', () => {
-    document.querySelectorAll('.section-title').forEach(el => obs.observe(el));
-  });
-})();
 
 // 3. 3D CARD TILT (desktop only)
 (function() {
@@ -3015,24 +2972,6 @@ document.addEventListener('DOMContentLoaded', function() {
   }, { passive: true });
 })();
 
-// 4. CURSOR SPARKLE TRAIL (desktop only)
-(function() {
-  if (!window.matchMedia('(pointer: fine)').matches) return;
-  let last = 0;
-  document.addEventListener('mousemove', e => {
-    const now = Date.now();
-    if (now - last < 45) return;
-    last = now;
-    const s = document.createElement('div');
-    s.style.cssText = `position:fixed;width:3px;height:3px;border-radius:50%;background:rgba(123,92,245,0.6);pointer-events:none;z-index:9994;will-change:transform,opacity;transform:translate3d(${e.clientX - 1.5}px,${e.clientY - 1.5}px,0);transition:opacity 0.35s ease,transform 0.35s ease;`;
-    document.body.appendChild(s);
-    requestAnimationFrame(() => {
-      s.style.opacity = '0';
-      s.style.transform = `translate3d(${e.clientX - 1.5}px,${e.clientY - 1.5}px,0) scale(0)`;
-    });
-    setTimeout(() => s.remove(), 380);
-  }, { passive: true });
-})();
 
 // ────────────────────────────────────────────────────────────────────────────
 
