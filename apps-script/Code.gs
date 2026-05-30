@@ -8,7 +8,9 @@
 //   3. Run setScriptSecrets() — copy the INTERNAL_SECRET it logs
 //   4. Paste INTERNAL_SECRET and STRIPE_SECRET_KEY into Cloudflare Worker secrets
 //   5. Run setup() to install the monthly email trigger
-//   6. Deploy → New deployment → Web app
+//   6. Run setupPreDriveTrigger() to install daily pre-drive check
+//   7. Run setDriveInfo("Drive Name", "2026-05-31T17:00", "Location") before each drive
+//   8. Deploy → New deployment → Web app
 //      Execute as: Me (oneloveinitiative.official@gmail.com)
 //      Access: Anyone
 //      → copy the /exec URL → paste into APPS_SCRIPT_URL in the Cloudflare Worker
@@ -58,7 +60,30 @@ function updateStats(kitCount, volunteerCount) {
 }
 
 // ----------------------------------------------------------
-// TRIGGER SETUP — run once
+// DRIVE INFO — store before each drive, used by auto-emails
+// ----------------------------------------------------------
+
+// Call this before each drive. dateStr format: "2026-05-31T17:00" or "May 31, 2026 at 5:00 PM"
+// location can be a single string or comma-separated list
+function setDriveInfo(name, dateStr, location) {
+  const props = PropertiesService.getScriptProperties();
+  props.setProperty('DRIVE_NAME', name);
+  props.setProperty('DRIVE_DATE', dateStr);
+  props.setProperty('DRIVE_LOCATION', location);
+  Logger.log('Drive info saved: ' + name + ' on ' + dateStr + ' at ' + location);
+}
+
+function getDriveInfo() {
+  const props = PropertiesService.getScriptProperties();
+  return {
+    name:     props.getProperty('DRIVE_NAME')     || '',
+    date:     props.getProperty('DRIVE_DATE')     || '',
+    location: props.getProperty('DRIVE_LOCATION') || ''
+  };
+}
+
+// ----------------------------------------------------------
+// TRIGGER SETUP — run once each
 // ----------------------------------------------------------
 function setup() {
   ScriptApp.getProjectTriggers().forEach(t => {
@@ -70,6 +95,19 @@ function setup() {
     .atHour(9)
     .create();
   Logger.log('Monthly newsletter trigger installed: 1st of each month at 9 AM');
+}
+
+// Install daily 8 AM trigger that sends pre-drive emails at 7, 3, 0 days before drive
+function setupPreDriveTrigger() {
+  ScriptApp.getProjectTriggers().forEach(t => {
+    if (t.getHandlerFunction() === 'checkPreDriveEmails') ScriptApp.deleteTrigger(t);
+  });
+  ScriptApp.newTrigger('checkPreDriveEmails')
+    .timeBased()
+    .everyDays(1)
+    .atHour(8)
+    .create();
+  Logger.log('Pre-drive email trigger installed: daily at 8 AM');
 }
 
 // ----------------------------------------------------------
@@ -120,6 +158,19 @@ function firstName(name) {
   return (name || '').split(' ')[0] || 'there';
 }
 
+// Format a drive date string for email display
+function formatDriveDate(dateStr) {
+  try {
+    const dt = new Date(dateStr);
+    if (isNaN(dt.getTime())) return dateStr;
+    const dateFormatted = dt.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+    const timeFormatted = dt.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+    return dateFormatted + ' at ' + timeFormatted;
+  } catch(_) {
+    return dateStr;
+  }
+}
+
 // ----------------------------------------------------------
 // HTTP ENTRY POINTS
 // ----------------------------------------------------------
@@ -144,6 +195,14 @@ function doPost(e) {
     return json({ok: true});
   }
 
+  if (data.action === 'send_post_drive') {
+    if (data.secret !== props.getProperty('INTERNAL_SECRET')) return json({ok: false, error: 'unauthorized'});
+    const { driveName, driveDate, driveLocation, kitsCollected, volunteerCount } = data;
+    if (!driveName) return json({ok: false, error: 'missing driveName'});
+    sendPostDriveRecap(driveName, driveDate || '', driveLocation || '', kitsCollected || '0', volunteerCount || '0');
+    return json({ok: true});
+  }
+
   // Newsletter subscribe
   const email = (data.email || '').trim().toLowerCase();
   if (!email || !email.includes('@')) return json({ok: false, error: 'invalid email'});
@@ -153,6 +212,8 @@ function doPost(e) {
 }
 
 function doGet(e) {
+  const props = PropertiesService.getScriptProperties();
+
   if (e.parameter.action === 'unsubscribe') {
     const email = (e.parameter.email || '').toLowerCase();
     const token = e.parameter.token || '';
@@ -166,6 +227,23 @@ function doGet(e) {
     }
     return HtmlService.createHtmlOutput('<p style="font-family:sans-serif;padding:40px;text-align:center">Invalid or expired unsubscribe link.</p>');
   }
+
+  if (e.parameter.action === 'get_subscribers') {
+    if (e.parameter.secret !== props.getProperty('INTERNAL_SECRET')) {
+      return ContentService.createTextOutput(JSON.stringify({ok: false, error: 'unauthorized'})).setMimeType(ContentService.MimeType.JSON);
+    }
+    const subs = getSubscribers();
+    return ContentService.createTextOutput(JSON.stringify({ok: true, subscribers: subs})).setMimeType(ContentService.MimeType.JSON);
+  }
+
+  if (e.parameter.action === 'get_volunteers') {
+    if (e.parameter.secret !== props.getProperty('INTERNAL_SECRET')) {
+      return ContentService.createTextOutput(JSON.stringify({ok: false, error: 'unauthorized'})).setMimeType(ContentService.MimeType.JSON);
+    }
+    const vols = getVolunteers();
+    return ContentService.createTextOutput(JSON.stringify({ok: true, volunteers: vols})).setMimeType(ContentService.MimeType.JSON);
+  }
+
   return HtmlService.createHtmlOutput('<p>One Love Initiative</p>');
 }
 
@@ -207,25 +285,7 @@ function unsubscribeEmail(email) {
   }
 }
 
-function saveVolunteer(data) {
-  const ss = SpreadsheetApp.openById(SHEET_ID);
-  let sheet = ss.getSheetByName('Volunteers');
-  if (!sheet) {
-    sheet = ss.insertSheet('Volunteers');
-    sheet.appendRow(['Timestamp', 'Name', 'Email', 'Phone', 'Age/Grade', 'Availability', 'Interests']);
-    sheet.setFrozenRows(1);
-  }
-  sheet.appendRow([
-    new Date().toISOString(),
-    data.name || '',
-    (data.email || '').trim().toLowerCase(),
-    data.phone || '',
-    data.age || '',
-    data.availability || '',
-    data.interests || ''
-  ]);
-}
-
+// Returns newsletter subscribers (subscribed status)
 function getSubscribers() {
   const sheet = getSheet();
   const data  = sheet.getDataRange().getValues();
@@ -234,8 +294,76 @@ function getSubscribers() {
     .map(row => ({ email: row[0].toString().toLowerCase(), name: row[3] || '', token: row[4] || makeUnsubToken(row[0]) }));
 }
 
+// Returns all volunteers from Volunteers sheet
+function getVolunteers() {
+  const ss = SpreadsheetApp.openById(SHEET_ID);
+  const sheet = ss.getSheetByName('Volunteers');
+  if (!sheet) return [];
+  const data = sheet.getDataRange().getValues();
+  return data.slice(1)
+    .filter(row => row[2]) // must have email (col C)
+    .map(row => ({
+      timestamp:    row[0] || '',
+      name:         row[1] || '',
+      email:        row[2].toString().toLowerCase().trim(),
+      phone:        row[3] || '',
+      age:          row[4] || '',
+      availability: row[5] || '',
+      interests:    row[6] || ''
+    }));
+}
+
+// Combined recipients: volunteers + newsletter subscribers, deduped by email
+function getAllRecipients() {
+  const volunteers  = getVolunteers();
+  const subscribers = getSubscribers();
+  const seen = new Set();
+  const all  = [];
+
+  volunteers.forEach(v => {
+    if (v.email && !seen.has(v.email)) {
+      seen.add(v.email);
+      all.push({ email: v.email, name: v.name, token: makeUnsubToken(v.email) });
+    }
+  });
+
+  subscribers.forEach(s => {
+    if (s.email && !seen.has(s.email)) {
+      seen.add(s.email);
+      all.push(s);
+    }
+  });
+
+  return all;
+}
+
+function saveVolunteer(data) {
+  const ss = SpreadsheetApp.openById(SHEET_ID);
+  let sheet = ss.getSheetByName('Volunteers');
+  if (!sheet) {
+    sheet = ss.insertSheet('Volunteers');
+    sheet.appendRow(['Timestamp', 'Name', 'Email', 'Phone', 'Age/Grade', 'Availability', 'Interests']);
+    sheet.setFrozenRows(1);
+  }
+  const email = (data.email || '').trim().toLowerCase();
+  sheet.appendRow([
+    new Date().toISOString(),
+    data.name || '',
+    email,
+    data.phone || '',
+    data.age || '',
+    data.availability || '',
+    data.interests || ''
+  ]);
+  if (email) {
+    try { sendVolunteerWelcomeEmail(email, data.name || ''); } catch(err) {
+      Logger.log('Volunteer welcome email failed: ' + err);
+    }
+  }
+}
+
 // ----------------------------------------------------------
-// EMAIL: WELCOME (sent on subscribe)
+// EMAIL: WELCOME (sent on newsletter subscribe)
 // ----------------------------------------------------------
 
 function sendWelcomeEmail(email, name) {
@@ -251,6 +379,26 @@ function sendWelcomeEmail(email, name) {
   const html    = fill(tpl.body,    vars);
 
   GmailApp.sendEmail(email, subject, stripHtml(html), { htmlBody: html, name: FROM_NAME });
+}
+
+// ----------------------------------------------------------
+// EMAIL: VOLUNTEER WELCOME (sent when volunteer form submitted)
+// ----------------------------------------------------------
+
+function sendVolunteerWelcomeEmail(email, name) {
+  const tpl = getTemplate('welcome');
+  if (!tpl) { Logger.log('No welcome template — skipping volunteer welcome to ' + email); return; }
+
+  const vars = {
+    NAME: firstName(name),
+    UNSUBSCRIBE_URL: unsubUrl(email)
+  };
+
+  const subject = fill(tpl.subject, vars);
+  const html    = fill(tpl.body,    vars);
+
+  GmailApp.sendEmail(email, subject, stripHtml(html), { htmlBody: html, name: FROM_NAME });
+  Logger.log('Volunteer welcome sent to ' + email);
 }
 
 // ----------------------------------------------------------
@@ -278,16 +426,17 @@ function sendDonationThanksEmail(email, name, amount, transactionId) {
 
 // ----------------------------------------------------------
 // EMAIL: MONTHLY NEWSLETTER (auto-triggered on 1st of month)
+// Sends to ALL recipients: volunteers + newsletter subscribers
 // ----------------------------------------------------------
 
 function sendMonthlyNewsletter() {
   const now   = new Date();
   const month = now.toLocaleString('default', { month: 'long' });
   const year  = now.getFullYear().toString();
-  const subs  = getSubscribers();
+  const all   = getAllRecipients();
   const props = PropertiesService.getScriptProperties();
 
-  if (subs.length === 0) { Logger.log('No subscribers — skipping newsletter'); return; }
+  if (all.length === 0) { Logger.log('No recipients — skipping newsletter'); return; }
 
   const sharedVars = {
     MONTH:          month,
@@ -297,7 +446,7 @@ function sendMonthlyNewsletter() {
     KIT_GOAL:       DEFAULTS.KIT_GOAL
   };
 
-  subs.forEach(({ email, name, token }) => {
+  all.forEach(({ email, name, token }) => {
     const tpl = getTemplate('newsletter');
     if (!tpl) return;
 
@@ -317,28 +466,69 @@ function sendMonthlyNewsletter() {
     }
   });
 
-  Logger.log('Monthly newsletter sent to ' + subs.length + ' subscribers (' + month + ' ' + year + ')');
+  Logger.log('Monthly newsletter sent to ' + all.length + ' recipients (' + month + ' ' + year + ')');
 }
 
 // ----------------------------------------------------------
-// EMAIL: PRE-DRIVE ANNOUNCEMENT
-// Send to all subscribers before a drive.
-// Usage: call sendPreDriveAnnouncement("Children's Kit Drive","June 15, 2025","Harris Teeter SouthPark")
+// EMAIL: PRE-DRIVE (auto-sent at 7, 3, 0 days before drive)
 // ----------------------------------------------------------
 
-function sendPreDriveAnnouncement(driveName, driveDate, driveLocation) {
-  const subs = getSubscribers();
-  if (subs.length === 0) { Logger.log('No subscribers'); return; }
+// Daily trigger — installed by setupPreDriveTrigger()
+function checkPreDriveEmails() {
+  const props = PropertiesService.getScriptProperties();
+  const info  = getDriveInfo();
 
-  subs.forEach(({ email, name, token }) => {
+  if (!info.name || !info.date) {
+    Logger.log('No drive info set — skipping pre-drive check. Call setDriveInfo() first.');
+    return;
+  }
+
+  const driveDate    = new Date(info.date);
+  const now          = new Date();
+  const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const driveMidnight = new Date(driveDate.getFullYear(), driveDate.getMonth(), driveDate.getDate());
+  const daysUntil    = Math.round((driveMidnight - todayMidnight) / (1000 * 60 * 60 * 24));
+
+  Logger.log('Days until drive (' + info.name + '): ' + daysUntil);
+
+  if (daysUntil < 0) {
+    Logger.log('Drive has passed — nothing to send');
+    return;
+  }
+
+  const sentKey = 'PREDRIVE_SENT_' + info.date.replace(/[^0-9]/g, '');
+  let sent;
+  try { sent = JSON.parse(props.getProperty(sentKey) || '[]'); }
+  catch(_) { sent = []; }
+
+  if ([7, 3, 0].includes(daysUntil) && !sent.includes(daysUntil)) {
+    Logger.log('Sending pre-drive email for ' + daysUntil + ' days out');
+    sendPreDriveToAll(info.name, info.date, info.location, daysUntil);
+    sent.push(daysUntil);
+    props.setProperty(sentKey, JSON.stringify(sent));
+  } else {
+    Logger.log('No pre-drive email needed today (daysUntil=' + daysUntil + ', sent=' + JSON.stringify(sent) + ')');
+  }
+}
+
+// Sends pre-drive email to ALL recipients (volunteers + subscribers)
+function sendPreDriveToAll(driveName, driveDate, driveLocation, daysUntil) {
+  const recipients = getAllRecipients();
+  if (!recipients.length) { Logger.log('No recipients — skipping pre-drive email'); return; }
+
+  const daysLabel = daysUntil === 0 ? 'Today!' : daysUntil === 1 ? 'Tomorrow!' : 'In ' + daysUntil + ' days!';
+  const dateDisplay = formatDriveDate(driveDate);
+
+  recipients.forEach(({ email, name, token }) => {
     const tpl = getTemplate('predrive');
     if (!tpl) return;
 
     const vars = {
       NAME:           firstName(name),
       DRIVE_NAME:     driveName,
-      DRIVE_DATE:     driveDate,
+      DRIVE_DATE:     dateDisplay,
       DRIVE_LOCATION: driveLocation,
+      DAYS_UNTIL:     daysLabel,
       UNSUBSCRIBE_URL: getDeploymentUrl() + '?action=unsubscribe&email=' + encodeURIComponent(email) + '&token=' + token
     };
 
@@ -349,31 +539,38 @@ function sendPreDriveAnnouncement(driveName, driveDate, driveLocation) {
       GmailApp.sendEmail(email, subject, stripHtml(html), { htmlBody: html, name: FROM_NAME });
       Utilities.sleep(500);
     } catch(err) {
-      Logger.log('Failed pre-drive email to ' + email + ': ' + err);
+      Logger.log('Failed pre-drive to ' + email + ': ' + err);
     }
   });
 
-  Logger.log('Pre-drive emails sent to ' + subs.length + ' subscribers for ' + driveName);
+  Logger.log('Pre-drive emails sent to ' + recipients.length + ' recipients (' + daysUntil + ' days before ' + driveName + ')');
+}
+
+// Manual send — same as checkPreDriveEmails but forces immediate send regardless of schedule
+function sendPreDriveAnnouncement(driveName, driveDate, driveLocation) {
+  sendPreDriveToAll(driveName, driveDate, driveLocation, 0);
 }
 
 // ----------------------------------------------------------
 // EMAIL: POST-DRIVE RECAP
-// Send to all subscribers after a drive with results.
-// Usage: call sendPostDriveRecap("Children's Kit Drive","June 15, 2025","Harris Teeter SouthPark","312","24")
+// Triggered via admin panel button or direct function call.
+// Sends to ALL recipients: volunteers + newsletter subscribers.
 // ----------------------------------------------------------
 
 function sendPostDriveRecap(driveName, driveDate, driveLocation, kitsCollected, volunteerCount) {
-  const subs = getSubscribers();
-  if (subs.length === 0) { Logger.log('No subscribers'); return; }
+  const all = getAllRecipients();
+  if (all.length === 0) { Logger.log('No recipients for post-drive recap'); return; }
 
-  subs.forEach(({ email, name, token }) => {
+  const dateDisplay = driveDate ? formatDriveDate(driveDate) : '';
+
+  all.forEach(({ email, name, token }) => {
     const tpl = getTemplate('postdrive');
     if (!tpl) return;
 
     const vars = {
       NAME:            firstName(name),
       DRIVE_NAME:      driveName,
-      DRIVE_DATE:      driveDate,
+      DRIVE_DATE:      dateDisplay,
       DRIVE_LOCATION:  driveLocation,
       KITS_COLLECTED:  kitsCollected,
       VOLUNTEER_COUNT: volunteerCount,
@@ -391,7 +588,7 @@ function sendPostDriveRecap(driveName, driveDate, driveLocation, kitsCollected, 
     }
   });
 
-  Logger.log('Post-drive recap emails sent to ' + subs.length + ' subscribers for ' + driveName);
+  Logger.log('Post-drive recap emails sent to ' + all.length + ' recipients for ' + driveName);
 }
 
 // ----------------------------------------------------------

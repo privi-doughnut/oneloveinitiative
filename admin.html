@@ -195,6 +195,9 @@
         <a onclick="showSection('gallery')" id="nav-gallery"><span class="nav-icon">📷</span> Gallery</a>
         <a onclick="showSection('testimonials')" id="nav-testimonials"><span class="nav-icon">💬</span> Testimonials</a>
         <a onclick="showSection('countdown')" id="nav-countdown"><span class="nav-icon">⏱️</span> Countdown</a>
+        <a onclick="showSection('volunteers')" id="nav-volunteers"><span class="nav-icon">🙋</span> Volunteers</a>
+        <a onclick="showSection('newsletter')" id="nav-newsletter"><span class="nav-icon">📧</span> Newsletter</a>
+        <a onclick="showSection('postdrive')" id="nav-postdrive"><span class="nav-icon">📊</span> Post-Drive</a>
         <a onclick="showSection('editor')" id="nav-editor"><span class="nav-icon">🎨</span> Visual Editor</a>
         <a onclick="showSection('publish')" id="nav-publish"><span class="nav-icon">🚀</span> Publish <span class="unsaved-dot" id="unsavedDot" style="display:none;"></span></a>
       </nav>
@@ -360,6 +363,74 @@
         <button class="btn btn-purple" onclick="saveCountdown()">Save Countdown</button>
       </div>
 
+      <!-- VOLUNTEERS -->
+      <div class="section-panel" id="panel-volunteers">
+        <div class="panel-header">
+          <h1 class="panel-title">Volunteer <em>Signups</em></h1>
+          <p class="panel-sub">Everyone who submitted the volunteer form. Fetched live from the spreadsheet.</p>
+        </div>
+        <div class="admin-card" id="vol-secret-card">
+          <div class="admin-card-header"><div class="admin-card-title">Apps Script Connection</div></div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Internal Secret</label>
+              <input class="form-input" type="password" id="internalSecretInput" placeholder="Paste INTERNAL_SECRET from Apps Script"/>
+            </div>
+            <div style="display:flex;align-items:flex-end;padding-bottom:14px;">
+              <button class="btn btn-outline" onclick="saveInternalSecret()">Save</button>
+            </div>
+          </div>
+          <p style="font-size:0.7rem;color:var(--muted);font-weight:300;">From Apps Script: run <code style="background:rgba(255,255,255,0.06);padding:2px 5px;border-radius:3px;">setScriptSecrets()</code> → copy the INTERNAL_SECRET from the logs. Stored in sessionStorage only.</p>
+        </div>
+        <div class="btn-group" style="margin-bottom:18px;">
+          <button class="btn btn-purple" onclick="loadVolunteers()">Load Volunteers</button>
+        </div>
+        <div id="volunteers-list"><div class="empty-state">Click "Load Volunteers" to fetch data.</div></div>
+      </div>
+
+      <!-- NEWSLETTER SUBSCRIBERS -->
+      <div class="section-panel" id="panel-newsletter">
+        <div class="panel-header">
+          <h1 class="panel-title">Newsletter <em>Subscribers</em></h1>
+          <p class="panel-sub">Everyone subscribed to OLI emails. Fetched live from the spreadsheet.</p>
+        </div>
+        <div class="btn-group" style="margin-bottom:18px;">
+          <button class="btn btn-purple" onclick="loadSubscribers()">Load Subscribers</button>
+        </div>
+        <div id="subscribers-list"><div class="empty-state">Click "Load Subscribers" to fetch data.</div></div>
+      </div>
+
+      <!-- POST-DRIVE RECAP -->
+      <div class="section-panel" id="panel-postdrive">
+        <div class="panel-header">
+          <h1 class="panel-title">Post-Drive <em>Recap</em></h1>
+          <p class="panel-sub">Send a recap email to all volunteers and newsletter subscribers after a drive. Fill in the results and hit Send.</p>
+        </div>
+        <div class="admin-card">
+          <div class="admin-card-header"><div class="admin-card-title">Drive Results</div></div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Drive Name</label><input class="form-input" id="pd-name" placeholder="Children's Hygiene Kit Drive"/></div>
+            <div class="form-group"><label class="form-label">Drive Date</label><input class="form-input" type="datetime-local" id="pd-date"/></div>
+          </div>
+          <div class="form-group"><label class="form-label">Location(s)</label><input class="form-input" id="pd-location" placeholder="5210 Camp Verde Ln, Charlotte, NC 28277"/></div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Kits Collected</label><input class="form-input" type="number" id="pd-kits" placeholder="312" min="0"/></div>
+            <div class="form-group"><label class="form-label">Volunteers Who Showed Up</label><input class="form-input" type="number" id="pd-volunteers" placeholder="24" min="0"/></div>
+          </div>
+          <div style="margin-top:8px;">
+            <div class="publish-status" id="pd-status"></div>
+          </div>
+          <button class="btn btn-green" style="margin-top:14px;" onclick="sendPostDriveEmail()">Send Recap Email to Everyone</button>
+        </div>
+        <div class="admin-card">
+          <div class="admin-card-header"><div class="admin-card-title">After Sending</div></div>
+          <p style="font-size:0.82rem;color:var(--muted);font-weight:300;line-height:1.7;">Once the recap email is sent, update your stats in the <strong>Stats &amp; Progress</strong> tab with the new kit count and volunteer count, then click Publish to update the site.</p>
+          <div class="btn-group" style="margin-top:14px;">
+            <button class="btn btn-outline" onclick="showSection('stats')">Go to Stats →</button>
+          </div>
+        </div>
+      </div>
+
       <!-- VISUAL EDITOR -->
       <div class="section-panel" id="panel-editor">
         <div class="editor-toolbar">
@@ -465,6 +536,7 @@ function initAdmin() {
   } else {
     document.getElementById('tokenBanner').style.display = 'flex';
   }
+  initSecretField();
 }
 
 // ── TOKEN ─────────────────────────────────────────────────────────────
@@ -1099,6 +1171,116 @@ function clearEditChanges() {
   if (editChanges.length && !confirm('Clear all pending text changes?')) return;
   editChanges = [];
   renderEditChanges();
+}
+
+// ── INTERNAL SECRET ───────────────────────────────────────────
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzJG_GSUYcRHz70pTjTyvOuUFQ2MksPO8gGtwL62SKa_08fuDwgO03EA3NIZwoDCfU3lg/exec';
+let internalSecret = sessionStorage.getItem('internalSecret') || '';
+
+function saveInternalSecret() {
+  const val = document.getElementById('internalSecretInput').value.trim();
+  if (!val) return;
+  internalSecret = val;
+  sessionStorage.setItem('internalSecret', internalSecret);
+  toast('Internal secret saved', 'success');
+}
+
+function initSecretField() {
+  if (internalSecret) {
+    document.getElementById('internalSecretInput').value = internalSecret;
+  }
+}
+
+// ── VOLUNTEERS ────────────────────────────────────────────────
+async function loadVolunteers() {
+  if (!internalSecret) { toast('Enter your Internal Secret first', 'error'); return; }
+  const container = document.getElementById('volunteers-list');
+  container.innerHTML = '<p style="font-size:0.8rem;color:var(--muted);">Loading...</p>';
+  try {
+    const res = await fetch(APPS_SCRIPT_URL + '?action=get_volunteers&secret=' + encodeURIComponent(internalSecret));
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.error || 'Failed');
+    const vols = data.volunteers || [];
+    if (!vols.length) { container.innerHTML = '<div class="empty-state">No volunteers yet.</div>'; return; }
+    container.innerHTML = '<p style="font-size:0.72rem;color:var(--muted);margin-bottom:14px;">' + vols.length + ' volunteer' + (vols.length !== 1 ? 's' : '') + ' total</p>' +
+      vols.map(v => `
+        <div class="item-row">
+          <div class="item-row-info">
+            <div class="item-row-name">${esc(v.name || '(no name)')}</div>
+            <div class="item-row-sub">${esc(v.email)}${v.phone ? ' · ' + esc(v.phone) : ''}${v.age ? ' · ' + esc(v.age) : ''}</div>
+            ${v.availability ? '<div class="item-row-sub" style="margin-top:2px;">Availability: ' + esc(v.availability) + '</div>' : ''}
+            ${v.interests ? '<div class="item-row-sub" style="margin-top:2px;">Interests: ' + esc(v.interests) + '</div>' : ''}
+          </div>
+          <div style="font-size:0.65rem;color:var(--muted);flex-shrink:0;">${v.timestamp ? new Date(v.timestamp).toLocaleDateString() : ''}</div>
+        </div>`).join('');
+  } catch(err) {
+    container.innerHTML = '<p style="color:var(--red);font-size:0.8rem;">Failed to load: ' + esc(err.message) + '</p>';
+    toast('Failed to load volunteers: ' + err.message, 'error');
+  }
+}
+
+// ── NEWSLETTER SUBSCRIBERS ────────────────────────────────────
+async function loadSubscribers() {
+  if (!internalSecret) { toast('Enter your Internal Secret in the Volunteers tab first', 'error'); showSection('volunteers'); return; }
+  const container = document.getElementById('subscribers-list');
+  container.innerHTML = '<p style="font-size:0.8rem;color:var(--muted);">Loading...</p>';
+  try {
+    const res = await fetch(APPS_SCRIPT_URL + '?action=get_subscribers&secret=' + encodeURIComponent(internalSecret));
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.error || 'Failed');
+    const subs = data.subscribers || [];
+    if (!subs.length) { container.innerHTML = '<div class="empty-state">No subscribers yet.</div>'; return; }
+    container.innerHTML = '<p style="font-size:0.72rem;color:var(--muted);margin-bottom:14px;">' + subs.length + ' subscriber' + (subs.length !== 1 ? 's' : '') + ' total</p>' +
+      subs.map(s => `
+        <div class="item-row">
+          <div class="item-row-info">
+            <div class="item-row-name">${esc(s.name || '(no name)')}</div>
+            <div class="item-row-sub">${esc(s.email)}</div>
+          </div>
+        </div>`).join('');
+  } catch(err) {
+    container.innerHTML = '<p style="color:var(--red);font-size:0.8rem;">Failed to load: ' + esc(err.message) + '</p>';
+    toast('Failed to load subscribers: ' + err.message, 'error');
+  }
+}
+
+// ── POST-DRIVE RECAP EMAIL ────────────────────────────────────
+async function sendPostDriveEmail() {
+  if (!internalSecret) { toast('Enter your Internal Secret in the Volunteers tab first', 'error'); showSection('volunteers'); return; }
+  const driveName     = document.getElementById('pd-name').value.trim();
+  const driveDate     = document.getElementById('pd-date').value;
+  const driveLocation = document.getElementById('pd-location').value.trim();
+  const kits          = document.getElementById('pd-kits').value.trim();
+  const vols          = document.getElementById('pd-volunteers').value.trim();
+
+  if (!driveName) { toast('Drive name is required', 'error'); return; }
+  if (!confirm('Send post-drive recap to ALL volunteers and newsletter subscribers?')) return;
+
+  const statusEl = document.getElementById('pd-status');
+  statusEl.className = 'publish-status show loading';
+  statusEl.textContent = 'Sending emails...';
+
+  try {
+    const res = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'send_post_drive',
+        secret: internalSecret,
+        driveName, driveDate, driveLocation,
+        kitsCollected: kits, volunteerCount: vols
+      })
+    });
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.error || 'Failed');
+    statusEl.className = 'publish-status show success';
+    statusEl.textContent = 'Recap emails sent successfully!';
+    toast('Post-drive recap sent!', 'success');
+  } catch(err) {
+    statusEl.className = 'publish-status show error';
+    statusEl.textContent = 'Error: ' + err.message;
+    toast('Failed: ' + err.message, 'error');
+  }
 }
 
 async function publishTextChanges() {

@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>The One Love Initiative</title>
   <link rel="icon" type="image/jpeg" href="OLI_LOGO.jpg"/>
+  <!-- Google Analytics — replace G-XXXXXXXXXX with your Measurement ID from GA4 dashboard -->
+  <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-XXXXXXXXXX');</script> -->
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
   <style>
     :root {
@@ -1551,6 +1554,17 @@
     </div>
   </section>
 
+  <!-- QR CODE -->
+  <section style="padding-top:0;padding-bottom:0;">
+    <div class="section-inner" style="text-align:center;">
+      <div style="display:inline-block;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:32px 40px;">
+        <p style="font-size:0.62rem;letter-spacing:0.18em;text-transform:uppercase;color:rgba(123,92,245,0.8);margin-bottom:14px;">Scan to Sign Up</p>
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&bgcolor=080808&color=F5F5F0&data=https%3A%2F%2Foneloveinitative.org%3Fvol%3D1" alt="QR code to volunteer signup" style="width:180px;height:180px;border-radius:8px;display:block;margin:0 auto;"/>
+        <p style="font-size:0.75rem;color:rgba(245,245,240,0.45);margin-top:14px;font-weight:300;">oneloveinitative.org</p>
+      </div>
+    </div>
+  </section>
+
   <!-- VOLUNTEER SIGNUP FORM -->
   <section class="vol-form-section" style="padding-top:0;">
     <div class="section-inner">
@@ -2127,7 +2141,18 @@
   }
 
   // INIT
-  window.addEventListener('load', initReveal);
+  window.addEventListener('load', function() {
+    initReveal();
+    // Handle ?vol=1 — direct link to volunteer signup (used by QR code on flyers)
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('vol') === '1') {
+      showPage('involved');
+      setTimeout(function() {
+        const form = document.getElementById('vol-form');
+        if (form) form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 500);
+    }
+  });
 </script>
 <script>
   (function() {
