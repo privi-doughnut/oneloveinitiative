@@ -1250,7 +1250,7 @@
   <div class="stats-bar">
     <div class="stat reveal"><div class="stat-num" data-admin="stat-kits">0</div><div class="stat-label">Kits Distributed</div></div>
     <div class="stat reveal reveal-delay-1"><div class="stat-num" data-admin="stat-volunteers">3</div><div class="stat-label">Active Volunteers</div></div>
-    <div class="stat reveal reveal-delay-2"><div class="stat-num" data-admin="stat-drives">1</div><div class="stat-label">Drives Organized</div></div>
+    <div class="stat reveal reveal-delay-2"><div class="stat-num" data-admin="stat-drives">2</div><div class="stat-label">Drives Organized</div></div>
     <div class="stat reveal reveal-delay-3"><div class="stat-num" data-admin="stat-partners">1</div><div class="stat-label">Partner Organizations</div></div>
   </div>
 
@@ -1327,7 +1327,7 @@
           <span class="impact-label">Active Volunteers</span>
         </div>
         <div class="impact-stat reveal reveal-delay-2">
-          <span class="impact-num" data-count-target="1">1</span>
+          <span class="impact-num" data-count-target="2">2</span>
           <span class="impact-label">Drives Organized</span>
         </div>
         <div class="impact-stat reveal reveal-delay-3">
@@ -1339,7 +1339,7 @@
   </section>
 
   <!-- DRIVE COUNTDOWN -->
-  <section class="countdown-section">
+  <section class="countdown-section" id="countdown-section">
     <div class="section-inner">
       <div class="countdown-inner">
         <div class="reveal">
@@ -1867,57 +1867,39 @@
   </section>
 </div>
 
-<!-- ===== HOW TO GIVE / TAX DEDUCTION PAGE ===== -->
+<!-- ===== HOW TO GIVE PAGE ===== -->
 <div class="page" id="howtogive-page">
   <section style="padding-top:160px;">
     <div class="section-inner">
       <p class="section-label reveal">How to Give</p>
-      <h2 class="section-title reveal">Two ways to donate —<br><em>one is tax-deductible</em></h2>
-      <p class="section-sub reveal" style="margin-top:16px;">Everything you need to know before giving. We want your donation to work best for you.</p>
+      <h2 class="section-title reveal">Every dollar<br><em>becomes a kit</em></h2>
+      <p class="section-sub reveal" style="margin-top:16px;">Everything you need to know before giving — including exactly where your money goes.</p>
 
       <div class="value-card reveal" style="margin-top:56px;max-width:720px;">
         <div class="value-icon">📋</div>
         <h3 class="value-title">Our Legal Status</h3>
-        <p class="value-text">The One Love Initiative is a student-led community initiative — not yet a standalone 501(c)(3). Direct donations to OLI through Stripe are <strong style="color:var(--white);">not tax-deductible</strong>. However, through our fiscal sponsorship arrangement with Crisis Assistance Ministry — a registered 501(c)(3) — donors <strong style="color:var(--white);">can</strong> receive a full tax deduction.</p>
+        <p class="value-text">The One Love Initiative is a student-led community initiative. We are <strong style="color:var(--white);">not a 501(c)(3)</strong>, and donations to OLI are <strong style="color:var(--white);">not tax-deductible</strong>. We're currently working toward a fiscal sponsorship arrangement that would change this — we'll update this page the moment it's finalized. We'd rather be upfront than have you find out at tax time.</p>
       </div>
 
       <div class="mission-grid reveal" style="margin-top:64px;">
         <div>
-          <p class="section-label" style="color:#22c55e;letter-spacing:0.18em;">✓ Tax Deductible</p>
-          <h3 class="section-title" style="font-size:1.7rem;margin-bottom:16px;">Donate through<br><em>Crisis Assistance Ministry</em></h3>
-          <p style="font-size:0.95rem;line-height:1.8;color:var(--muted);font-weight:300;margin-bottom:28px;">CAM is our fiscal sponsor and a fully registered 501(c)(3). Donations made through them, designated for the One Love Initiative, are fully tax-deductible and go directly toward our kits.</p>
-          <p class="section-label" style="margin-bottom:20px;">Step-by-step</p>
-          <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:32px;">
-            <div style="display:flex;align-items:flex-start;gap:16px;">
-              <div class="step-num" style="width:34px;height:34px;font-size:0.9rem;flex-shrink:0;margin-bottom:0;">1</div>
-              <div style="font-size:0.92rem;line-height:1.7;color:rgba(245,245,240,0.8);padding-top:4px;">Go to <a href="https://crisisassistance.org/donate" target="_blank" style="color:var(--purple);">crisisassistance.org/donate</a></div>
-            </div>
-            <div style="display:flex;align-items:flex-start;gap:16px;">
-              <div class="step-num" style="width:34px;height:34px;font-size:0.9rem;flex-shrink:0;margin-bottom:0;">2</div>
-              <div style="font-size:0.92rem;line-height:1.7;color:rgba(245,245,240,0.8);padding-top:4px;">Fill in your donation amount and details</div>
-            </div>
-            <div style="display:flex;align-items:flex-start;gap:16px;">
-              <div class="step-num" style="width:34px;height:34px;font-size:0.9rem;flex-shrink:0;margin-bottom:0;">3</div>
-              <div style="font-size:0.92rem;line-height:1.7;color:rgba(245,245,240,0.8);padding-top:4px;">In the <strong style="color:var(--white);">"Designation"</strong> or <strong style="color:var(--white);">"Notes"</strong> field, write: <strong style="color:var(--purple);">One Love Initiative</strong></div>
-            </div>
-            <div style="display:flex;align-items:flex-start;gap:16px;">
-              <div class="step-num" style="width:34px;height:34px;font-size:0.9rem;flex-shrink:0;margin-bottom:0;">4</div>
-              <div style="font-size:0.92rem;line-height:1.7;color:rgba(245,245,240,0.8);padding-top:4px;">Complete your donation — CAM will earmark funds for OLI and issue a tax receipt</div>
-            </div>
-          </div>
-          <a href="https://crisisassistance.org/donate" target="_blank" class="btn-primary">Donate via CAM →</a>
+          <p class="section-label" style="color:var(--purple);letter-spacing:0.18em;">Donate</p>
+          <h3 class="section-title" style="font-size:1.7rem;margin-bottom:16px;">Give directly<br><em>to OLI</em></h3>
+          <p style="font-size:0.95rem;line-height:1.8;color:var(--muted);font-weight:300;margin-bottom:28px;">Donations go through our Stripe page straight to OLI, where they fund bulk supply purchasing and kit assembly. No intermediary, instant processing. This donation is <strong style="color:var(--white);">not tax-deductible</strong>.</p>
+          <a href="https://donate.stripe.com/3cIcMY53Y81g7MK0hl0kE00" target="_blank" rel="noopener" class="btn-primary">Donate via Stripe →</a>
         </div>
 
         <div>
-          <p class="section-label" style="color:var(--muted);letter-spacing:0.18em;">No tax deduction</p>
-          <h3 class="section-title" style="font-size:1.7rem;margin-bottom:16px;">Donate directly<br><em>to OLI</em></h3>
-          <p style="font-size:0.95rem;line-height:1.8;color:var(--muted);font-weight:300;margin-bottom:28px;">Prefer to give directly to us? Donate through our Stripe page. Funds go straight to OLI for supplies and operations. This donation is <strong style="color:var(--white);">not tax-deductible</strong>.</p>
           <div class="value-card" style="margin-bottom:28px;">
             <div class="value-icon">⚡</div>
             <h3 class="value-title">Fast &amp; Direct</h3>
             <p class="value-text">100% of your donation goes directly to OLI for bulk supply purchasing and kit assembly. No intermediary, instant processing via Stripe.</p>
           </div>
-          <a href="https://donate.stripe.com/3cIcMY53Y81g7MK0hl0kE00" target="_blank" class="btn-outline">Donate via Stripe →</a>
+          <div class="value-card">
+            <div class="value-icon">🤝</div>
+            <h3 class="value-title">Where Kits Go</h3>
+            <p class="value-text">Assembled kits are distributed through our partner Crisis Assistance Ministry, a registered 501(c)(3) serving Charlotte families in crisis. They handle distribution; we handle assembly.</p>
+          </div>
         </div>
       </div>
 
@@ -1978,7 +1960,7 @@
     <div class="footer-col">
       <h4>Take Action</h4>
       <a href="https://donate.stripe.com/3cIcMY53Y81g7MK0hl0kE00" target="_blank">Donate Now</a>
-      <a href="#" onclick="showPage('howtogive')">Tax Deduction Info</a>
+      <a href="#" onclick="showPage('howtogive')">How to Give</a>
       <a href="#" onclick="showPage('involved')">Volunteer</a>
       <a href="#" onclick="showPage('involved')">Start a Drive</a>
       <a href="https://www.instagram.com/one.love.initiative/" target="_blank">Instagram</a>
@@ -1995,7 +1977,7 @@
   "stats": {
     "kits": 0,
     "volunteers": 3,
-    "drives": 1,
+    "drives": 2,
     "partners": 1
   },
   "kitCount": 0,
@@ -2054,13 +2036,10 @@
   ],
   "gallery": [],
   "countdown": {
-    "title": "Children's Hygiene Kit Drive",
-    "date": "2026-05-31T17:00",
-    "locations": [
-      "5210 Camp Verde Ln, Charlotte, NC, 28277",
-      "6322 Springs Mill Rd, Charlotte, NC, 28277"
-    ],
-    "posterUrl": "https://i.imgur.com/RfMj9YM.jpeg"
+    "title": "",
+    "date": "",
+    "locations": [],
+    "posterUrl": ""
   }
 }
 </script>
@@ -2276,16 +2255,20 @@ Key facts you know:
 - Founded by Prithivi Vijayakumar in 2025
 - Based in Charlotte, North Carolina
 - Mission: Mobilize students to assemble and distribute O.L.I Kits (essential supply bundles) for families in need
-- Current drive: Children's Hygiene Kit Drive — each kit contains kids toothbrush, toothpaste, kid-friendly soap/body wash, and kid-friendly lotion
-- Kit goal: 20,000 O.L.I Kits by end of summer 2025
+- Each O.L.I Kit contains a toothbrush, toothpaste, soap/body wash, and lotion
+- Working toward a goal of 20,000 O.L.I Kits (no set deadline)
+- How it works now: we raise money, buy supplies in bulk, and volunteers assemble the kits together — we are not running a physical item-collection drive at the moment
 - Distribution partner: Crisis Assistance Ministry (Charlotte, NC)
 - Community partner: Hindu Center of Charlotte
 - Team: 3 active volunteers, 4 team members
 - Donation link: https://donate.stripe.com/3cIcMY53Y81g7MK0hl0kE00
 - Email: oneloveinitiative.official@gmail.com
 - Instagram: https://www.instagram.com/one.love.initiative/
-- Ways to help: volunteer, donate items, donate money, start a drive, partner with us
-- Currently collecting: kids toothbrushes, toothpaste, kid-friendly soap, kid-friendly lotion
+- Ways to help: volunteer, donate money, start a drive, partner with us
+
+IMPORTANT — donations and taxes: OLI is NOT a registered 501(c)(3), and donations to OLI are NOT tax-deductible. If anyone asks about tax deductions, receipts, or write-offs, say plainly that donations are not tax-deductible. Never say or imply that a donation is (or could be) tax-deductible, and do not tell people to route donations through Crisis Assistance Ministry for a deduction.
+
+If you are asked about an upcoming drive or event date and you do not know of one, say no drive is scheduled right now and point them to the email or Instagram for updates. Never invent dates, locations, or numbers.
 
 Keep responses concise (2-4 sentences max), friendly, and always encourage people to get involved. If someone asks how to donate money, share the Stripe link. If someone asks to volunteer or contact, share the email.`;
 
@@ -3017,6 +3000,16 @@ document.addEventListener('DOMContentLoaded', function() {
   const oliData = JSON.parse(document.getElementById('oli-data').textContent);
   const cd = (oliData && oliData.countdown) || {};
 
+  // No drive scheduled (or the date has passed) → hide the whole section rather
+  // than fall back to the hardcoded placeholder drive.
+  const section = document.getElementById('countdown-section');
+  const parsed = cd.date ? new Date(cd.date) : null;
+  const hasDrive = !!(cd.title && parsed && !isNaN(parsed) && parsed > Date.now());
+  if (!hasDrive) {
+    if (section) section.style.display = 'none';
+    return;
+  }
+
   const titleEl = document.getElementById('cd-drive-title');
   if (titleEl && cd.title) titleEl.textContent = cd.title;
 
@@ -3042,7 +3035,7 @@ document.addEventListener('DOMContentLoaded', function() {
     posterBox.innerHTML = '<img src="' + cd.posterUrl.replace(/"/g, '&quot;') + '" alt="Drive poster" style="width:100%;height:100%;object-fit:cover;border-radius:10px;"/>';
   }
 
-  const target = cd.date ? new Date(cd.date) : new Date('2026-05-31T17:00:00');
+  const target = parsed;
   function pad(n) { return String(n).padStart(2, '0'); }
   function tick() {
     const diff = target - Date.now();

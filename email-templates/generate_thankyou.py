@@ -12,7 +12,7 @@ RECEIPT = ("<div style='background:#f8f8f8;border:1px solid #eee;border-radius:4
     "<tr><td style='padding:5px 0;font-size:12px;color:#888;'>Date</td><td style='padding:5px 0;font-size:12px;color:#333;text-align:right;'>{{DONATION_DATE}}</td></tr>"
     "<tr><td style='padding:5px 0;font-size:12px;color:#888;'>Transaction</td><td style='padding:5px 0;font-size:11px;color:#333;text-align:right;font-family:monospace;'>{{TRANSACTION_ID}}</td></tr>"
     "</table>"
-    "<p style='font-size:10px;color:#aaa;margin:10px 0 0;'>Note: For a tax-deductible receipt, donate through Crisis Assistance Ministry earmarked for One Love Initiative.</p>"
+    "<p style='font-size:10px;color:#aaa;margin:10px 0 0;'>Note: One Love Initiative is not a registered 501(c)(3), so this donation is not tax-deductible.</p>"
     "</div>")
 
 NUDGE = ("<div style='border-top:1px solid #eee;margin:24px 0 0;padding-top:20px;'>"
