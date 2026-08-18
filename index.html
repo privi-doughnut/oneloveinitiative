@@ -1339,13 +1339,16 @@
   </section>
 
   <!-- DRIVE COUNTDOWN -->
-  <section class="countdown-section" id="countdown-section">
+  <!-- Hidden by default; the countdown script below reveals it only when a
+       future drive is set in oli-data.countdown. Keeps a stale drive from
+       flashing on load, and fails closed if the script never runs. -->
+  <section class="countdown-section" id="countdown-section" style="display:none;">
     <div class="section-inner">
       <div class="countdown-inner">
         <div class="reveal">
           <p class="countdown-label">Next Drive</p>
-          <h2 class="countdown-title" id="cd-drive-title">Children's Hygiene Kit Drive</h2>
-          <p class="countdown-date" id="cd-drive-date">May 31, 2026 · 5:00 PM</p>
+          <h2 class="countdown-title" id="cd-drive-title"></h2>
+          <p class="countdown-date" id="cd-drive-date"></p>
           <p class="countdown-locations" id="cd-locations"></p>
           <div class="countdown-grid" id="countdown-grid">
             <div class="countdown-unit"><span class="countdown-num" id="cd-days">--</span><span class="countdown-unit-label">Days</span></div>
@@ -3000,15 +3003,13 @@ document.addEventListener('DOMContentLoaded', function() {
   const oliData = JSON.parse(document.getElementById('oli-data').textContent);
   const cd = (oliData && oliData.countdown) || {};
 
-  // No drive scheduled (or the date has passed) → hide the whole section rather
-  // than fall back to the hardcoded placeholder drive.
+  // The section ships hidden; only reveal it for a drive that is actually
+  // scheduled and still in the future.
   const section = document.getElementById('countdown-section');
   const parsed = cd.date ? new Date(cd.date) : null;
   const hasDrive = !!(cd.title && parsed && !isNaN(parsed) && parsed > Date.now());
-  if (!hasDrive) {
-    if (section) section.style.display = 'none';
-    return;
-  }
+  if (!hasDrive) return;
+  if (section) section.style.display = '';
 
   const titleEl = document.getElementById('cd-drive-title');
   if (titleEl && cd.title) titleEl.textContent = cd.title;

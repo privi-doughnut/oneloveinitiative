@@ -42,9 +42,14 @@ The **One Love Initiative (OLI)** is a student-led nonprofit in Charlotte, NC th
 5. Chatbot changes → check the `oli-api-proxy` Worker, keep the model string `claude-sonnet-4-5`.
 
 ## Open tasks
-- Verify the team section in `index.html` includes **Jadon Santhosh** (role + bio above); add if missing, and confirm it's actually pushed live (not just in the admin panel).
-- Confirm the "Drives Organized" stat reads **2**.
-- Keep all tax-deductibility language **off** the site until the new MOU is signed.
+- **Follow up with Ms. Donley at CAM** on the fiscal-sponsorship MOU — still no reply. This is the gate on tax-deductible donations.
+- Keep all tax-deductibility language **off** the site until the new MOU is signed. When it *is* signed, the places to update are: the "How to Give" page in `index.html`, the receipt footer in `email-templates/generate_thankyou.py` (then regenerate `thankyou.json`), and the tax rule in `OLI_SYSTEM` (the chatbot prompt).
+- When the next drive is scheduled, fill in `countdown` in the `oli-data` JSON block (title + date + locations + posterUrl). The countdown section ships hidden and only appears for a future-dated drive — no need to clear it after the drive passes.
+
+### Done (Aug 2026)
+- Jadon Santhosh is in the team section and live. ✓
+- "Drives Organized" reads **2** in all three places (stat block, impact counter, `oli-data`). ✓
+- Tax-deductibility claims removed sitewide, including the chatbot prompt. ✓
 
 ## Quick reference
 - Founder contact: prithivivijayakumar.work@gmail.com · 704-453-7198
