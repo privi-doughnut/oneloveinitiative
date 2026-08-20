@@ -1,0 +1,17 @@
+# Config for the OLI chatbot proxy Worker.
+#
+# Deploy:  wrangler deploy --config cloudflare-workers/wrangler.toml
+# Secret:  wrangler secret put ANTHROPIC_API_KEY --name oli-api-proxy
+#
+# The API key is a SECRET, never a [vars] entry — [vars] values are plaintext
+# and would end up committed to this repo.
+
+name = "oli-api-proxy"
+main = "oli-api-proxy.js"
+compatibility_date = "2026-08-20"
+
+# Per-IP rate limit counters. The Worker degrades gracefully (no limiting)
+# if this binding is ever missing, rather than failing the request.
+[[kv_namespaces]]
+binding = "RATE_LIMIT"
+id = "1ed02fc2245547889dc826414191fa7a"
