@@ -1,0 +1,10 @@
+# Local wrangler state — account IDs, caches, local dev data
+.wrangler/
+
+# Node
+node_modules/
+
+# Env files — never commit secrets
+.env
+.env.*
+.dev.vars
