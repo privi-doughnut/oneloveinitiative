@@ -23,16 +23,17 @@ The **One Love Initiative (OLI)** is a student-led nonprofit in Charlotte, NC th
 - **Hosting:** Cloudflare Workers. The Worker named `oneloveinitiative` serves the site and is connected to this GitHub repo.
 - **Repo:** `github.com/privi-doughnut/oneloveinitiative`
 - **Structure:** a **single `index.html`** with JS `showPage()` navigation (one-file site — all pages/sections live in that file).
-- **AI chatbot ("OLI"):** calls a **separate** Cloudflare Worker named `oli-api-proxy`, which holds the Anthropic API key as a Cloudflare **secret** (`ANTHROPIC_API_KEY`). The site never contains the key.
+- **AI chatbot ("OLI"):** calls a **separate** Cloudflare Worker named `oli-api-proxy`, which holds the Anthropic API key as a Cloudflare **secret** (`ANTHROPIC_API_KEY`). The site never contains the key. Source is tracked at `cloudflare-workers/oli-api-proxy.js` (config: `cloudflare-workers/wrangler.toml`) — it used to exist only in the Cloudflare dashboard. Deploy with `wrangler deploy --config cloudflare-workers/wrangler.toml`. The Worker restricts callers to an **Origin allowlist**, fixes the model/prompt/token cap server-side, and rate limits per IP (10/min, KV binding `RATE_LIMIT`).
 - **Donations:** Stripe donate link (live) + Relay for banking.
 - **Newsletter:** Google Sheets + Apps Script.
 
 ## CRITICAL gotchas (read before editing)
-1. **Model string:** the chatbot must use **`claude-sonnet-4-5`**. Do **NOT** use `claude-sonnet-4-20250514` — that string was the recurring bug that broke the chatbot.
-2. **API key stays a Cloudflare secret** in `oli-api-proxy`. Never hardcode it into `index.html` or commit it.
-3. **The admin panel is client-side.** Edits made in it do NOT reliably persist to the repo or the live site — they can be session-local. For anything that must go live, **edit `index.html` directly and push via git** (the Worker deploys from the repo). Don't trust the admin panel to have saved changes.
-4. **Verify live changes in an incognito window** (no cached admin session) to confirm they actually deployed.
-5. **Impact/stats numbers are founder-provided.** Use exactly the figures Prithivi gives you — do not generate, estimate, or infer metrics on your own.
+1. **Model string:** the chatbot must use **`claude-sonnet-4-5`**. Do **NOT** use `claude-sonnet-4-20250514` — that string was the recurring bug that broke the chatbot. As of Aug 2026 this lives in the **Worker** (`cloudflare-workers/oli-api-proxy.js`), not `index.html`.
+2. **The chatbot's system prompt lives in the Worker, not the site.** `index.html` sends only `messages`. If you change the persona or the org facts, edit `OLI_SYSTEM` in `cloudflare-workers/oli-api-proxy.js` and redeploy the Worker — editing `index.html` will do nothing.
+3. **API key stays a Cloudflare secret** in `oli-api-proxy`. Never hardcode it into `index.html` or commit it. **This has already gone wrong once:** a live key was committed in `75380aa` (May 2026) and sat in the public repo's history for ~3 months. Set keys with `wrangler secret put ANTHROPIC_API_KEY --name oli-api-proxy` — never as a plaintext `[vars]` entry, never in a file.
+4. **The admin panel is client-side.** Edits made in it do NOT reliably persist to the repo or the live site — they can be session-local. For anything that must go live, **edit `index.html` directly and push via git** (the Worker deploys from the repo). Don't trust the admin panel to have saved changes.
+5. **Verify live changes in an incognito window** (no cached admin session) to confirm they actually deployed.
+6. **Impact/stats numbers are founder-provided.** Use exactly the figures Prithivi gives you — do not generate, estimate, or infer metrics on your own.
 
 ## How to make a change
 1. Edit `index.html` in this repo.
