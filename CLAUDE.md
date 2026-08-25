@@ -27,6 +27,17 @@ The **One Love Initiative (OLI)** is a student-led nonprofit in Charlotte, NC th
 - **Donations:** Stripe donate link (live) + Relay for banking.
 - **Newsletter:** Google Sheets + Apps Script.
 
+## Site design + content rules (Aug 2026 rebrand)
+- **Monochrome only.** The palette is a grey ladder plus one warm paper tone (`--paper: #F4F2ED`). No hue anywhere — no colored hex, no saturated `rgb()`/`hsl()`. There is no purple left in the file.
+- **No emoji as UI.** Numbered list markers come from a CSS `counter()`, not glyphs. The only symbols in the markup are `✓` and the `☰` nav toggle.
+- **No custom cursor.** The cursor-follower effect was removed on purpose (it hurt nav responsiveness). Don't reintroduce it.
+- **Grid hairlines:** cards draw their own four edges via `box-shadow`; the grid container has **no** border. This is deliberate — a container border outlines the empty tail of the last row and reads as a hole.
+- **Fonts:** Fraunces (display) + Archivo (text), via Google Fonts. That request is the site's only third-party call besides Stripe/Apps Script/Instagram, and the Privacy Policy discloses it.
+- **No analytics.** There is no GA4 (a commented-out snippet was removed). The Privacy Policy states this outright — if analytics are ever added, that page must change in the same commit.
+- **Privacy Policy page** (`privacy-page`) exists and is linked in the footer.
+- **QR code** on Get Involved is a self-hosted inline SVG data URI (generated with `segno`), not a third-party image fetch.
+- **Language must match the funding pivot:** we raise cash and bulk-buy, we do not run item-collection drives. And **45 kits are PACKED, not delivered** — never label them as distributed.
+
 ## CRITICAL gotchas (read before editing)
 1. **Model string:** the chatbot must use **`claude-sonnet-4-5`**. Do **NOT** use `claude-sonnet-4-20250514` — that string was the recurring bug that broke the chatbot. As of Aug 2026 this lives in the **Worker** (`cloudflare-workers/oli-api-proxy.js`), not `index.html`.
 2. **The chatbot's system prompt lives in the Worker, not the site.** `index.html` sends only `messages`. If you change the persona or the org facts, edit `OLI_SYSTEM` in `cloudflare-workers/oli-api-proxy.js` and redeploy the Worker — editing `index.html` will do nothing.
