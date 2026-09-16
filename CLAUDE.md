@@ -36,7 +36,7 @@ The **One Love Initiative (OLI)** is a student-led nonprofit in Charlotte, NC th
 - **No analytics.** There is no GA4 (a commented-out snippet was removed). The Privacy Policy states this outright — if analytics are ever added, that page must change in the same commit.
 - **Privacy Policy page** (`privacy-page`) exists and is linked in the footer.
 - **QR code** on Get Involved is a self-hosted inline SVG data URI (generated with `segno`), not a third-party image fetch.
-- **Language must match the funding pivot:** we raise cash and bulk-buy, we do not run item-collection drives. And **45 kits are PACKED, not delivered** — never label them as distributed.
+- **Language must match the funding pivot:** we raise cash and bulk-buy, we do not run item-collection drives. And **145 kits are PACKED, not delivered** — never label them as distributed.
 
 ## CRITICAL gotchas (read before editing)
 1. **Model string:** the chatbot must use **`claude-sonnet-4-5`**. Do **NOT** use `claude-sonnet-4-20250514` — that string was the recurring bug that broke the chatbot. As of Aug 2026 this lives in the **Worker** (`cloudflare-workers/oli-api-proxy.js`), not `index.html`.
