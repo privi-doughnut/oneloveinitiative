@@ -1217,95 +1217,6 @@
     }
 
     /* --------------------------------------------------------------------------
-       DONATION PROGRESS
-       ------------------------------------------------------------------------ */
-
-    .donation-progress-section {
-      padding: var(--space-section) var(--gutter);
-      border-bottom: 1px solid var(--rule);
-    }
-
-    .progress-wrap { max-width: 860px; margin: 56px auto 0; }
-
-    .progress-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      gap: 24px;
-      margin-bottom: 22px;
-    }
-
-    .progress-current {
-      font-family: var(--display);
-      font-size: clamp(2.4rem, 5vw, 3.6rem);
-      font-weight: 400;
-      line-height: 1;
-      letter-spacing: -0.035em;
-      font-variant-numeric: lining-nums tabular-nums;
-    }
-
-    .progress-goal {
-      font-size: 0.68rem;
-      font-weight: 500;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: var(--paper-3);
-      text-align: right;
-    }
-
-    .progress-track { height: 1px; background: var(--rule); position: relative; }
-
-    .progress-fill-bar {
-      position: absolute;
-      inset: 0 auto 0 0;
-      width: 0;
-      background: var(--paper);
-      transition: width 1.2s var(--ease);
-    }
-
-    .progress-pct {
-      margin-top: 12px;
-      font-size: 0.78rem;
-      color: var(--paper-3);
-      font-variant-numeric: lining-nums tabular-nums;
-    }
-    .progress-pct span { color: var(--paper); font-weight: 500; }
-
-    .progress-milestones {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      margin-top: 44px;
-      border-top: 1px solid var(--rule);
-    }
-
-    .milestone {
-      padding: 18px 8px;
-      text-align: center;
-      border-right: 1px solid var(--rule);
-      opacity: 0.42;
-    }
-    .milestone:last-child { border-right: none; }
-    .milestone.reached { opacity: 1; }
-
-    .milestone-num {
-      font-family: var(--display);
-      font-size: 1.06rem;
-      font-weight: 400;
-      font-variant-numeric: lining-nums tabular-nums;
-      color: var(--paper-2);
-    }
-    .milestone.reached .milestone-num { color: var(--paper); }
-
-    .milestone-label {
-      font-size: 0.58rem;
-      font-weight: 500;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: var(--paper-3);
-      margin-top: 5px;
-    }
-
-    /* --------------------------------------------------------------------------
        NEWSLETTER
        ------------------------------------------------------------------------ */
 
@@ -2090,11 +2001,6 @@
       .form-row,
       .vol-form { grid-template-columns: 1fr; }
 
-      .progress-milestones { grid-template-columns: repeat(5, 1fr); }
-      .milestone { padding: 14px 4px; }
-      .milestone-num { font-size: 0.86rem; }
-      .milestone-label { font-size: 0.5rem; letter-spacing: 0.1em; }
-
       .countdown-grid { flex-wrap: wrap; gap: 10px; }
 
       .footer-grid { grid-template-columns: 1fr 1fr; gap: 36px; }
@@ -2164,7 +2070,7 @@
   </section>
 
   <div class="stats-bar">
-    <div class="stat reveal"><div class="stat-num" data-admin="stat-kits">145</div><div class="stat-label">Kits Packed</div></div>
+    <div class="stat reveal"><div class="stat-num" data-admin="stat-kits">0</div><div class="stat-label">Kits Packed</div></div>
     <div class="stat reveal reveal-delay-1"><div class="stat-num" data-admin="stat-volunteers">15</div><div class="stat-label">Volunteers</div></div>
     <div class="stat reveal reveal-delay-2"><div class="stat-num" data-admin="stat-drives">2</div><div class="stat-label">Drives Organized</div></div>
     <div class="stat reveal reveal-delay-3"><div class="stat-num" data-admin="stat-partners">1</div><div class="stat-label">Partner Organizations</div></div>
@@ -2232,10 +2138,10 @@
   <section class="impact-section">
     <div class="section-inner">
       <p class="section-label reveal" style="text-align:center;">By the Numbers</p>
-      <h2 class="section-title reveal" style="text-align:center;">Our impact<br><em>so far</em></h2>
+      <h2 class="section-title reveal" style="text-align:center;">Where we<br><em>are now</em></h2>
       <div class="impact-grid">
         <div class="impact-stat reveal">
-          <span class="impact-num" data-count-target="145">145</span>
+          <span class="impact-num" data-count-target="0">0</span>
           <span class="impact-label">Kits Packed</span>
         </div>
         <div class="impact-stat reveal reveal-delay-1">
@@ -2951,12 +2857,12 @@
 <script id="oli-data" type="application/json">
 {
   "stats": {
-    "kits": 145,
+    "kits": 0,
     "volunteers": 15,
     "drives": 2,
     "partners": 1
   },
-  "kitCount": 145,
+  "kitCount": 0,
   "team": [
     {
       "initials": "PV",
@@ -3370,52 +3276,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const homePage = document.getElementById('home-page');
   if (homePage) {
 
-    // 1. DONATION PROGRESS BAR
-    const statsBar = homePage.querySelector('.stats-bar');
-    if (statsBar) {
-      const progressSection = document.createElement('div');
-      progressSection.className = 'donation-progress-section reveal';
-      progressSection.innerHTML = `
-        <div class="section-inner">
-          <p class="section-label" style="text-align:center;">Our Progress</p>
-          <h2 class="section-title" style="text-align:center;">Working toward <em>20,000 total kits</em></h2>
-          <div class="progress-wrap">
-            <div class="progress-header">
-              <div>
-                <div class="progress-current" id="progressCount">0</div>
-                <div style="font-size:0.72rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;margin-top:4px;">Kits Assembled</div>
-              </div>
-              <div class="progress-goal">Goal: 20,000 O.L.I Kits</div>
-            </div>
-            <div class="progress-track"><div class="progress-fill-bar" id="progressFillBar"></div></div>
-            <div class="progress-pct"><span id="progressPct">0%</span> of our 20,000-kit goal</div>
-            <div class="progress-milestones">
-              <div class="milestone" id="m500"><div class="milestone-num">500</div><div class="milestone-label">Kits</div></div>
-              <div class="milestone" id="m2500"><div class="milestone-num">2,500</div><div class="milestone-label">Kits</div></div>
-              <div class="milestone" id="m5000"><div class="milestone-num">5,000</div><div class="milestone-label">Kits</div></div>
-              <div class="milestone" id="m10000"><div class="milestone-num">10,000</div><div class="milestone-label">Kits</div></div>
-              <div class="milestone" id="m20000"><div class="milestone-num">20,000</div><div class="milestone-label">Goal</div></div>
-            </div>
-          </div>
-        </div>`;
-      statsBar.after(progressSection);
-      setTimeout(() => {
-        const kits = d.kitCount || 0;
-        const pct = (kits / 20000) * 100;
-        const bar = document.getElementById('progressFillBar');
-        const pctEl = document.getElementById('progressPct');
-        const countEl = document.getElementById('progressCount');
-        if (bar) bar.style.width = Math.max(pct, 0.5) + '%';
-        if (pctEl) pctEl.textContent = pct.toFixed(1) + '%';
-        if (countEl) countEl.textContent = kits.toLocaleString();
-        [['m500',500],['m2500',2500],['m5000',5000],['m10000',10000],['m20000',20000]].forEach(([id, threshold]) => {
-          const el = document.getElementById(id);
-          if (el && kits >= threshold) el.classList.add('reached');
-        });
-      }, 600);
-    }
-
-    // 2. TESTIMONIALS
+    // 1. TESTIMONIALS
     const homeCta = homePage.querySelector('.cta-banner');
     if (homeCta) {
       const hasTestimonials = d.testimonials && d.testimonials.length > 0;
@@ -3438,7 +3299,7 @@ document.addEventListener('DOMContentLoaded', function() {
       homeCta.before(testimonialsSection);
     }
 
-    // 3. INSTAGRAM
+    // 2. INSTAGRAM
     const homePageEnd = homePage.querySelector('.cta-banner');
     if (homePageEnd) {
       const igSection = document.createElement('section');
@@ -3460,7 +3321,7 @@ document.addEventListener('DOMContentLoaded', function() {
       homePageEnd.after(igSection);
     }
 
-    // 4. NEWSLETTER
+    // 3. NEWSLETTER
     const igSec = homePage.querySelector('.instagram-section');
     if (igSec) {
       const newsletterSection = document.createElement('section');

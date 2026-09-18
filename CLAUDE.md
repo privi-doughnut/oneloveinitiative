@@ -36,7 +36,7 @@ The **One Love Initiative (OLI)** is a student-led nonprofit in Charlotte, NC th
 - **No analytics.** There is no GA4 (a commented-out snippet was removed). The Privacy Policy states this outright — if analytics are ever added, that page must change in the same commit.
 - **Privacy Policy page** (`privacy-page`) exists and is linked in the footer.
 - **QR code** on Get Involved is a self-hosted inline SVG data URI (generated with `segno`), not a third-party image fetch.
-- **Language must match the funding pivot:** we raise cash and bulk-buy, we do not run item-collection drives. And **145 kits are PACKED, not delivered** — never label them as distributed.
+- **Language must match the funding pivot:** we raise cash and bulk-buy, we do not run item-collection drives. **Zero kits have been assembled as of Sep 2026** — the "145 kits packed" figure given in an earlier session was wrong and has been corrected sitewide. Never show a kit count above 0 without an explicit founder confirmation that kits have actually been assembled.
 
 ## CRITICAL gotchas (read before editing)
 1. **Model string:** the chatbot must use **`claude-sonnet-4-5`**. Do **NOT** use `claude-sonnet-4-20250514` — that string was the recurring bug that broke the chatbot. As of Aug 2026 this lives in the **Worker** (`cloudflare-workers/oli-api-proxy.js`), not `index.html`.
@@ -57,6 +57,11 @@ The **One Love Initiative (OLI)** is a student-led nonprofit in Charlotte, NC th
 - **Follow up with Ms. Donley at CAM** on the fiscal-sponsorship MOU — still no reply. This is the gate on tax-deductible donations.
 - Keep all tax-deductibility language **off** the site until the new MOU is signed. When it *is* signed, the places to update are: the "How to Give" page in `index.html`, the receipt footer in `email-templates/generate_thankyou.py` (then regenerate `thankyou.json`), and the tax rule in `OLI_SYSTEM` (the chatbot prompt).
 - When the next drive is scheduled, fill in `countdown` in the `oli-data` JSON block (title + date + locations + posterUrl). The countdown section ships hidden and only appears for a future-dated drive — no need to clear it after the drive passes.
+
+### Done (Sep 2026)
+- Corrected a false "145 kits assembled/packed" figure sitewide (hero stat bar, impact stats, `oli-data`) to **0** — zero kits have actually been assembled. It was sitting directly above a live Stripe donate button. ✓
+- Removed the "Our Progress" kit-count donation bar (145/20,000 = "0.7% of goal") entirely — JS, CSS, and the `kitCount` field it read from are all gone. Don't rebuild a kit-based progress bar until kits are actually being assembled; if a progress visual is wanted before then, it should track **funds raised toward a funding goal**, not a kit count, and needs a real goal dollar figure from the founder first. ✓
+- Renamed "Our impact so far" → "Where we are now" since nothing has been distributed yet. ✓
 
 ### Done (Aug 2026)
 - Jadon Santhosh is in the team section and live. ✓
