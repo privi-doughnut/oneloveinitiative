@@ -3,7 +3,8 @@
 Project briefing for Claude Code. Last updated: Aug 2026.
 
 ## What this is
-The **One Love Initiative (OLI)** is a student-led nonprofit in Charlotte, NC that assembles hygiene kits (toothbrush, toothpaste, soap, lotion) for individuals and families experiencing hardship. Model: buy supplies in bulk → volunteers assemble standardized "OLI Kits" → distributed through our partner, **Crisis Assistance Ministry (CAM)**. Founder: **Prithivi Vijayakumar**. This repo is the OLI website.
+The **One Love Initiative (OLI)** is a student-led nonprofit in Charlotte, NC that assembles **welfare kits** (general term — bundles of essential items) for individuals and families experiencing hardship. Model: buy supplies in bulk → volunteers assemble standardized "OLI Kits" → distributed through our partner, **Crisis Assistance Ministry (CAM)**. Founder: **Prithivi Vijayakumar**. This repo is the OLI website.
+- **"Welfare kits" vs "hygiene kits":** OLI's kits aren't only hygiene items long-term (see "Our Work" — future drives go "beyond hygiene, from clothing to household essentials"). Use **"welfare kits"** for general/org-level descriptions (title tag, meta tags, hero eyebrow, Press "Our Story", etc.). Keep **"hygiene kits"** only where the text is specifically about the current/named drive (the "Children's Hygiene Kit Drive" sections, its fact-rows, and the FAQ answer naming it) — that drive really is hygiene-specific.
 
 ## Where the org stands right now
 - **Stage:** early. First pilot drive is complete; the org has pivoted from collecting physical donations to **raising cash and bulk-buying supplies**, then assembling kits as a group.
@@ -36,7 +37,7 @@ The **One Love Initiative (OLI)** is a student-led nonprofit in Charlotte, NC th
 - **No analytics.** There is no GA4 (a commented-out snippet was removed). The Privacy Policy states this outright — if analytics are ever added, that page must change in the same commit.
 - **Privacy Policy page** (`privacy-page`) exists and is linked in the footer.
 - **QR code** on Get Involved is a self-hosted inline SVG data URI (generated with `segno`), not a third-party image fetch.
-- **Language must match the funding pivot:** we raise cash and bulk-buy, we do not run item-collection drives. **Zero kits have been assembled as of Sep 2026** — the "145 kits packed" figure given in an earlier session was wrong and has been corrected sitewide. Never show a kit count above 0 without an explicit founder confirmation that kits have actually been assembled.
+- **Language must match the funding pivot:** we raise cash and bulk-buy, we do not run item-collection drives. **Zero kits have been physically assembled as of Sep 2026.** The stat is now labeled **"Kits Funded"** (currently 50) rather than "Kits Packed" — it tracks funding coverage, not physical assembly. Never change the number or relabel it back to "packed/assembled/built" without an explicit founder-given figure — "funded" and "assembled" are different claims and must not be conflated.
 
 ## CRITICAL gotchas (read before editing)
 1. **Model string:** the chatbot must use **`claude-sonnet-4-5`**. Do **NOT** use `claude-sonnet-4-20250514` — that string was the recurring bug that broke the chatbot. As of Aug 2026 this lives in the **Worker** (`cloudflare-workers/oli-api-proxy.js`), not `index.html`.
@@ -62,6 +63,9 @@ The **One Love Initiative (OLI)** is a student-led nonprofit in Charlotte, NC th
 - Corrected a false "145 kits assembled/packed" figure sitewide (hero stat bar, impact stats, `oli-data`) to **0** — zero kits have actually been assembled. It was sitting directly above a live Stripe donate button. ✓
 - Removed the "Our Progress" kit-count donation bar (145/20,000 = "0.7% of goal") entirely — JS, CSS, and the `kitCount` field it read from are all gone. Don't rebuild a kit-based progress bar until kits are actually being assembled; if a progress visual is wanted before then, it should track **funds raised toward a funding goal**, not a kit count, and needs a real goal dollar figure from the founder first. ✓
 - Renamed "Our impact so far" → "Where we are now" since nothing has been distributed yet. ✓
+- Fixed a layout bug: any `.section-title` with inline `text-align:center` renders off-center, because `.section-title { max-width: 20ch }` shrinks the box to content width with no `margin:auto`, so it hugs the container's left edge instead of centering. The `.instagram-section` and `.newsletter-inner` sections already had a `.section-title { max-width: none; }` override for this; `.impact-section` ("Where we are now") was missing it and got the same fix. **Check for this bug any time a new centered section heading is added.** ✓
+- Relabeled the kits stat "Kits Packed" → "**Kits Funded**", value **50** (funding raised covers 50 kits worth — not the same claim as "assembled"). Changed in the hero stat bar, "By the Numbers" impact stat, and `oli-data` (`stats.kits`, `kitCount`). ✓
+- Reworded general/org-level copy from "hygiene kits" to "**welfare kits**" (title tag, meta/OG/Twitter descriptions, hero eyebrow, Press "Our Story") — kept "hygiene kits" everywhere the text is specifically about the current "Children's Hygiene Kit Drive". See the "welfare kits vs hygiene kits" rule above. ✓
 
 ### Done (Aug 2026)
 - Jadon Santhosh is in the team section and live. ✓
